@@ -19,7 +19,7 @@ public class TiledMapClickListener extends ClickListener {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        CombatStage stage = (CombatStage)event.getStage();
+        CombatController stage = (CombatController)event.getStage();
 
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 

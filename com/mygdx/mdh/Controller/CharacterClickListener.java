@@ -18,7 +18,7 @@ public class CharacterClickListener extends ClickListener {
     public void clicked(InputEvent evt, float x, float y) {
 
 
-        CombatStage stage = (CombatStage)evt.getStage();
+        CombatController stage = (CombatController)evt.getStage();
         stage.setSelectedCharacter(actor);
 
         System.out.println("[Actor Clicked]"+x +","+y+ " has been clicked."+actor.getX()+"/"+actor.getWidth());
@@ -40,7 +40,8 @@ public class CharacterClickListener extends ClickListener {
 
             System.out.println("[CharacterClickListener] Targeted "+actor.getCharacter().getName());
             stage.getCombat().getCurrentSelectedAbility().apply(actor.getCharacter());
-            stage.getCombat().setGameStep("Selection");
+            actor.getHit(10);
+             stage.getCombat().setGameStep("Selection");
 
         }
 

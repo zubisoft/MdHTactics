@@ -1,11 +1,17 @@
 package com.mygdx.mdh.View;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.mdh.MDHTactics;
 import com.mygdx.mdh.Model.Character;
 
@@ -31,6 +37,8 @@ public class CharacterActor extends Actor {
     LifeBar lifebar;
 
     AnimatedAction currentAction;
+
+    Label l;
 
 
     public CharacterActor(Character character, int startX, int startY) {
@@ -74,6 +82,12 @@ public class CharacterActor extends Actor {
 
         lifebar.draw();
         if (!character.isActive()) MDHTactics.batch.setColor(1f, 1f, 1f, 1f);
+
+        if (l != null) {
+            l.act(stateTime);
+            l.draw(MDHTactics.batch,1);
+        }
+
     }
 
     public void loadAnimations () {
@@ -108,6 +122,23 @@ public class CharacterActor extends Actor {
         System.out.println("[CharacterActor] New position: "+this.getX()+","+this.getY());
 
     }
+
+    public void getHit( int value ) {
+
+        Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+        l=(new Label("Hit!", uiSkin, "default-font", Color.ORANGE));
+        l.setPosition(getX(),getY()+getHeight()-50);
+        l.addAction(Actions.sequence(
+                Actions.moveTo(getX(), getY()+getHeight(),120, Interpolation.fade),
+                Actions.alpha(0,120,Interpolation.fade)
+
+        ));
+
+
+        System.out.println("[CharacterActor] New attack");
+
+    }
+
 
     public Animation getIdleAnimation() {
         return idleAnimation;

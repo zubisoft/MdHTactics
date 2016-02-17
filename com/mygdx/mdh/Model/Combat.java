@@ -15,9 +15,12 @@ public class Combat {
     Ability currentSelectedAbility;
     Character currentSelectedCharacter;
 
+    boolean playerTurn;
+
     public Combat () {
         characters = new ArrayList<Character>();
         gameStep="Selection";
+        playerTurn = true;
     }
 
     public  List<Character> getCharacters() {
@@ -35,24 +38,25 @@ public class Combat {
         c.setCellx(1);
         c.setCelly(1);
         this.addCharacter(c);
-
+/*
         //c = new Character("zubi",true);
         c = Character.loadFromJSON("core/assets/characters/hagen.txt");
         c.setCellx(1);
         c.setCelly(2);
         this.addCharacter(c);
-
+        */
         //c = new Character("trooper",true);
         c = Character.loadFromJSON("core/assets/characters/trooper.txt");
         c.setCellx(3);
         c.setCelly(3);
         this.addCharacter(c);
-
+/*
         //c = new Character("walker",true);
         c = Character.loadFromJSON("core/assets/characters/walker.txt");
         c.setCellx(4);
         c.setCelly(3);
         this.addCharacter(c);
+        */
 
         System.out.println("[Combat] Loaded character with  "+c.getHealth()+"/"+c.getMaxHealth());
     }
@@ -79,5 +83,13 @@ public class Combat {
 
     public void setCurrentSelectedCharacter(Character currentSelectedCharacter) {
         this.currentSelectedCharacter = currentSelectedCharacter;
+    }
+
+    public boolean isPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
     }
 }

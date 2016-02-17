@@ -16,7 +16,7 @@ public class AbilityButtonClickListener extends ClickListener {
 
     @Override
     public void clicked(InputEvent evt, float x, float y) {
-        CombatStage stage = (CombatStage)evt.getStage();
+        CombatController stage = (CombatController)evt.getStage();
 
         stage.getCombat().setGameStep("Targeting");
         stage.getCombat().setCurrentSelectedAbility(abilityButton.getAbility());
