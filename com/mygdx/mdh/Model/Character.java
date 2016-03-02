@@ -186,7 +186,7 @@ public class Character  {
 
         try {
 
-            System.out.println("Employee Object\n"+jsonData);
+            //System.out.println("Employee Object\n"+jsonData);
             emp = objectMapper.readValue(jsonData, Character.class);
 
         } catch (Exception e) {
@@ -196,5 +196,10 @@ public class Character  {
         return emp;
 
     }
+
+    public String toString() {
+        return "[Character: "+name+"] @ Cell("+cellx+","+celly+") HP:"+health+ " AP:"+availableActions;
+    }
+
 } //Character
 

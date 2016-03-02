@@ -1,5 +1,6 @@
 package com.mygdx.mdh.View;
 import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.mdh.Model.MapCell;
 
@@ -26,9 +27,10 @@ public class MapCellActor extends Actor {
         this.mapCell = mapCell;
     }
 
-    public MapCell getMapCell() {
-        return mapCell;
-    }
+
+
+
+
 
 
 }

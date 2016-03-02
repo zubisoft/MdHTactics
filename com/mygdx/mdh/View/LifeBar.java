@@ -3,6 +3,7 @@ package com.mygdx.mdh.View;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.mdh.MDHTactics;
@@ -41,14 +42,18 @@ public class LifeBar {
 
     }
 
-    public void draw() {
+    public void draw(SpriteBatch batch) {
         //Get model data
         bar.setValue(actor.getCharacter().getHealth());
 
         //Update graphics
         bar.setX(actor.getX()+10);
         bar.setY(actor.getY());
-        bar.draw(MDHTactics.batch,1.0f);
+        bar.setOriginX(actor.getOriginX());
+        bar.setOriginY(actor.getOriginY());
+        bar.draw(batch,1.0f);
+
+
     }
 
 

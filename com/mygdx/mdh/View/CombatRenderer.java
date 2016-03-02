@@ -3,20 +3,30 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.mygdx.mdh.Controller.CombatController;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 /**
  * Created by zubisoft on 13/02/2016.
  */
 public class CombatRenderer {
 
+    OrthographicCamera camera;
+    private OrthographicCamera cameraGUI;
+
     CombatController controller;
 
-    OrthographicCamera camera;
+
 
     TiledMapRenderer tiledMapRenderer;
 
@@ -24,36 +34,23 @@ public class CombatRenderer {
         this.controller=controller;
 
         camera = new OrthographicCamera();
-
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         camera.setToOrtho(false,w,h);
+
         camera.update();
+
+        cameraGUI = new OrthographicCamera();
+        cameraGUI.setToOrtho(false,w,h);
+        cameraGUI.update();
 
         controller.getViewport().setCamera(camera);
 
         tiledMapRenderer = new OrthogonalTiledMapRenderer(controller.getTiledMap());
 
-
     }
 
-    private void renderHUD(SpriteBatch batch) {
-        Texture sprite = new Texture(Gdx.files.internal("core/assets/HUD-background.png"));
-        batch.setColor(1f, 1f, 1f,  0.8f);
-        batch.draw(sprite,450,0);
-        batch.setColor(1f, 1f, 1f, 1f);
 
-        BitmapFont font = new BitmapFont();
-        font.draw(batch, "Hello World", 450, 100);
-
-        for (AbilityButton a: controller.getAbilityButtons()) {
-            a.draw(batch);
-        }
-
-        if (controller.getEOTButton() != null)
-            controller.getEOTButton().draw(batch,1.0f);
-
-    }
 
     private void renderMap() {
         tiledMapRenderer.setView(camera);
@@ -61,10 +58,25 @@ public class CombatRenderer {
     }
 
     private void renderObjects(SpriteBatch batch) {
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
         for (CharacterActor c: controller.getCharacterActors()) {
-            c.draw();
+            c.draw(batch);
         }
+        batch.end();
     }
+
+    private void renderHUD(SpriteBatch batch) {
+
+        batch.setProjectionMatrix(cameraGUI.combined);
+        batch.begin();
+
+        controller.combatHUD.render(batch);
+
+        batch.end();
+    }
+
+
 
 
     public void render (SpriteBatch batch) {
@@ -74,13 +86,29 @@ public class CombatRenderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
 
-        renderMap();
 
+        controller.cameraManager.applyTo(camera);
+        controller.update();
+
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        controller.map.draw(batch);
+        batch.end();
+
+        //renderMap();
         renderObjects(batch);
         renderHUD(batch);
 
-        batch.end();
 
+
+
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(OrthographicCamera camera) {
+        this.camera = camera;
     }
 }

@@ -27,7 +27,7 @@ public class CharacterClickListener extends ClickListener {
 
             if (actor.getCharacter().isActive()) {
                 System.out.println("[CharacterClickListener] Selected "+actor.getCharacter().getName());
-                stage.showAbilityButtons(actor.getCharacter());
+                stage.combatHUD.showAbilityButtons(actor.getCharacter());
             } else {
                 System.out.println("[CharacterClickListener] No actions left");
             }
@@ -41,7 +41,7 @@ public class CharacterClickListener extends ClickListener {
             System.out.println("[CharacterClickListener] Targeted "+actor.getCharacter().getName());
             stage.getCombat().getCurrentSelectedAbility().apply(actor.getCharacter());
             actor.getHit(10);
-             stage.getCombat().setGameStep("Selection");
+            stage.getCombat().setGameStep("Selection");
 
         }
 

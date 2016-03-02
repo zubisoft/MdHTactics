@@ -3,6 +3,8 @@ package com.mygdx.mdh.Controller;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.mdh.View.IsoMapCellActor;
+import com.mygdx.mdh.View.IsometricMapCellActor;
 import com.mygdx.mdh.View.MapCellActor;
 
 /**
@@ -10,9 +12,9 @@ import com.mygdx.mdh.View.MapCellActor;
  */
 public class TiledMapClickListener extends ClickListener {
 
-    private MapCellActor actor;
+    private IsoMapCellActor actor;
 
-    public TiledMapClickListener(MapCellActor actor) {
+    public TiledMapClickListener(IsoMapCellActor actor) {
         super(-1); //Listen to all buttons
         this.actor = actor;
     }
@@ -24,14 +26,15 @@ public class TiledMapClickListener extends ClickListener {
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
         if (stage.getCombat().getGameStep().equals("Action") &&  stage.getSelectedCharacter().getCharacter().isActive() && event.getButton() == Input.Buttons.RIGHT ) {
-            System.out.println("[Tile Clicked] Moving character to "+actor.getMapCell().getCellx()+","+actor.getMapCell().getCelly());
-            stage.getSelectedCharacter().moveToCell(actor.getMapCell().getCellx(),actor.getMapCell().getCelly() );
+            System.out.println("[Tile Clicked] Moving character to "+actor.getMapCell().x+","+actor.getMapCell().y);
+
+            stage.getSelectedCharacter().moveToCell(actor.getPosition().x, actor.getPosition().y);
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
             stage.setSelectedCharacter(null);
-            stage.hideAbilityButtons();
-            System.out.println("esconder" );
+            stage.combatHUD.hideAbilityButtons();
+            System.out.println("[Tile Clicked] "+actor.toString() );
         }
 
         stage.getCombat().setGameStep("Selection");

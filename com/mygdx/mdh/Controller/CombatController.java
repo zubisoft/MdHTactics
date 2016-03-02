@@ -2,12 +2,14 @@ package com.mygdx.mdh.Controller;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,9 +21,7 @@ import com.mygdx.mdh.Model.Ability;
 import com.mygdx.mdh.Model.Character;
 import com.mygdx.mdh.Model.Combat;
 import com.mygdx.mdh.Model.MapCell;
-import com.mygdx.mdh.View.AbilityButton;
-import com.mygdx.mdh.View.CharacterActor;
-import com.mygdx.mdh.View.MapCellActor;
+import com.mygdx.mdh.View.*;
 
 import java.util.*;
 
@@ -34,10 +34,16 @@ public class CombatController extends Stage {
     TiledMap tiledMap;
     Combat combat;
     java.util.List<CharacterActor> characterActors;
-    java.util.List<AbilityButton> abilityButtons;
-    ImageButton EOTButton;
+    public CombatHUD combatHUD;
+
+    public CameraManager cameraManager;
+
 
     CharacterActor selectedCharacter;
+
+    float stateTime;
+
+    public IsoMapActor map;
 
 
     public CombatController() {
@@ -49,39 +55,100 @@ public class CombatController extends Stage {
         //Gdx.input.setInputProcessor(new CombatController(this));
 
         this.characterActors = new ArrayList<CharacterActor>();
-        this.abilityButtons = new ArrayList<AbilityButton>();
+
+
 
         this.combat = new Combat();
         combat.populateSampleMap();
 
-        createActorsForLayer( combat );
 
         Gdx.input.setInputProcessor(this);
 
+        combatHUD = new CombatHUD(this);
+        this.addActor(combatHUD);
+
+        stateTime = 0;
+
+        cameraManager = new CameraManager();
+
+        map=new IsoMapActor();
+        this.addActor(map);
+
+        createActorsForLayer( combat );
+
+        cameraManager.setPosition(new Vector2(map.getCellWidth()*64,map.getCellHeigth()*32));
+
 
     }
 
-    private boolean friendliesActive () {
+    public boolean isEndOfTurn () {
         for(CharacterActor a: characterActors) {
-            if (a.getCharacter().isActive() & a.getCharacter().isFriendly()) return true;
+            if (a.getCharacter().isActive() & a.getCharacter().isFriendly()) return false;
+        }
+        return true;
+    }
+
+    public boolean  friendliesActive() {
+
+        for(CharacterActor c: getCharacterActors()) {
+            if(c.getCharacter().isFriendly() & c.getCharacter().isActive()) {
+                return true;
+            }
         }
         return false;
+
     }
 
+    public boolean  baddiesActive() {
+
+        for(CharacterActor c: getCharacterActors()) {
+            if(!c.getCharacter().isFriendly() & c.getCharacter().isActive()) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+
     public void update() {
+       // System.out.println(Gdx.graphics.getDeltaTime());
+        stateTime = Gdx.graphics.getDeltaTime();           // #15
+
+        for(CharacterActor a: characterActors) {
+            a.update(stateTime);
+        }
+
+        if (!friendliesActive() & selectedCharacter != null) {
+            if (selectedCharacter.isReady()) {
+
+                CombatHUD.notificationText = "BADDIES";
+                updateBaddies();
+            }
+
+        }
+
+        if (!friendliesActive() & !baddiesActive()) {
+            CombatHUD.notificationText = "START";
+            this.startTurn();
+        }
+
+        /*
         if (friendliesActive()) {
             EOTButton = null;
-            //System.out.println("[CombatController] Friendli");
+            //System.out.println("[CombatController] Friendly");
         } else {
             showEndOfTurnButton();
             System.out.println("[CombatController] End Turn");
         }
+        */
     }
 
 
     //private void createActorsForLayer(TiledMapTileLayer tiledLayer, Encounter encounter, HUD hud) {
     private void createActorsForLayer(Combat encounter) {
 
+        /*
         TiledMapTileLayer tiledLayer = (TiledMapTileLayer)tiledMap.getLayers().get(0);
 
         for (int x = 0; x < tiledLayer.getWidth(); x++) {
@@ -95,17 +162,35 @@ public class CombatController extends Stage {
             }
         }
 
+*/
+
+
+        for (int x = 0; x < map.getCellWidth(); x++) {
+            for (int y = 0; y < map.getCellHeigth(); y++) {
+                //TiledMapTileLayer.Cell cell = tiledLayer.getCell(x, y);
+                //MapCellActor actor = new MapCellActor(tiledMap, new MapCell(x,y));
+                IsoMapCellActor actor = map.getCell(x,y);
+                this.addActor(actor);
+                EventListener eventListener = new TiledMapClickListener(actor);
+                actor.addListener(eventListener);
+                //if (y<3 && x <3) { System.out.println("x,y"+x * tiledLayer.getTileWidth()+","+ y * tiledLayer.getTileHeight()+"realx,realy"+tiledLayer.getTileWidth()+","+tiledLayer.getTileHeight());}
+            }
+        }
 
         for ( Character character: encounter.getCharacters() ) {
 
 
             //Character character = new Character("Hagen",100,100,true);
-            CharacterActor actor = new CharacterActor(character,character.getCellx(),character.getCelly());
+            IsoMapCellActor m= map.getCell( character.getCellx(),character.getCelly() );
+            Vector2 position = m.getPosition();
+            CharacterActor actor = new CharacterActor(character,position.x,position.y);
+            actor.setOrigin(m.getWidth()/2-35,m.getHeight()/2-10);
+            actor.setPosition(position.x,position.y);
 
             this.addActor(actor);
             this.characterActors.add(actor);
 
-            System.out.println("[CombatController] Adding actor "+character.getName()+". Bounds: ("+character.getCellx()*100+","+character.getCelly()*100+","+(character.getCellx()*100+100)+","+(character.getCelly()*100+100)+")");
+            System.out.println("[CombatController] Adding actor "+actor.toString());
 
             EventListener eventListener = new CharacterClickListener(actor);
             actor.addListener(eventListener);
@@ -120,41 +205,9 @@ public class CombatController extends Stage {
         */
     }
 
-    public void showAbilityButtons(Character selectedCharacter) {
-
-        int i = 0;
-        for (Ability ability : selectedCharacter.getAbilities()) {
-            AbilityButton actor = new AbilityButton(ability,300+i*70,20);
 
 
-            this.abilityButtons.add(actor);
-            this.addActor(actor);
-            i = i+1;
 
-            EventListener eventListener = new AbilityButtonClickListener(actor);
-            actor.addListener(eventListener);
-        }
-    }
-
-    public void hideAbilityButtons() {
-
-
-        for (Actor actor :this.abilityButtons) {
-            actor.remove();
-        }
-        this.abilityButtons.clear();
-
-
-    }
-
-    public void showEndOfTurnButton() {
-        EOTButton = new ImageButton(new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal("core/assets/btn-end_turn.png")))));
-        EOTButton.setWidth(50);
-        EOTButton.setHeight(50);
-        EOTButton.setX(600);
-        EOTButton.setY(50);
-
-    }
 
     public Combat getCombat() {
         return combat;
@@ -165,9 +218,6 @@ public class CombatController extends Stage {
     }
 
 
-    public java.util.List<AbilityButton> getAbilityButtons() {
-        return abilityButtons;
-    }
 
     public CharacterActor getSelectedCharacter() {
         return selectedCharacter;
@@ -185,26 +235,39 @@ public class CombatController extends Stage {
         this.tiledMap = tiledMap;
     }
 
-    public ImageButton getEOTButton() {
-        return EOTButton;
+    public void updateBaddies () {
+        this.combat.setGameStep("Baddies");
+        for (CharacterActor c : getCharacterActors()) {
+            if (!c.getCharacter().isFriendly() & c.getCharacter().isActive()) {
+                c.moveToCell(1, 1);
+            }
+
+
+        }
     }
 
-/*
+    public void startTurn() {
+        for(CharacterActor c: getCharacterActors()) {
+            c.getCharacter().startTurn();
+        }
+    }
+
+
     @Override
     public boolean keyUp(int keycode) {
         if(keycode == Input.Keys.LEFT)
-            game.getCamera().translate(-32,0);
+            cameraManager.move(-32,0);
         if(keycode == Input.Keys.RIGHT)
-            game.getCamera().translate(32,0);
+            cameraManager.move(32,0);
         if(keycode == Input.Keys.UP)
-            game.getCamera().translate(0,-32);
+            cameraManager.move(0,-32);
         if(keycode == Input.Keys.DOWN)
-            game.getCamera().translate(0,32);
-        if(keycode == Input.Keys.NUM_1)
-            game.getTiledMap().getLayers().get(0).setVisible(!game.getTiledMap().getLayers().get(0).isVisible());
-        if(keycode == Input.Keys.NUM_2)
-            game.getTiledMap().getLayers().get(1).setVisible(!game.getTiledMap().getLayers().get(1).isVisible());
+            cameraManager.move(0,32);
+        if(keycode == Input.Keys.NUM_1);
+            //game.getTiledMap().getLayers().get(0).setVisible(!game.getTiledMap().getLayers().get(0).isVisible());
+        if(keycode == Input.Keys.NUM_2);
+            //game.getTiledMap().getLayers().get(1).setVisible(!game.getTiledMap().getLayers().get(1).isVisible());
         return false;
     }
-    */
+
 }

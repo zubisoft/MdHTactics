@@ -27,8 +27,10 @@ public class AbilityButton extends ImageButton {
         super((new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal(ability.getPic()))))));
         this.ability = ability;
 
+        /*
         this.setX(startX);
         this.setY(startY);
+        */
         this.setWidth(50);
         this.setHeight(50);
         //this.setBounds(this.getX(),this.getY(), this.getWidth(),this.getHeight());
