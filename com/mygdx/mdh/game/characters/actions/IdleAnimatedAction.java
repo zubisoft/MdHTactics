@@ -1,8 +1,8 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.characters.actions;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.mygdx.mdh.MDHTactics;
+import com.mygdx.mdh.game.characters.CharacterActor;
 
 /**
  * Created by zubisoft on 02/02/2016.
@@ -32,7 +32,15 @@ public class IdleAnimatedAction extends AnimatedAction {
     @Override
     public void draw(SpriteBatch batch) {
         //batch.draw(currentFrame,actor.getX(),actor.getY());
-        batch.draw(currentFrame,actor.getX()+actor.getOriginX(),actor.getY()+actor.getOriginY(),actor.getOriginX(),actor.getOriginY(),actor.getHeight(),actor.getWidth(),actor.getScaleX(),actor.getScaleY(),actor.getRotation());
+        batch.draw(currentFrame,actor.getX()+actor.getOriginX()
+                ,actor.getY()+actor.getOriginY()
+                ,actor.getOriginX()
+                ,actor.getOriginY()
+                ,actor.getWidth()
+                ,actor.getHeight()
+                ,actor.getScaleX()
+                ,actor.getScaleY()
+                ,actor.getRotation());
 //actor.getOriginX(),actor.getOriginY()
     }
 

@@ -1,8 +1,8 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.characters.actions;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.mygdx.mdh.MDHTactics;
+import com.mygdx.mdh.game.characters.CharacterActor;
 
 /**
  * Created by zubisoft on 02/02/2016.
@@ -13,6 +13,8 @@ public class MovementAnimatedAction extends AnimatedAction {
 
     float stepx;
     float stepy;
+
+    float scaleX;
 
     CharacterActor actor;
 
@@ -30,6 +32,9 @@ public class MovementAnimatedAction extends AnimatedAction {
         this.stepx = Math.signum(targetx - actor.getX())*5;
         this.stepy = Math.signum(targety - actor.getY())*5;
 
+        if (Math.signum(targetx - actor.getX())!=Math.signum(actor.getScaleX())) actor.setScaleX(-1*actor.getScaleX());
+        //else actor.setScaleX(1);
+
         //currentFrame.setRegion(actor.getX(),actor.getY(),actor.getWidth(),actor.getHeight());
 
         currentFrame = getKeyFrame(0);
@@ -39,7 +44,7 @@ public class MovementAnimatedAction extends AnimatedAction {
 
     @Override
     public void update (float newTime)  {
-        System.out.println(newTime);
+
         if (newTime - stateTime >= frameDuration) {
             stateTime = newTime;
             if (Math.abs(actor.getX())==targetx & Math.round(actor.getY())==targety) {
@@ -54,7 +59,7 @@ public class MovementAnimatedAction extends AnimatedAction {
                 actor.getCharacter().setAvailableActions(actor.getCharacter().getAvailableActions()-1);
 
             } else {
-                System.out.println("[CharacterActor] Target moving "+targetx+" "+targety);
+                //System.out.println("[CharacterActor] Target moving "+targetx+" "+targety);
                 actor.setState(CharacterActor.CHARACTER_STATE.MOVING);
                 //Update position
                 if ( (stepx>0 & targetx - actor.getX() > stepx) | (stepx<0 & targetx - actor.getX() < stepx)) actor.setX(actor.getX()  + stepx);
@@ -72,7 +77,16 @@ public class MovementAnimatedAction extends AnimatedAction {
     @Override
     public void draw(SpriteBatch batch){
 
-        batch.draw(currentFrame,actor.getX()+actor.getOriginX(),actor.getY()+actor.getOriginY(),actor.getOriginX(),actor.getOriginY(),actor.getHeight(),actor.getWidth(),actor.getScaleX(),actor.getScaleY(),actor.getRotation());
+
+        batch.draw(currentFrame,actor.getX()+actor.getOriginX()
+                ,actor.getY()+actor.getOriginY()
+                ,actor.getOriginX()
+                ,actor.getOriginY()
+                ,actor.getWidth()
+                ,actor.getHeight()
+                ,actor.getScaleX()
+                ,actor.getScaleY()
+                ,actor.getRotation());
 
     }
 

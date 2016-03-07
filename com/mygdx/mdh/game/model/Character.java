@@ -1,17 +1,10 @@
-package com.mygdx.mdh.Model;
+package com.mygdx.mdh.game.model;
 
 import java.util.*;
 
-import java.nio.file.Files;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by zubisoft on 27/01/2016.
@@ -34,6 +27,7 @@ public class Character  {
     int availableActions;
     boolean friendly;
     boolean active;
+    boolean dead;
     int cellx;
     int celly;
 
@@ -61,6 +55,7 @@ public class Character  {
         maxActions = 2;
         availableActions=maxActions;
         active=true;
+        dead=false;
         friendly =startFriendly;
         pic = "core/assets/"+characterName+".png";
 
@@ -79,7 +74,13 @@ public class Character  {
     public int getAttack() { return attack; }
     public int getDefence() { return defence; }
     public int getHealth() { return health; }
-    public void setHealth(int h) { health=h; }
+    public void setHealth(int h) {
+        health=h;
+        if (health<=0) dead=true;
+    }
+
+
+
     public boolean isFriendly() { return friendly; }
     public String getPic() { return pic; }
     public List<Ability> getAbilities() { return abilities; }
@@ -201,5 +202,12 @@ public class Character  {
         return "[Character: "+name+"] @ Cell("+cellx+","+celly+") HP:"+health+ " AP:"+availableActions;
     }
 
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
 } //Character
 

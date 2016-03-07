@@ -1,10 +1,10 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.characters;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -13,8 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.mygdx.mdh.MDHTactics;
-import com.mygdx.mdh.Model.Character;
+import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.characters.actions.AnimatedAction;
+import com.mygdx.mdh.game.characters.actions.IdleAnimatedAction;
+import com.mygdx.mdh.game.characters.actions.MovementAnimatedAction;
+import com.mygdx.mdh.game.model.Character;
 
 /**
  * Created by zubisoft on 28/01/2016.
@@ -35,8 +38,7 @@ public class CharacterActor extends Actor {
     AnimatedAction currentAction;
 
     //Addtional graphic elements
-    Texture sprite;
-    LifeBar lifebar;
+    CharacterLifeBar lifebar;
     Label l;
 
     //Game Logic
@@ -58,6 +60,14 @@ public class CharacterActor extends Actor {
         this.state = state;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
 
     //Logic management
 
@@ -70,7 +80,9 @@ public class CharacterActor extends Actor {
     CHARACTER_STATE state;
     float stateTime;
 
+    boolean selected;
     ShapeRenderer s;
+    Sprite selectionCircle;
 
 
 
@@ -78,27 +90,32 @@ public class CharacterActor extends Actor {
         super();
         this.character = character;
 
+        selected = false;
+
         this.setX(startX);
         this.setY(startY);
-        this.setWidth(126);
-        this.setHeight(83);
+        this.setWidth(83);
+        this.setHeight(126);
 
-        //this.setBounds(this.getX(),this.getY(),this.getWidth(),this.getHeight());
+        if (!character.isFriendly()) setScaleX(-1);
 
-        sprite = new Texture(Gdx.files.internal(character.getPic()));
 
-        lifebar = new LifeBar(this);
+        lifebar = new CharacterLifeBar(this);
         lifebar.setX(startX);
         lifebar.setY(startY);
 
 
         loadAnimations();
 
-        currentAction = new IdleAnimatedAction (0.025f, this);
+        currentAction = new IdleAnimatedAction(0.025f, this);
 
         this.state=CHARACTER_STATE.IDLE;
 
         s = new ShapeRenderer();
+
+        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
+        selectionCircle = new Sprite(texture);
+
 
     }
 
@@ -106,13 +123,12 @@ public class CharacterActor extends Actor {
 
     public Character getCharacter() {return character;}
 
-    public Texture getSprite() {
-        return sprite;
-    }
 
     public void update(float deltaTime) {
 
         stateTime +=deltaTime;
+
+        lifebar.update();
 
         //Update character extra graphics
         if (l != null)  l.act(stateTime);
@@ -126,14 +142,27 @@ public class CharacterActor extends Actor {
         }
 
         currentAction.update(stateTime);
+        this.act(deltaTime);
 
     }
 
 
     public void draw (SpriteBatch batch) {
+
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a);
+
+
         if (!character.isActive())  batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+        //System.out.println("[Checking] "+CombatController.combat.getCurrentSelectedCharacter()+"=="+character);
+        if (isSelected() ) {
+            selectionCircle.setPosition(getX()+16,getY()+8);
+            selectionCircle.setSize(100,50);
+            selectionCircle.draw(batch,0.7f);
+        }
 
         currentAction.draw(batch);
+
         lifebar.draw(batch);
 
         if (!character.isActive()) batch.setColor(1f, 1f, 1f, 1f);
@@ -169,6 +198,8 @@ public class CharacterActor extends Actor {
 
         idleAnimation = new Animation(0.1f, frames);      // #11
 
+        System.out.println("idle anim width "+frames[0].getRegionWidth()+" "+frames[0].getRegionHeight());
+
         frames = new TextureRegion[1];
         frames[0] = tmp[2][1];
 
@@ -178,11 +209,12 @@ public class CharacterActor extends Actor {
     }
 
     public void moveToCell( float x, float y) {
-
-        //TODO: Fix the position
-        currentAction = new MovementAnimatedAction (0.1f, this, x, y);
-
-        System.out.println("[CharacterActor] New position: "+this.getX()+","+this.getY());
+        this.state=CHARACTER_STATE.MOVING;
+        currentAction = new MovementAnimatedAction(0.1f, this, x, y);
+/*
+        System.out.println("[CharacterActor] Moving: "+this.character);
+        System.out.println("[CharacterActor] New position: "+this.getX()+","+this.getY()+" Action "+ currentAction);
+        */
 
     }
 
@@ -192,15 +224,27 @@ public class CharacterActor extends Actor {
 
         Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
         l=(new Label("Hit!", uiSkin, "default-font", Color.ORANGE));
-        l.setPosition(getX(),getY()+getHeight()-50);
+        l.setPosition(getX()+60,getY()+getHeight());
+
         l.addAction(Actions.sequence(
-                Actions.moveTo(getX(), getY()+getHeight(),120, Interpolation.fade),
-                Actions.alpha(0,120,Interpolation.fade)
-
+                Actions.moveTo(getX()+60, getY()+getHeight()+50,1000, Interpolation.exp5Out)
+                ,Actions.alpha(0,1000,Interpolation.fade)
         ));
+        character.setHealth(character.getHealth()-50);
+
+        if (character.isDead()) {
+            System.out.println("[CharacterActor] Dying:  "+character);
+            this.addAction(
+                    Actions.sequence(
+                             Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
+                            ,Actions.alpha(0,1,Interpolation.fade)
+
+            ));
 
 
-        System.out.println("[CharacterActor] New attack");
+        }
+
+        System.out.println("[CharacterActor] Attacked "+character+" Dead? "+character.isDead());
 
     }
 

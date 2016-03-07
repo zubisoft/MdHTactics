@@ -1,29 +1,28 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.mygdx.mdh.Controller.AbilityButtonClickListener;
-import com.mygdx.mdh.Controller.CombatController;
-import com.mygdx.mdh.Model.Ability;
-import com.mygdx.mdh.Model.Character;
+import com.mygdx.mdh.game.controller.AbilityButtonClickListener;
+import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.model.Ability;
+import com.mygdx.mdh.game.model.Character;
 
 import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 11/02/2016.
  */
-public class CombatHUD extends Group {
+public class CombatHUD extends Stage {
 
     java.util.List<AbilityButton> abilityButtons;
     ImageButton EOTButton;
@@ -54,7 +53,7 @@ public class CombatHUD extends Group {
 
     public void showAbilityButtons(Character selectedCharacter) {
 
-
+        System.out.println("shhowing buttons"+selectedCharacter.getName());
         Skin skin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
         Label nameLabel = new Label("Name:", skin);
 
@@ -63,27 +62,33 @@ public class CombatHUD extends Group {
         hudTableLayout.center().bottom();
         hudTableLayout.pad(10);
         hudTableLayout.setPosition(400,50);
+        hudTableLayout.setSize(200,50);
 
 
 
 
         int i = 0;
         for (Ability ability : selectedCharacter.getAbilities()) {
-            AbilityButton actor = new AbilityButton(ability,300+i*70,20);
+            AbilityButton actor = new AbilityButton(ability);
 
             hudTableLayout.add(actor).size(50,50).pad(2);
 
-            /*
-            this.abilityButtons.add(actor);
-this.addActor(actor);
-            i = i+1;
-            */
-
             EventListener eventListener = new AbilityButtonClickListener(actor);
             actor.addListener(eventListener);
+            //this.addActor(actor);
         }
 
+
         this.addActor(hudTableLayout);
+
+        hudTableLayout.addListener( new ClickListener() {
+            @Override
+            public void clicked(InputEvent evt, float x, float y)
+            {
+                System.out.println("hiii");
+            }
+        });
+
     }
 
     public void hideAbilityButtons() {

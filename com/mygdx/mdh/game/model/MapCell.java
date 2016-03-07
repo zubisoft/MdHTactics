@@ -1,4 +1,4 @@
-package com.mygdx.mdh.Model;
+package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 

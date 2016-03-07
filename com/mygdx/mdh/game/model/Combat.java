@@ -1,4 +1,4 @@
-package com.mygdx.mdh.Model;
+package com.mygdx.mdh.game.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ public class Combat {
 
     String gameStep;
     Ability currentSelectedAbility;
-    Character currentSelectedCharacter;
 
     boolean playerTurn;
 
@@ -77,19 +76,5 @@ public class Combat {
         this.currentSelectedAbility = currentSelectedAbility;
     }
 
-    public Character getCurrentSelectedCharacter() {
-        return currentSelectedCharacter;
-    }
 
-    public void setCurrentSelectedCharacter(Character currentSelectedCharacter) {
-        this.currentSelectedCharacter = currentSelectedCharacter;
-    }
-
-    public boolean isPlayerTurn() {
-        return playerTurn;
-    }
-
-    public void setPlayerTurn(boolean playerTurn) {
-        this.playerTurn = playerTurn;
-    }
 }

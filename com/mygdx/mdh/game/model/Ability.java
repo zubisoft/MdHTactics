@@ -1,4 +1,4 @@
-package com.mygdx.mdh.Model;
+package com.mygdx.mdh.game.model;
 
 /**
  * Created by zubisoft on 28/01/2016.
@@ -30,11 +30,13 @@ public class Ability {
     public void apply (Character target) {
 
         if (this.type == AbilityType.HEAL ) {
-            System.out.println("[Ability] "+ source.name + " cura "+ target.name);
-            target.setHealth( target.getHealth() + 2 );
+
+            target.setHealth( target.getHealth() + 50 );
+            System.out.println("[Ability] "+ source + " ha curado "+ target);
         } else {
-            System.out.println("[Ability] "+ source.name + " zumba "+ target.name);
-            target.setHealth( target.getHealth() - 2);
+
+            target.setHealth( target.getHealth() - 50);
+            System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
         }
 
         source.setAvailableActions(source.getAvailableActions() - 1);

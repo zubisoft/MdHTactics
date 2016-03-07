@@ -1,4 +1,4 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.characters;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.mygdx.mdh.MDHTactics;
 
 /**
  * Created by zubisoft on 31/01/2016.

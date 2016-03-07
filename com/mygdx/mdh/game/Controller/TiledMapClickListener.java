@@ -1,11 +1,11 @@
-package com.mygdx.mdh.Controller;
+package com.mygdx.mdh.game.controller;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mygdx.mdh.View.IsoMapCellActor;
-import com.mygdx.mdh.View.IsometricMapCellActor;
-import com.mygdx.mdh.View.MapCellActor;
+import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.map.IsoMapCellActor;
+
 
 /**
  * Created by zubisoft on 28/01/2016.

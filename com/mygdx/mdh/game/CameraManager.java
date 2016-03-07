@@ -1,6 +1,5 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 
@@ -31,9 +30,15 @@ public class CameraManager {
         }
 
     public void move (int deltax, int deltay) {
-        this.position.x = position.x+deltax;
-        this.position.y = position.y+deltay;
+        if (position.x+deltax >= 512 & position.x+deltax <= 800 )
+            this.position.x = position.x+deltax;
+
+        if (position.y+deltay >= 352 & position.y+deltay <= 448)
+            this.position.y = position.y+deltay;
+
         this.zoom = zoom;
+
+        System.out.println("[Camera position] "+position);
     }
 
 

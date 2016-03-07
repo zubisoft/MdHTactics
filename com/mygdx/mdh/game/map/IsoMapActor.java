@@ -1,4 +1,4 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.map;
 
 import com.badlogic.gdx.Gdx;
 
@@ -21,7 +21,7 @@ public class IsoMapActor extends Group{
     final int CELLHEIGTH = 64;
 
     public IsoMapActor() {
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/tile-grass-64x32.png"));
+        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/tile-transparent-256x128.png"));
 
         for (int z = 0; z < 10; z++) {
             for (int x = 0; x < 10; x++) {

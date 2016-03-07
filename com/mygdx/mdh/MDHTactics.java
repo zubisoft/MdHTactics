@@ -2,19 +2,12 @@ package com.mygdx.mdh;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
 
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.mygdx.mdh.View.CharacterActor;
-import com.mygdx.mdh.Model.Combat;
-import com.mygdx.mdh.Controller.CombatController;
-import com.mygdx.mdh.View.CombatRenderer;
-import com.mygdx.mdh.View.AbilityButton;
+import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.CombatRenderer;
 
 /*
 public class MDHTactics extends ApplicationAdapter {

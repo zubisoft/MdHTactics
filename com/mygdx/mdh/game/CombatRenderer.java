@@ -1,20 +1,11 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.mygdx.mdh.Controller.CombatController;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.mygdx.mdh.game.characters.CharacterActor;
 
 /**
  * Created by zubisoft on 13/02/2016.
@@ -45,6 +36,7 @@ public class CombatRenderer {
         cameraGUI.update();
 
         controller.getViewport().setCamera(camera);
+        controller.combatHUD.getViewport().setCamera(cameraGUI);
 
         tiledMapRenderer = new OrthogonalTiledMapRenderer(controller.getTiledMap());
 
@@ -90,17 +82,17 @@ public class CombatRenderer {
         controller.cameraManager.applyTo(camera);
         controller.update();
 
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        controller.background.draw(batch);
         controller.map.draw(batch);
         batch.end();
 
         //renderMap();
         renderObjects(batch);
+
         renderHUD(batch);
-
-
-
 
     }
 

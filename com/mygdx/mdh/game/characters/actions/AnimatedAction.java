@@ -1,6 +1,5 @@
-package com.mygdx.mdh.View;
+package com.mygdx.mdh.game.characters.actions;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.Animation;
 
 /**
  * Created by zubisoft on 02/02/2016.
@@ -22,6 +21,10 @@ public class AnimatedAction {
     public void draw(SpriteBatch batch) {
 
 
+    }
+
+    public String toString() {
+        return this.getClass().toString();
     }
 
 }
