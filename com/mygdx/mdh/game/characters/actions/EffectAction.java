@@ -1,0 +1,92 @@
+package com.mygdx.mdh.game.characters.actions;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.mygdx.mdh.game.characters.CharacterActor;
+import com.mygdx.mdh.game.model.Effect;
+
+/**
+ * Created by zubisoft on 09/03/2016.
+ */
+public class EffectAction  extends Action {
+
+    boolean begin; //True until the action takes place the first time, false otherwise
+    float stateTime;
+    float frameDuration;
+
+    Animation  effectAnimation;
+    TextureRegion currentFrame;
+
+    Effect effect;
+
+    final static int FRAME_COLS = 5;
+
+    public EffectAction(Effect effect, float frameDuration) {
+        this.frameDuration = frameDuration;
+        this.begin=true;
+        this.stateTime=0;
+        this.effect = effect;
+        this.loadAnimations();
+    }
+
+
+    @Override
+    public boolean act (float delta)  {
+
+
+
+        //Effects are applied first, when the animation starts
+        if (this.begin ) {
+            effect.setTarget(((CharacterActor) target).getCharacter());
+            effect.apply();
+
+            ((CharacterActor) target).showMessage(effect.getOutcome());
+
+            this.begin = false;
+        }
+
+        stateTime += delta;
+
+        currentFrame = effectAnimation.getKeyFrame(stateTime, true);
+
+        return false;
+    }
+
+
+    public void draw (SpriteBatch batch) {
+
+        batch.draw(currentFrame,target.getX()+target.getOriginX()
+                ,target.getY()+target.getOriginY()
+                ,target.getOriginX()
+                ,target.getOriginY()
+                ,target.getWidth()
+                ,target.getHeight()
+                ,target.getScaleX()
+                ,target.getScaleY()
+                ,target.getRotation());
+
+    }
+
+
+
+    public void loadAnimations () {
+        Texture texture = new Texture(Gdx.files.internal(effect.getPic())); // #9
+        TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/FRAME_COLS, texture.getHeight());              // #10
+        TextureRegion[] frames = new TextureRegion[FRAME_COLS];
+        int index = 0;
+
+        for (int j = 0; j < FRAME_COLS; j++) {
+            frames[index++] = tmp[0][j];
+        }
+
+        effectAnimation = new Animation(0.15f, frames);      // #11
+
+    }
+
+
+}

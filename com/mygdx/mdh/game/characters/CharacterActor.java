@@ -13,11 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.mygdx.mdh.game.CombatController;
-import com.mygdx.mdh.game.characters.actions.AnimatedAction;
-import com.mygdx.mdh.game.characters.actions.IdleAnimatedAction;
-import com.mygdx.mdh.game.characters.actions.MovementAnimatedAction;
+import com.mygdx.mdh.game.characters.actions.EffectAction;
+import com.mygdx.mdh.game.characters.actions.MovementAction;
 import com.mygdx.mdh.game.model.Character;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zubisoft on 28/01/2016.
@@ -34,48 +35,22 @@ public class CharacterActor extends Actor {
     Animation                       attackAnimation;          // #3
     Animation                       walkAnimation;          // #3
     Texture                         walkSheet;              // #4
-    TextureRegion                   currentFrame;           // #7
-    AnimatedAction currentAction;
+    final Skin                      uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+
 
     //Addtional graphic elements
     CharacterLifeBar lifebar;
-    Label l;
+    List<Label> messages;
 
     //Game Logic
     private Character character;
-
-    public boolean isReady() {
-        return ready;
-    }
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
-    }
-
-    public CHARACTER_STATE getState() {
-        return state;
-    }
-
-    public void setState(CHARACTER_STATE state) {
-        this.state = state;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-
-    //Logic management
-
 
     public enum CHARACTER_STATE {
         IDLE, MOVING, ABILITY1, ABILITY2
     }
 
+
+    //Logic management
     boolean ready;
     CHARACTER_STATE state;
     float stateTime;
@@ -83,6 +58,10 @@ public class CharacterActor extends Actor {
     boolean selected;
     ShapeRenderer s;
     Sprite selectionCircle;
+
+    TextureRegion currentFrame;
+
+    List<EffectAction> effectActions;
 
 
 
@@ -107,8 +86,6 @@ public class CharacterActor extends Actor {
 
         loadAnimations();
 
-        currentAction = new IdleAnimatedAction(0.025f, this);
-
         this.state=CHARACTER_STATE.IDLE;
 
         s = new ShapeRenderer();
@@ -116,12 +93,21 @@ public class CharacterActor extends Actor {
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
         selectionCircle = new Sprite(texture);
 
+        effectActions = new ArrayList<>();
+        messages = new ArrayList<>();
 
     }
 
 
 
     public Character getCharacter() {return character;}
+
+
+
+    public void addEffectAction (EffectAction ea) {
+        this.effectActions.add(ea);
+        this.addAction(ea);
+    }
 
 
     public void update(float deltaTime) {
@@ -131,17 +117,23 @@ public class CharacterActor extends Actor {
         lifebar.update();
 
         //Update character extra graphics
-        if (l != null)  l.act(stateTime);
+        for(Label l: messages) l.act(stateTime);
 
         switch(state) {
-            case IDLE:      this.setReady(true); break;
-            case MOVING:    this.setReady(false);break;
+            case IDLE:
+                this.setReady(true);
+                currentFrame = getIdleAnimation().getKeyFrame(stateTime, true);
+                break;
+            case MOVING:
+                this.setReady(false);
+                currentFrame = getWalkAnimation().getKeyFrame(stateTime, true);
+                break;
             case ABILITY1:  this.setReady(false);break;
             case ABILITY2:  this.setReady(false);break;
 
         }
 
-        currentAction.update(stateTime);
+        //currentAction.update(stateTime);
         this.act(deltaTime);
 
     }
@@ -151,9 +143,11 @@ public class CharacterActor extends Actor {
 
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a);
-
-
         if (!character.isActive())  batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+
+
+
+
         //System.out.println("[Checking] "+CombatController.combat.getCurrentSelectedCharacter()+"=="+character);
         if (isSelected() ) {
             selectionCircle.setPosition(getX()+16,getY()+8);
@@ -161,13 +155,30 @@ public class CharacterActor extends Actor {
             selectionCircle.draw(batch,0.7f);
         }
 
-        currentAction.draw(batch);
+        //currentAction.draw(batch);
+
+        batch.draw(currentFrame,getX()+getOriginX()
+                ,getY()+getOriginY()
+                ,getOriginX()
+                ,getOriginY()
+                ,getWidth()
+                ,getHeight()
+                ,getScaleX()
+                ,getScaleY()
+                ,getRotation());
+
+        //Draw effects
+        for (EffectAction effect: effectActions ) {
+
+            effect.draw(batch);
+        }
+
 
         lifebar.draw(batch);
 
         if (!character.isActive()) batch.setColor(1f, 1f, 1f, 1f);
 
-        if (l != null)  l.draw(batch,1);
+        for(Label l: messages) l.draw(batch,1);
 
     /*
         this.setDebug(true);
@@ -210,7 +221,11 @@ public class CharacterActor extends Actor {
 
     public void moveToCell( float x, float y) {
         this.state=CHARACTER_STATE.MOVING;
-        currentAction = new MovementAnimatedAction(0.1f, this, x, y);
+        MovementAction movementAction = new MovementAction(0.025f);
+        movementAction.setTargetPosition(x,y);
+
+        this.addAction(movementAction);
+
 /*
         System.out.println("[CharacterActor] Moving: "+this.character);
         System.out.println("[CharacterActor] New position: "+this.getX()+","+this.getY()+" Action "+ currentAction);
@@ -218,18 +233,25 @@ public class CharacterActor extends Actor {
 
     }
 
+    public void showMessage (String message) {
+        Label la=(new Label(message, uiSkin, "default-font", Color.ORANGE));
+
+        la.setPosition(getX()+60,getY()+getHeight()-messages.size()*15);
+
+
+        messages.add(la);
+
+        la.addAction(Actions.sequence(
+                Actions.moveTo(getX()+60, getY()+getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
+                ,Actions.alpha(0,1000,Interpolation.fade)
+        ));
+    }
 
 
     public void getHit( int value ) {
 
-        Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
-        l=(new Label("Hit!", uiSkin, "default-font", Color.ORANGE));
-        l.setPosition(getX()+60,getY()+getHeight());
+        showMessage("Hit "+value+" HP");
 
-        l.addAction(Actions.sequence(
-                Actions.moveTo(getX()+60, getY()+getHeight()+50,1000, Interpolation.exp5Out)
-                ,Actions.alpha(0,1000,Interpolation.fade)
-        ));
         character.setHealth(character.getHealth()-50);
 
         if (character.isDead()) {
@@ -257,16 +279,33 @@ public class CharacterActor extends Actor {
         return walkAnimation;
     }
 
-    public AnimatedAction getCurrentAction() {
-        return currentAction;
-    }
-
-    public void setCurrentAction(AnimatedAction currentAction) {
-        this.currentAction = currentAction;
-    }
-
 
     public String toString() {
         return "[Character: "+character.name+"] Cell("+character.getCellx()+","+character.getCelly()+") @ ["+this.getX()+","+getY()+ "] HP:"+character.getHealth()+ " AP:"+character.getAvailableActions();
+    }
+
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public CHARACTER_STATE getState() {
+        return state;
+    }
+
+    public void setState(CHARACTER_STATE state) {
+        this.state = state;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

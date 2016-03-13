@@ -81,13 +81,6 @@ public class CombatHUD extends Stage {
 
         this.addActor(hudTableLayout);
 
-        hudTableLayout.addListener( new ClickListener() {
-            @Override
-            public void clicked(InputEvent evt, float x, float y)
-            {
-                System.out.println("hiii");
-            }
-        });
 
     }
 

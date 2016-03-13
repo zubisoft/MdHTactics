@@ -11,9 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 
-
-
-
 public class Character  {
 
     //Core attributes
@@ -31,18 +28,24 @@ public class Character  {
     int cellx;
     int celly;
 
+    //Abilities of the character
     List<Ability> abilities;
+
+    //Effects currently applied on this character
+    List<Effect> effects;
 
     //Graphic info
     String pic;
 
 
     public Character() {
-
         active=true;
         abilities = new ArrayList<Ability>();
 
+        effects = new ArrayList<Effect> ();
     }
+
+    /*
     public Character(String characterName, boolean startFriendly) {
 
         //Normally we would load this from JSON or similar
@@ -61,29 +64,30 @@ public class Character  {
 
         //Add a couple of default abilities
         abilities = new ArrayList<Ability> ();
-        abilities.add(new Ability(this,AbilityType.HEAL));
-        abilities.add(new Ability(this,AbilityType.RANGED));
+        abilities.add(new Ability(this, Ability.AbilityType.HEAL));
+        abilities.add(new Ability(this, Ability.AbilityType.RANGED));
 
-    }
+        //Add a list for active effects
+        effects = new ArrayList<Effect> ();
+
+    }*/
 
     public void startTurn() {
         availableActions = maxActions;
         this.setActive(true);
     }
 
-    public int getAttack() { return attack; }
-    public int getDefence() { return defence; }
+    public void hit(int damage) {
+        setHealth(getHealth()-damage);
+    }
     public int getHealth() { return health; }
     public void setHealth(int h) {
         health=h;
-        if (health<=0) dead=true;
+        if (health<=0) {
+            dead=true;
+           // active=false;
+        }
     }
-
-
-
-    public boolean isFriendly() { return friendly; }
-    public String getPic() { return pic; }
-    public List<Ability> getAbilities() { return abilities; }
 
     public int getAvailableActions() {return availableActions;}
     public void setAvailableActions(int a) {
@@ -91,58 +95,26 @@ public class Character  {
         if (this.availableActions<=0) this.setActive(false);
     }
 
-    public boolean isActive() { return active; }
 
-    public void setActive(boolean a) { this.active=a; }
+    public int getAttack() { return attack; }
+    public int getDefence() { return defence; }
 
-    public int getCelly() {
-        return celly;
-    }
 
-    public void setCelly(int celly) {
-        this.celly = celly;
-    }
 
-    public int getCellx() {
-        return cellx;
-    }
 
-    public void setCellx(int cellx) {
-        this.cellx = cellx;
-    }
+    public boolean isFriendly() { return friendly; }
+    public String getPic() { return pic; }
+    public List<Ability> getAbilities() { return abilities; }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public int getMaxHealth() {
-        return maxHealth;
-    }
 
     public void setMaxHealth(int maxHealth) {
         health=maxHealth;
         this.maxHealth = maxHealth;
     }
 
-    public void setAttack(int attack) {
-        this.attack = attack;
-    }
 
-    public void setDefence(int defence) {
-        this.defence = defence;
-    }
-
-    public int getMovement() {
-        return movement;
-    }
-
-    public void setMovement(int movement) {
-        this.movement = movement;
-    }
 
     public int getMaxActions() {
         return maxActions;
@@ -202,12 +174,76 @@ public class Character  {
         return "[Character: "+name+"] @ Cell("+cellx+","+celly+") HP:"+health+ " AP:"+availableActions;
     }
 
+
+
+    /******************** Generic getters and setters ********************/
     public boolean isDead() {
         return dead;
     }
 
     public void setDead(boolean dead) {
         this.dead = dead;
+    }
+
+    public List<Effect> getEffects() {
+        return effects;
+    }
+
+    public void addEffect (Effect e) {
+        effects.add(e);
+    }
+
+    public void addEffect (List<Effect> e) {
+        if (e != null) effects.addAll(e);
+    }
+
+
+    public boolean isActive() { return active; }
+
+    public void setActive(boolean a) { this.active=a; }
+
+    public int getCelly() {
+        return celly;
+    }
+
+    public void setCelly(int celly) {
+        this.celly = celly;
+    }
+
+    public int getCellx() {
+        return cellx;
+    }
+
+    public void setCellx(int cellx) {
+        this.cellx = cellx;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
+    }
+
+    public void setDefence(int defence) {
+        this.defence = defence;
+    }
+
+    public int getMovement() {
+        return movement;
+    }
+
+    public void setMovement(int movement) {
+        this.movement = movement;
     }
 } //Character
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.mdh.game.characters.actions.EffectAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
 import com.mygdx.mdh.game.controller.TiledMapClickListener;
 import com.mygdx.mdh.game.model.Character;
@@ -25,6 +26,7 @@ import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.hud.CombatHUD;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
+import com.mygdx.mdh.game.model.Effect;
 
 import java.util.*;
 
@@ -92,6 +94,11 @@ public class CombatController extends Stage {
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/background/Arena_Battle_Background.jpeg"));
         background = new Sprite(texture);
 
+/*
+        for (CharacterActor ca: characterActors) {
+            if(!ca.getCharacter().isFriendly()) ca.addEffectAction(new EffectAction(new Effect("FIRE"),0.15f));
+        }
+*/
     }
 
 
@@ -198,7 +205,6 @@ public class CombatController extends Stage {
 
         if (!friendliesActive() & selectedCharacter != null) {
             if (selectedCharacter.isReady()) {
-
                 CombatHUD.notificationText = "BADDIES";
                 updateBaddies();
             }
@@ -207,7 +213,7 @@ public class CombatController extends Stage {
 
         if (!friendliesActive() & !baddiesActive()) {
             CombatHUD.notificationText = "START";
-            this.startTurn();
+            this.startTurn("FRIENDLIES");
         }
 
     }
@@ -243,19 +249,37 @@ public class CombatController extends Stage {
     }
 
     public void updateBaddies () {
-        this.combat.setGameStep("Baddies");
+
+        //this.startTurn("BADDIES");
+
         for (CharacterActor c : getCharacterActors()) {
             if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & c.isReady()) {
                 IsoMapCellActor aux = map.getCell(5,8);
                 c.moveToCell(aux.getX(), aux.getY());
+                //aux = map.getCell(5,7);
+                //c.moveToCell(aux.getX(), aux.getY());
             }
         }
+
+
     }
 
-    public void startTurn() {
-        for(CharacterActor c: getCharacterActors()) {
-            c.getCharacter().startTurn();
+    public void startTurn(String player) {
+
+        if (player.equals("FRIENDLIES")) {
+            for (CharacterActor c : getCharacterActors()) {
+                if(c.getCharacter().isFriendly()) {
+                    c.getCharacter().startTurn();
+                }
+            }
         }
+
+        if (player.equals("BADDIES")) {
+            for (CharacterActor c : getCharacterActors()) {
+                if(!c.getCharacter().isFriendly()) c.getCharacter().startTurn();
+            }
+        }
+
     }
 
 

@@ -11,14 +11,21 @@ public class Combat {
 
     List<Character> characters;
 
-    String gameStep;
+    public enum GameStepType {
+        START_TURN,MOVING,SELECTION,TARGETING,ACTION_SELECTION
+    }
+
+    GameStepType gameStep;
+
+
+
     Ability currentSelectedAbility;
 
     boolean playerTurn;
 
     public Combat () {
         characters = new ArrayList<Character>();
-        gameStep="Selection";
+        gameStep=GameStepType.SELECTION;
         playerTurn = true;
     }
 
@@ -33,7 +40,7 @@ public class Combat {
     public void populateSampleMap() {
 
         //Character c = new Character("hagen",true);
-        Character c = Character.loadFromJSON("core/assets/characters/zubi.txt");
+        Character c = Character.loadFromJSON("core/assets/characters/zubi_effects.txt");
         c.setCellx(1);
         c.setCelly(1);
         this.addCharacter(c);
@@ -60,11 +67,11 @@ public class Combat {
         System.out.println("[Combat] Loaded character with  "+c.getHealth()+"/"+c.getMaxHealth());
     }
 
-    public String getGameStep() {
+    public GameStepType getGameStep() {
         return gameStep;
     }
 
-    public void setGameStep(String gameStep) {
+    public void setGameStep(GameStepType gameStep) {
         this.gameStep = gameStep;
     }
 
