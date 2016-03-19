@@ -44,10 +44,6 @@ public class CombatRenderer {
 
 
 
-    private void renderMap() {
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
-    }
 
     private void renderObjects(SpriteBatch batch) {
         batch.setProjectionMatrix(camera.combined);

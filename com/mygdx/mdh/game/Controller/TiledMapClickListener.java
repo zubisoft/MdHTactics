@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
+import com.mygdx.mdh.game.model.Combat;
 
 
 /**
@@ -25,10 +26,10 @@ public class TiledMapClickListener extends ClickListener {
 
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
-        if (stage.getCombat().getGameStep().equals("Action") &&  stage.getSelectedCharacter().getCharacter().isActive() && event.getButton() == Input.Buttons.RIGHT ) {
-            System.out.println("[Tile Clicked] Moving character to "+actor.getMapCell().x+","+actor.getMapCell().y);
+        if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION) &&  stage.getSelectedCharacter().getCharacter().isActive() && event.getButton() == Input.Buttons.RIGHT ) {
+            System.out.println("[Tile Clicked] Moving character to "+actor.getMapCoordinates());
 
-            stage.getSelectedCharacter().moveToCell(actor.getPosition().x, actor.getPosition().y);
+            stage.getSelectedCharacter().moveToCell(actor);
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
@@ -37,6 +38,7 @@ public class TiledMapClickListener extends ClickListener {
             System.out.println("[Tile Clicked] "+actor.toString() );
         }
 
-        stage.getCombat().setGameStep("Selection");
+        stage.map.removeHighlightCells();
+        stage.getCombat().setGameStep(Combat.GameStepType.SELECTION);
     }
 }

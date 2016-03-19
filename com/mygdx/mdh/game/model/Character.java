@@ -4,7 +4,9 @@ import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Vector2;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygdx.mdh.game.map.IsoMapCellActor;
 
 /**
  * Created by zubisoft on 27/01/2016.
@@ -25,8 +27,9 @@ public class Character  {
     boolean friendly;
     boolean active;
     boolean dead;
-    int cellx;
-    int celly;
+
+    //Position
+    MapCell cell;
 
     //Abilities of the character
     List<Ability> abilities;
@@ -73,8 +76,10 @@ public class Character  {
     }*/
 
     public void startTurn() {
-        availableActions = maxActions;
-        this.setActive(true);
+        if (!isDead()) {
+            availableActions = maxActions;
+            this.setActive(true);
+        }
     }
 
     public void hit(int damage) {
@@ -85,7 +90,7 @@ public class Character  {
         health=h;
         if (health<=0) {
             dead=true;
-           // active=false;
+            active=false;
         }
     }
 
@@ -171,7 +176,7 @@ public class Character  {
     }
 
     public String toString() {
-        return "[Character: "+name+"] @ Cell("+cellx+","+celly+") HP:"+health+ " AP:"+availableActions;
+        return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions;
     }
 
 
@@ -202,21 +207,6 @@ public class Character  {
 
     public void setActive(boolean a) { this.active=a; }
 
-    public int getCelly() {
-        return celly;
-    }
-
-    public void setCelly(int celly) {
-        this.celly = celly;
-    }
-
-    public int getCellx() {
-        return cellx;
-    }
-
-    public void setCellx(int cellx) {
-        this.cellx = cellx;
-    }
 
     public String getName() {
         return name;
@@ -244,6 +234,15 @@ public class Character  {
 
     public void setMovement(int movement) {
         this.movement = movement;
+    }
+
+
+    public MapCell getCell() {
+        return cell;
+    }
+
+    public void setCell(MapCell cell) {
+        this.cell = cell;
     }
 } //Character
 

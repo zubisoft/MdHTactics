@@ -12,7 +12,7 @@ public class Combat {
     List<Character> characters;
 
     public enum GameStepType {
-        START_TURN,MOVING,SELECTION,TARGETING,ACTION_SELECTION
+        START_TURN,MOVING,SELECTION,TARGETING,ACTION_SELECTION,BADDIES
     }
 
     GameStepType gameStep;
@@ -41,8 +41,8 @@ public class Combat {
 
         //Character c = new Character("hagen",true);
         Character c = Character.loadFromJSON("core/assets/characters/zubi_effects.txt");
-        c.setCellx(1);
-        c.setCelly(1);
+        c.setCell(new MapCell(1,1));
+
         this.addCharacter(c);
 /*
         //c = new Character("zubi",true);
@@ -53,8 +53,7 @@ public class Combat {
         */
         //c = new Character("trooper",true);
         c = Character.loadFromJSON("core/assets/characters/trooper.txt");
-        c.setCellx(3);
-        c.setCelly(3);
+        c.setCell(new MapCell(3,3));
         this.addCharacter(c);
 /*
         //c = new Character("walker",true);

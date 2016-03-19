@@ -1,25 +1,30 @@
 package com.mygdx.mdh.game.characters.actions;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AfterAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.mygdx.mdh.game.characters.CharacterActor;
+import com.mygdx.mdh.game.map.IsoMapCellActor;
 
 /**
  * Created by zubisoft on 07/03/2016.
  */
-public class MovementAction extends SequenceAction {
+public class MovementAction extends Action {
 
     boolean begin; //True until the action takes place the first time, false otherwise
 
     float stateTime;
 
-    int targetx;
-    int targety;
+    IsoMapCellActor targetCell;
 
     float stepx;
     float stepy;
+
+    float targetx;
+    float targety;
 
     float frameDuration;
 
@@ -27,24 +32,27 @@ public class MovementAction extends SequenceAction {
         this.frameDuration = frameDuration;
         this.begin=true;
         this.stateTime=0;
+
     }
 
-    //We cant assign these in the constructor, as the actor is assigned right after the action is created
-    public void setTargetPosition(float targetx, float targety) {
+
+    public void setTargetCell(IsoMapCellActor target) {
 
         //These need to come as actual graphical xy
-        this.targetx=(int)targetx;
-        this.targety=(int)targety;
+        this.targetCell = target;
+
+        targetx = target.getX();
+        targety = target.getY();
 
     }
 
-
-    @Override
+    //@Override
     public boolean act (float delta)  {
 
         CharacterActor characterActor = (CharacterActor)actor;
 
         if (this.begin ) {
+
             this.stepx = Math.signum(targetx - actor.getX()) * 5;
             this.stepy = Math.signum(targety - actor.getY()) * 5;
 
@@ -52,6 +60,8 @@ public class MovementAction extends SequenceAction {
                 actor.setScaleX(-1 * actor.getScaleX());
             //System.out.println("[CharacterActor] Checking X "+actor.toString()+" "+targetx+" "+targety);
             this.begin = false;
+
+            System.out.println("[CharacterActor] From  "+actor.getX()+" to "+targetx+" step "+stepx);
         }
 
         stateTime += delta;
@@ -63,16 +73,17 @@ public class MovementAction extends SequenceAction {
 
             if (Math.round(actor.getX())==targetx & Math.round(actor.getY())==targety) {
                 //Target reached
-                System.out.println("[CharacterActor] Target reached");
+
                 actor.setBounds(targetx, targety, actor.getWidth(),actor.getHeight());
 
                 //Stop moving
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
                 //Assign final destination in the game logic
-                characterActor.getCharacter().setCellx(targetx);
-                characterActor.getCharacter().setCelly(targety);
+                characterActor.getCharacter().setCell(targetCell.getCell());
                 characterActor.getCharacter().setAvailableActions(characterActor.getCharacter().getAvailableActions()-1);
+
+                System.out.println("[CharacterActor] Target reached "+characterActor);
 
                 return true;
 

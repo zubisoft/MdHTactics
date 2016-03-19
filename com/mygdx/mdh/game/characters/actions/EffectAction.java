@@ -22,6 +22,8 @@ public class EffectAction  extends Action {
     Animation  effectAnimation;
     TextureRegion currentFrame;
 
+    boolean finished;
+
     Effect effect;
 
     final static int FRAME_COLS = 5;
@@ -32,6 +34,7 @@ public class EffectAction  extends Action {
         this.stateTime=0;
         this.effect = effect;
         this.loadAnimations();
+        this.finished = false;
     }
 
 
@@ -50,6 +53,13 @@ public class EffectAction  extends Action {
             this.begin = false;
         }
 
+        System.out.println("action");
+        if (effectAnimation.isAnimationFinished(stateTime)) {
+            actor.removeAction(this);
+            finished=true;
+            return true;
+        }
+
         stateTime += delta;
 
         currentFrame = effectAnimation.getKeyFrame(stateTime, true);
@@ -59,13 +69,13 @@ public class EffectAction  extends Action {
 
 
     public void draw (SpriteBatch batch) {
-
-        batch.draw(currentFrame,target.getX()+target.getOriginX()
-                ,target.getY()+target.getOriginY()
+        if(!finished)
+            batch.draw(currentFrame,target.getX()+target.getOriginX()
+                ,target.getY()+target.getOriginY()+50
                 ,target.getOriginX()
                 ,target.getOriginY()
                 ,target.getWidth()
-                ,target.getHeight()
+                ,50
                 ,target.getScaleX()
                 ,target.getScaleY()
                 ,target.getRotation());
@@ -84,7 +94,7 @@ public class EffectAction  extends Action {
             frames[index++] = tmp[0][j];
         }
 
-        effectAnimation = new Animation(0.15f, frames);      // #11
+        effectAnimation = new Animation(0.2f, frames);      // #11
 
     }
 

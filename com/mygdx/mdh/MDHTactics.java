@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
 
+
 /*
 public class MDHTactics extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -27,10 +28,10 @@ public class MDHTactics extends ApplicationAdapter {
 }
 */
 
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+
 
 public class MDHTactics extends ApplicationAdapter {
-
-	TiledMap tiledMap;
 
 
 	public static SpriteBatch batch;
@@ -40,6 +41,9 @@ public class MDHTactics extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+
+
 
 		//Initialize graphics
 		Gdx.graphics.setWindowedMode(1000,700);

@@ -20,7 +20,7 @@ public class CharacterLifeBar extends Actor {
     static final float BARHEIGHT = 10f;
 
 
-    Sprite barBackground;
+    TextureRegion barBackground;
     TextureRegion barFill;
 
     CharacterActor actor;
@@ -32,8 +32,9 @@ public class CharacterLifeBar extends Actor {
         this.actor = actor;
 
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/healthbar_bg_small.png"));
-        barBackground = new Sprite(texture);
-        barBackground.setSize(BARWIDTH, BARHEIGHT);
+        barBackground = new TextureRegion(texture);
+        /*barBackground = new Sprite(texture);
+        barBackground.setSize(BARWIDTH, BARHEIGHT);*/
 
         texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/healthbar_fill_small.png"));
 
@@ -42,28 +43,29 @@ public class CharacterLifeBar extends Actor {
 
     }
 
-    public void update () {
-        barBackground.setX(actor.getX()+actor.getOriginX());
-        barBackground.setY(actor.getY()+actor.getOriginY());
+    public void update (float delta) {
+        //barBackground.setX(actor.getX()+actor.getOriginX());
+        //barBackground.setY(actor.getY()+actor.getOriginY());
 
         barFill.setRegionWidth(Math.round(BARWIDTH*actor.getCharacter().getHealth()/actor.getCharacter().getMaxHealth()));
+        this.act(delta);
+
     }
 
     public void draw(SpriteBatch batch) {
         //Update graphics
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a);
 
-        barBackground.draw(batch,1.0f);
+        //barBackground.draw(batch,1.0f);
 
+        batch.draw(barBackground,actor.getX()+actor.getOriginX(),actor.getY()+actor.getOriginY());
         batch.draw(barFill,actor.getX()+actor.getOriginX(),actor.getY()+actor.getOriginY());
 
+        //Return color to normal
+        batch.setColor(1f, 1f, 1f, 1f);
     }
 
 
-    public void setX (float x) {
-        barBackground.setX(x);
-    }
 
-    public void setY (float x) {
-        barBackground.setY(x);
-    }
 }

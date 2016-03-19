@@ -1,34 +1,34 @@
 package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by zubisoft on 01/02/2016.
  */
-public class MapCell extends TiledMapTileLayer.Cell{
-    int Cellx;
-    int Celly;
+public class MapCell {
+    Vector2 mapCoordinates;
 
 
-
-    public MapCell(int cellx, int celly) {
-        Cellx = cellx;
-        Celly= celly;
+    public MapCell() {
+        this.mapCoordinates = new Vector2();
     }
 
-    public int getCellx() {
-        return Cellx;
+    public MapCell(Vector2 coordinates) {
+        this.mapCoordinates = coordinates;
     }
 
-    public void setCellx(int cellx) {
-        Cellx = cellx;
+    public MapCell(int x, int y) {
+        this.mapCoordinates = new Vector2(x,y);
     }
 
-    public int getCelly() {
-        return Celly;
+    public Vector2 getMapCoordinates() {
+        return mapCoordinates;
     }
 
-    public void setCelly(int celly) {
-        Celly = celly;
+    public String toString () {
+        return mapCoordinates.toString();
     }
+
+
 }

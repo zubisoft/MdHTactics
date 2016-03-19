@@ -1,6 +1,7 @@
 package com.mygdx.mdh.game.hud;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -34,6 +35,10 @@ public class CombatHUD extends Stage {
     public static String notificationText;
 
 
+    Texture sprite = new Texture(Gdx.files.internal("core/assets/HUD-background.png"));
+    Texture abilityBarSprite = new Texture(Gdx.files.internal("core/assets/HUD-bar.png"));
+
+
     public CombatHUD (CombatController controller) {
 
         this.controller = controller;
@@ -53,15 +58,12 @@ public class CombatHUD extends Stage {
 
     public void showAbilityButtons(Character selectedCharacter) {
 
-        System.out.println("shhowing buttons"+selectedCharacter.getName());
         Skin skin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
-        Label nameLabel = new Label("Name:", skin);
-
 
         hudTableLayout = new Table();
         hudTableLayout.center().bottom();
         hudTableLayout.pad(10);
-        hudTableLayout.setPosition(400,50);
+        hudTableLayout.setPosition(280,40);
         hudTableLayout.setSize(200,50);
 
 
@@ -71,7 +73,7 @@ public class CombatHUD extends Stage {
         for (Ability ability : selectedCharacter.getAbilities()) {
             AbilityButton actor = new AbilityButton(ability);
 
-            hudTableLayout.add(actor).size(50,50).pad(2);
+            hudTableLayout.add(actor).size(40,40).pad(2);
 
             EventListener eventListener = new AbilityButtonClickListener(actor);
             actor.addListener(eventListener);
@@ -109,13 +111,16 @@ public class CombatHUD extends Stage {
     }
 
     public void render (SpriteBatch batch) {
-        Texture sprite = new Texture(Gdx.files.internal("core/assets/HUD-background.png"));
-        batch.setColor(1f, 1f, 1f,  0.8f);
-        batch.draw(sprite,450,0);
+
+        batch.setColor(1f, 1f, 1f,  1f);
+
+
+        batch.draw(sprite,750,0);
         batch.setColor(1f, 1f, 1f, 1f);
 
         BitmapFont font = new BitmapFont();
-        font.draw(batch, notificationText, 450, 100);
+        font.setColor(Color.BLACK);
+        font.draw(batch, notificationText, 800, 100);
 
         //Draw current character abilities
         if (controller.getSelectedCharacter() != null ) {
@@ -125,16 +130,18 @@ public class CombatHUD extends Stage {
             }
             */
             if (controller.getSelectedCharacter().isReady())
+                batch.draw(abilityBarSprite,300,0);
                 hudTableLayout.draw(batch,1.0f);
 
         }
 
-
+/*
         if (controller.isEndOfTurn()) {
 
             this.getEOTButton().draw(batch, 1.0f);
 
         }
+        */
     }
 
 }

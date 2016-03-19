@@ -3,6 +3,7 @@ package com.mygdx.mdh.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,7 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.characters.actions.EffectAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
+import com.mygdx.mdh.game.controller.CombatInputListener;
 import com.mygdx.mdh.game.controller.TiledMapClickListener;
+import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Combat;
 import com.mygdx.mdh.game.characters.CharacterActor;
@@ -55,6 +58,16 @@ public class CombatController extends Stage {
     public Sprite background;
 
 
+    boolean baddiesBegin;
+
+
+    public enum GameTurn {
+        PLAYER, BADDIES
+    }
+
+    GameTurn gameTurn;
+
+
     public CombatController() {
         super();
 
@@ -87,12 +100,19 @@ public class CombatController extends Stage {
         //Add event handling
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(combatHUD);
+        multiplexer.addProcessor(new CombatInputListener(this));
         multiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(multiplexer);
 
 
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/background/Arena_Battle_Background.jpeg"));
+        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/background/arena_background.png"));
         background = new Sprite(texture);
+        background.setPosition(0,-275);
+
+        baddiesBegin=true;
+        gameTurn = GameTurn.PLAYER;
+
+
 
 /*
         for (CharacterActor ca: characterActors) {
@@ -105,22 +125,11 @@ public class CombatController extends Stage {
     /** Initializes map cells and characters.*/
     private void createActorsForLayer(Combat encounter) {
 
-        for (int x = 0; x < map.getCellWidth(); x++) {
-            for (int y = 0; y < map.getCellHeigth(); y++) {
-
-                //Add interactivity for the map tiles
-                IsoMapCellActor actor = map.getCell(x,y);
-                this.addActor(actor);
-                EventListener eventListener = new TiledMapClickListener(actor);
-                actor.addListener(eventListener);
-
-            }
-        }
 
         for ( Character character: encounter.getCharacters() ) {
 
             //Get the graphic location of the cell
-            IsoMapCellActor m= map.getCell( character.getCellx(),character.getCelly() );
+            IsoMapCellActor m= map.getCell( character.getCell().getMapCoordinates());
             Vector2 position = m.getPosition();
 
             //Place the character in that cell
@@ -164,6 +173,44 @@ public class CombatController extends Stage {
         return true;
     }
 
+    public void playerTurnBegin () {
+        gameTurn = GameTurn.PLAYER;
+
+        CombatHUD.notificationText = "Player Start";
+        for (CharacterActor c : getCharacterActors()) {
+            if(c.getCharacter().isFriendly()) {
+                c.getCharacter().startTurn();
+            }
+        }
+    }
+
+    public void baddiesTurnBegin () {
+
+        gameTurn = GameTurn.BADDIES;
+
+        /* Start turn for all characters */
+        CombatHUD.notificationText = "Baddies Start";
+        for (CharacterActor c : getCharacterActors()) {
+            if(!c.getCharacter().isFriendly()) {
+                c.getCharacter().startTurn();
+            }
+        }
+
+        /* Execute orders */
+        for (CharacterActor c : getCharacterActors()) {
+            if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & c.isReady()) {
+                IsoMapCellActor aux = map.getCell(1, 5);
+                c.moveToCell(aux);
+                aux = map.getCell(1, 6);
+
+                c.moveToCell(aux);
+
+                //aux = map.getCell(2,6);
+                //c.moveToCell(aux);
+            }
+        }
+    }
+
     public boolean  friendliesActive() {
 
         for(CharacterActor c: getCharacterActors()) {
@@ -182,6 +229,8 @@ public class CombatController extends Stage {
                 return true;
             }
         }
+
+
         return false;
 
     }
@@ -192,28 +241,31 @@ public class CombatController extends Stage {
         stateTime = Gdx.graphics.getDeltaTime();           // #15
 
         if (isGameOver()) {
-          //  System.out.println("Game Over");
+            System.out.println("Game Over");
         }
 
         if (isVictory()) {
-            //System.out.println("Victory");
+            System.out.println("Victory");
         }
 
         for(CharacterActor a: characterActors) {
             a.update(stateTime);
         }
 
-        if (!friendliesActive() & selectedCharacter != null) {
+        if (!friendliesActive() /*& selectedCharacter != null*/) {
             if (selectedCharacter.isReady()) {
-                CombatHUD.notificationText = "BADDIES";
                 updateBaddies();
             }
 
         }
 
-        if (!friendliesActive() & !baddiesActive()) {
-            CombatHUD.notificationText = "START";
-            this.startTurn("FRIENDLIES");
+
+        if (!friendliesActive() & gameTurn==GameTurn.PLAYER ) {
+            baddiesTurnBegin();
+        }
+
+        if (!baddiesActive() & gameTurn==GameTurn.BADDIES ) {
+            playerTurnBegin();
         }
 
     }
@@ -251,27 +303,21 @@ public class CombatController extends Stage {
     public void updateBaddies () {
 
         //this.startTurn("BADDIES");
+/*
+        if (baddiesBegin) {
 
-        for (CharacterActor c : getCharacterActors()) {
-            if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & c.isReady()) {
-                IsoMapCellActor aux = map.getCell(5,8);
-                c.moveToCell(aux.getX(), aux.getY());
-                //aux = map.getCell(5,7);
-                //c.moveToCell(aux.getX(), aux.getY());
-            }
+
+            baddiesBegin = false;
+
         }
-
+        */
 
     }
 
     public void startTurn(String player) {
 
         if (player.equals("FRIENDLIES")) {
-            for (CharacterActor c : getCharacterActors()) {
-                if(c.getCharacter().isFriendly()) {
-                    c.getCharacter().startTurn();
-                }
-            }
+
         }
 
         if (player.equals("BADDIES")) {
@@ -283,21 +329,27 @@ public class CombatController extends Stage {
     }
 
 
-    @Override
-    public boolean keyUp(int keycode) {
-        if(keycode == Input.Keys.LEFT)
-            cameraManager.move(-32,0);
-        if(keycode == Input.Keys.RIGHT)
-            cameraManager.move(32,0);
-        if(keycode == Input.Keys.UP)
-            cameraManager.move(0,-32);
-        if(keycode == Input.Keys.DOWN)
-            cameraManager.move(0,32);
-        if(keycode == Input.Keys.NUM_1);
-            //game.getTiledMap().getLayers().get(0).setVisible(!game.getTiledMap().getLayers().get(0).isVisible());
-        if(keycode == Input.Keys.NUM_2);
-            //game.getTiledMap().getLayers().get(1).setVisible(!game.getTiledMap().getLayers().get(1).isVisible());
-        return false;
+    /**
+     * Executes the current selected ability on the target.
+     * @param target
+     */
+    public void executeCurrentAbility(CharacterActor target) {
+        Ability a = combat.getCurrentSelectedAbility();
+        target.receiveAbility(a);
+
+        selectedCharacter.useAbility();
+
+        if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
+
+        combat.setGameStep(Combat.GameStepType.SELECTION);
     }
+
+
+    public void showMovementTiles(CharacterActor actor) {
+
+         map.highlightCells(new Color(0.0f,0.5f,1f,0.2f), map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());
+
+    }
+
 
 }
