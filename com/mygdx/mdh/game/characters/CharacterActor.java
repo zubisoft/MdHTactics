@@ -1,6 +1,7 @@
 package com.mygdx.mdh.game.characters;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -24,6 +25,7 @@ import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Effect;
+import com.mygdx.mdh.game.util.Assets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -208,34 +210,10 @@ public class CharacterActor extends Actor {
      * Loads the animation from the spritesheet defined in the Character.
      */
     public void loadAnimations () {
-        walkSheet = new Texture(Gdx.files.internal(character.getPic())); // #9
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/FRAME_COLS, walkSheet.getHeight()/FRAME_ROWS);              // #10
-        TextureRegion[] frames = new TextureRegion[FRAME_COLS];
 
-
-        for (int j = 0; j < FRAME_COLS; j++) {
-                frames[j] = tmp[0][j];
-        }
-
-        walkAnimation = new Animation(0.2f, frames);      // #11
-
-
-        frames = new TextureRegion[FRAME_COLS];
-
-        for (int j = 0; j < FRAME_COLS; j++) {
-            frames[j] = tmp[1][j];
-        }
-
-        attackAnimation = new Animation(0.2f, frames);      // #11
-
-        frames = new TextureRegion[1];
-        frames[0] = tmp[2][0];
-
-        idleAnimation = new Animation(0.2f, frames);      // #11
-
-
-
-        //stateTime = 0f;
+        idleAnimation   = Assets.instance.characters.get(character.getName()).idleAnimation;
+        walkAnimation   = Assets.instance.characters.get(character.getName()).walkAnimation;
+        attackAnimation = Assets.instance.characters.get(character.getName()).attackAnimation;
     }
 
     /**

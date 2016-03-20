@@ -4,9 +4,7 @@ import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector2;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mygdx.mdh.game.map.IsoMapCellActor;
 
 /**
  * Created by zubisoft on 27/01/2016.
