@@ -29,16 +29,20 @@ public class TiledMapClickListener extends ClickListener {
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION) &&  stage.getSelectedCharacter().getCharacter().isActive() && event.getButton() == Input.Buttons.RIGHT ) {
             System.out.println("[Tile Clicked] Moving character to "+actor.getMapCoordinates());
 
+            stage.map.removeHighlightCells();
             stage.getSelectedCharacter().moveToCell(actor);
+            stage.getCombat().setGameStep(Combat.GameStepType.ACTION_SELECTION);
+
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
             stage.setSelectedCharacter(null);
             stage.combatHUD.hideAbilityButtons();
             System.out.println("[Tile Clicked] "+actor.toString() );
+            stage.getCombat().setGameStep(Combat.GameStepType.SELECTION);
         }
 
-        stage.map.removeHighlightCells();
-        stage.getCombat().setGameStep(Combat.GameStepType.SELECTION);
+
+
     }
 }

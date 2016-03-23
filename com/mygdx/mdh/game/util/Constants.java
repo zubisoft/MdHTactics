@@ -19,6 +19,14 @@ public class Constants {
     public static final String TEXTURE_ATLAS_COMBAT_UI =
             "core/assets/graphics/mdhtactics-combatui.pack.atlas";
 
+    public static final String TEXTURE_ATLAS_MAPS =
+            "core/assets/graphics/mdhtactics-maps.pack.atlas";
+
+
     public static final String TEXTURE_ATLAS_FONT =
             "core/assets/graphics/fonts/default.fnt";
+
+
+    public static final int MAX_MAP_CELLWIDTH = 10;
+    public static final int MAX_MAP_CELLHEIGHT = 10;
 }

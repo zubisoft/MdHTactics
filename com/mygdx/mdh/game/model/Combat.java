@@ -39,31 +39,16 @@ public class Combat {
 
     public void populateSampleMap() {
 
-        //Character c = new Character("hagen",true);
-        Character c = Character.loadFromJSON("core/assets/characters/zubi_effects.txt");
-        c.setCell(new MapCell(1,1));
 
-        this.addCharacter(c);
-/*
-        //c = new Character("zubi",true);
-        c = Character.loadFromJSON("core/assets/characters/hagen.txt");
-        c.setCellx(1);
-        c.setCelly(2);
-        this.addCharacter(c);
-        */
-        //c = new Character("trooper",true);
-        c = Character.loadFromJSON("core/assets/characters/trooper.txt");
+        Character c = Character.loadFromJSON("core/assets/characters/zubi_effects.txt");
         c.setCell(new MapCell(3,3));
         this.addCharacter(c);
-/*
-        //c = new Character("walker",true);
-        c = Character.loadFromJSON("core/assets/characters/walker.txt");
-        c.setCellx(4);
-        c.setCelly(3);
-        this.addCharacter(c);
-        */
 
-        System.out.println("[Combat] Loaded character with  "+c.getHealth()+"/"+c.getMaxHealth());
+
+        c = Character.loadFromJSON("core/assets/characters/fireknight.txt");
+        c.setCell(new MapCell(8,3));
+        this.addCharacter(c);
+
     }
 
     public GameStepType getGameStep() {
@@ -81,6 +66,17 @@ public class Combat {
     public void setCurrentSelectedAbility(Ability currentSelectedAbility) {
         this.currentSelectedAbility = currentSelectedAbility;
     }
+
+
+
+    /**
+     * Sets the combat map.
+     * @param mapName
+     */
+    public void setMapFile(String mapName) {
+
+    }
+
 
 
 }

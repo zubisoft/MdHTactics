@@ -1,27 +1,19 @@
 package com.mygdx.mdh.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mygdx.mdh.game.characters.actions.EffectAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
 import com.mygdx.mdh.game.controller.CombatInputListener;
-import com.mygdx.mdh.game.controller.TiledMapClickListener;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Combat;
@@ -29,7 +21,10 @@ import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.hud.CombatHUD;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
-import com.mygdx.mdh.game.model.Effect;
+import com.mygdx.mdh.game.model.MapCell;
+import com.mygdx.mdh.game.util.Assets;
+import com.mygdx.mdh.screens.ScreenManager;
+import com.mygdx.mdh.game.model.Map;
 
 import java.util.*;
 
@@ -39,26 +34,28 @@ import java.util.*;
  */
 public class CombatController extends Stage {
 
-    TiledMap tiledMap;
+    public InputMultiplexer multiplexer;
+
     public static Combat combat;
     java.util.List<CharacterActor> characterActors;
     public CombatHUD combatHUD;
 
     public CameraManager cameraManager;
 
-
     CharacterActor selectedCharacter;
+    MapCell selectedCharacterPosition = new MapCell();
 
     float stateTime;
 
     public IsoMapActor map;
 
-    TextButton button;
 
     public Sprite background;
 
 
     boolean baddiesBegin;
+
+    ScreenManager screenManager;
 
 
     public enum GameTurn {
@@ -67,9 +64,10 @@ public class CombatController extends Stage {
 
     GameTurn gameTurn;
 
-
-    public CombatController() {
+    public CombatController(ScreenManager screenManager)
+    {
         super();
+        this.screenManager = screenManager;
 
         //Initialize game logic
         this.characterActors = new ArrayList<CharacterActor>();
@@ -77,7 +75,7 @@ public class CombatController extends Stage {
         this.combat = new Combat();
         combat.populateSampleMap();
 
-        map=new IsoMapActor();
+        map=new IsoMapActor(new Map());
         this.addActor(map);
 
         createActorsForLayer( combat );
@@ -98,28 +96,21 @@ public class CombatController extends Stage {
         cameraManager.setPosition(new Vector2(map.getCellWidth()*64,map.getCellHeigth()*32));
 
         //Add event handling
-        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(combatHUD);
         multiplexer.addProcessor(new CombatInputListener(this));
         multiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(multiplexer);
 
 
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/background/arena_background.png"));
-        background = new Sprite(texture);
+        background = new Sprite(Assets.instance.maps.get("map01"));
         background.setPosition(0,-275);
 
         baddiesBegin=true;
         gameTurn = GameTurn.PLAYER;
 
-
-
-/*
-        for (CharacterActor ca: characterActors) {
-            if(!ca.getCharacter().isFriendly()) ca.addEffectAction(new EffectAction(new Effect("FIRE"),0.15f));
-        }
-*/
     }
+
 
 
     /** Initializes map cells and characters.*/
@@ -235,10 +226,9 @@ public class CombatController extends Stage {
 
     }
 
-
-    public void update() {
+    public void update(float deltaTime) {
        // System.out.println(Gdx.graphics.getDeltaTime());
-        stateTime = Gdx.graphics.getDeltaTime();           // #15
+        stateTime += deltaTime;          // #15
 
         if (isGameOver()) {
             System.out.println("Game Over");
@@ -249,29 +239,29 @@ public class CombatController extends Stage {
         }
 
         for(CharacterActor a: characterActors) {
-            a.update(stateTime);
-        }
-
-        if (!friendliesActive() /*& selectedCharacter != null*/) {
-            if (selectedCharacter.isReady()) {
-                updateBaddies();
-            }
-
+            a.update(deltaTime);
         }
 
 
         if (!friendliesActive() & gameTurn==GameTurn.PLAYER ) {
-            baddiesTurnBegin();
+            //Wait for player's action to finish
+            if (selectedCharacter.isReady()) {
+                baddiesTurnBegin();
+            }
         }
 
         if (!baddiesActive() & gameTurn==GameTurn.BADDIES ) {
             playerTurnBegin();
         }
 
+        //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
+        if (selectedCharacter != null)
+            if(selectedCharacter.getCharacter().getCell()!=selectedCharacterPosition)
+                if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
+                    setSelectedCharacter(selectedCharacter);
+                }
+
     }
-
-
-
 
     public Combat getCombat() {
         return combat;
@@ -285,52 +275,33 @@ public class CombatController extends Stage {
         return selectedCharacter;
     }
 
+    /**
+     * Selects a new character as the currently active character.
+     * The previoius selected character becomes deselected.
+     * @param selectedCharacter
+     */
     public void setSelectedCharacter(CharacterActor selectedCharacter) {
         if (this.selectedCharacter != null) this.selectedCharacter.setSelected(false);
-        if (selectedCharacter != null)  selectedCharacter.setSelected(true);
+
+        if (selectedCharacter != null) {
+            selectedCharacter.setSelected(true);
+            if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
+                selectedCharacterPosition = selectedCharacter.getCharacter().getCell();
+                combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
+                showMovementTiles(selectedCharacter);
+            }
+
+        }
+
         this.selectedCharacter = selectedCharacter;
 
     }
 
-    public TiledMap getTiledMap() {
-        return tiledMap;
-    }
 
-    public void setTiledMap(TiledMap tiledMap) {
-        this.tiledMap = tiledMap;
-    }
-
-    public void updateBaddies () {
-
-        //this.startTurn("BADDIES");
-/*
-        if (baddiesBegin) {
-
-
-            baddiesBegin = false;
-
-        }
-        */
-
-    }
-
-    public void startTurn(String player) {
-
-        if (player.equals("FRIENDLIES")) {
-
-        }
-
-        if (player.equals("BADDIES")) {
-            for (CharacterActor c : getCharacterActors()) {
-                if(!c.getCharacter().isFriendly()) c.getCharacter().startTurn();
-            }
-        }
-
-    }
 
 
     /**
-     * Executes the current selected ability on the target.
+     * Executes the current selected ability on a target.
      * @param target
      */
     public void executeCurrentAbility(CharacterActor target) {
@@ -344,7 +315,10 @@ public class CombatController extends Stage {
         combat.setGameStep(Combat.GameStepType.SELECTION);
     }
 
-
+    /**
+     * Highlights the cells on the map where this character can move.
+     * @param actor
+     */
     public void showMovementTiles(CharacterActor actor) {
 
          map.highlightCells(new Color(0.0f,0.5f,1f,0.2f), map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());

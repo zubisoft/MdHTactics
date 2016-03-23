@@ -17,11 +17,12 @@ public class CombatRenderer {
 
     CombatController controller;
 
+    public static SpriteBatch batch;
 
-
-    TiledMapRenderer tiledMapRenderer;
 
     public CombatRenderer(CombatController controller) {
+        batch = new SpriteBatch();
+
         this.controller=controller;
 
         camera = new OrthographicCamera();
@@ -38,10 +39,7 @@ public class CombatRenderer {
         controller.getViewport().setCamera(camera);
         controller.combatHUD.getViewport().setCamera(cameraGUI);
 
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(controller.getTiledMap());
-
     }
-
 
 
 
@@ -67,17 +65,15 @@ public class CombatRenderer {
 
 
 
-    public void render (SpriteBatch batch) {
+    public void render () {
 
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
 
-
         controller.cameraManager.applyTo(camera);
-        controller.update();
-
+        controller.update(0);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -98,5 +94,23 @@ public class CombatRenderer {
 
     public void setCamera(OrthographicCamera camera) {
         this.camera = camera;
+    }
+
+    public void resize(int width, int height)
+    {
+        /*
+        camera.viewportWidth = (Constants.VIEWPORT_HEIGHT/height) * width;
+        camera.update();
+        cameraGUI.viewportHeight = Constants.VIEWPORT_GUI_HEIGHT;
+        cameraGUI.viewportWidth = (Constants.VIEWPORT_GUI_HEIGHT/(float)height) * (float)width;
+        cameraGUI.position.set(cameraGUI.viewportWidth/2, cameraGUI.viewportHeight/2, 0);
+        cameraGUI.update();
+        */
+    }
+
+
+    public void dispose() {
+        batch.dispose();
+        //shaderMonochrome.dispose();
     }
 }

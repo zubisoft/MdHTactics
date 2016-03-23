@@ -40,7 +40,7 @@ import java.io.File;
 public class MDHTactics extends ApplicationAdapter {
 
 
-	public static SpriteBatch batch;
+
 
 	CombatController combatController;
 	CombatRenderer combatRenderer;
@@ -62,19 +62,19 @@ public class MDHTactics extends ApplicationAdapter {
         AudioManager.instance.play(Assets.instance.music.song01);
 		// Start game at menu screen
 		ScreenTransition transition = ScreenTransitionSlice.init(2,
-				ScreenTransitionSlice.UP_DOWN, 10, Interpolation.pow5Out);
+				ScreenTransitionSlice.UP_DOWN, 10, Interpolation. pow5Out);
 		setScreen(new MenuScreen(this), transition);
 		 */
 
 		//Initialize graphics
-		Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
+		//Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 		//Initialize main game logic
-		combatController = new CombatController();
-		combatRenderer = new CombatRenderer(combatController);
+		//combatController = new CombatController();
+		//combatRenderer = new CombatRenderer(combatController);
 
 
-		batch = new SpriteBatch();
+
 
 	}
 
@@ -83,8 +83,8 @@ public class MDHTactics extends ApplicationAdapter {
 	@Override
 	public void render () {
 
-		combatController.update();
-		combatRenderer.render(batch);
+		combatController.update(0);
+		combatRenderer.render();
 
 	}
 

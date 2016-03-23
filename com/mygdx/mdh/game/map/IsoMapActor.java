@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.mygdx.mdh.game.controller.TiledMapClickListener;
+import com.mygdx.mdh.game.model.Map;
 import com.mygdx.mdh.game.model.MapCell;
+import com.mygdx.mdh.game.util.Assets;
 
 
 /**
@@ -24,37 +27,12 @@ public class IsoMapActor extends Group{
     final int CELLWIDTH = 128;
     final int CELLHEIGTH = 64;
 
-    public IsoMapActor() {
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/tile-transparent-256x128.png"));
+
 /*
-        for (int z = 0; z < 10; z++) {
-            for (int x = 0; x < 10; x++) {
-                s = new Sprite(texture);
-                //s.setPosition(x, z);
-                s.setSize(CELLWIDTH, CELLHEIGTH);
-                s.setPosition(x*CELLWIDTH+Math.floorMod(z,2)*CELLWIDTH/2, z*CELLHEIGTH/2);
-
-                mapCells[x][z] = new IsoMapCellActor(s);
-                mapCells[x][z].setMapCoordinates(x,z);
-                mapCells[x][z].setWidth(CELLWIDTH);
-                mapCells[x][z].setHeight(CELLHEIGTH);
-                mapCells[x][z].setPosition(x*CELLWIDTH+Math.floorMod(z,2)*CELLWIDTH/2, z*CELLHEIGTH/2);
-
-
-                this.addActor(mapCells[x][z]);
-
-            }
-        }
-        */
-
+    public IsoMapActor() {
 
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
-
-                //Graphical position
-                s = new Sprite(texture);
-                s.setSize(CELLWIDTH, CELLHEIGTH);
-                s.setPosition(x*CELLWIDTH+Math.floorMod(y,2)*CELLWIDTH/2, y*CELLHEIGTH/2+100);
 
                 //Cartesian position (map cells)
                 Vector2 logicalCoordinates = new Vector2();
@@ -62,7 +40,7 @@ public class IsoMapActor extends Group{
                 logicalCoordinates.y = x+(float)Math.ceil(y/2.0f);
 
                 MapCell c = new MapCell(logicalCoordinates);
-                mapCells[x][y] = new IsoMapCellActor(s,c);
+                mapCells[x][y] = new IsoMapCellActor(c);
 
                 //mapCells[x][y].setMapCoordinates((int)logicalCoordinates.x,(int)logicalCoordinates.y );
                 mapCells[x][y].setWidth(CELLWIDTH);
@@ -85,12 +63,54 @@ public class IsoMapActor extends Group{
 
     }
 
+*/
+
+
+    public IsoMapActor(Map map) {
+
+        map = Map.loadFromJSON("core/assets/maps/map01.txt");
+
+
+        for (int row = 0; row < map.getCellWidth(); row++) {
+            for (int column = 0; column < map.getCellHeight(); column++) {
+
+
+                //They come inversed in the file for convienece when writing the file...
+                MapCell c = map.getMapCells()[row][column];
+                c.setMapCoordinates(column,row);
+
+                //c.setMapCoordinates(column, row);
+                mapCells[column][row] = new IsoMapCellActor(c);
+
+                //mapCells[x][y].setMapCoordinates((int)logicalCoordinates.x,(int)logicalCoordinates.y );
+                mapCells[column][row].setWidth(CELLWIDTH);
+                mapCells[column][row].setHeight(CELLHEIGTH);
+                mapCells[column][row].setPosition(column*CELLWIDTH+Math.floorMod(row,2)*CELLWIDTH/2, (CELLHEIGTH*5)-(row*CELLHEIGTH/2)+75);
+
+
+                EventListener eventListener = new TiledMapClickListener(mapCells[column][row]);
+                mapCells[column][row].addListener(eventListener);
+
+                this.addActor(mapCells[column][row]);
+
+                if (c.getCellType()== MapCell.CellType.IMPASSABLE)  mapCells[column][row].setVisible(false);
+
+            }
+        }
+
+
+
+
+
+
+    }
+
 
     public void draw(SpriteBatch batch) {
 
         for(int z = 0; z < 10; z++) {
             for(int x = 0; x < 10; x++) {
-                mapCells[x][z].draw(batch);
+                if(mapCells[x][z].isVisible()) mapCells[x][z].draw(batch,1.0f);
             }
         }
 
@@ -128,7 +148,7 @@ public class IsoMapActor extends Group{
     }
 
     public void highlightCells (Color c, IsoMapCellActor cell, int radius) {
-
+        removeHighlightCells();
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
 
@@ -155,7 +175,7 @@ public class IsoMapActor extends Group{
 
     public static float distance (IsoMapCellActor c1, IsoMapCellActor c2) {
 
-        return (float)Math.ceil(c1.getMapCoordinates().dst(c2.getMapCoordinates()));
+        return (float)Math.ceil(c1.getCell().getCartesianCoordinates().dst(c2.getCell().getCartesianCoordinates()));
     }
 
     public static float distance (Vector2 c1, Vector2 c2) {

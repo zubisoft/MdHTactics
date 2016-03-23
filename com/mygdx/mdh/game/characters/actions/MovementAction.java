@@ -103,6 +103,8 @@ public class MovementAction extends Action {
                     actor.setY(targety);
                     //System.out.println("[CharacterActor] MovingY "+actor.getY()+" "+targety );
                 }
+
+
             }
         }
 

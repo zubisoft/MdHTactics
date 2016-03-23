@@ -112,6 +112,7 @@ public class CharacterActor extends Actor {
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
         selectionCircle = new Sprite(texture);
 
+
         effectActions = new ArrayList<>();
         actionQueue = new ArrayList<>();
         messages = new ArrayList<>();
@@ -156,6 +157,7 @@ public class CharacterActor extends Actor {
         }
 
         //Update actions attached to this Actor
+
         this.act(deltaTime);
 
     }
@@ -222,7 +224,7 @@ public class CharacterActor extends Actor {
     public void moveToCell(IsoMapCellActor newCell) {
 
 
-        if( IsoMapActor.distance(character.getCell().getMapCoordinates(),newCell.getCell().getMapCoordinates()) <= character.getMovement() ) {
+        if( IsoMapActor.distance(character.getCell().getCartesianCoordinates(),newCell.getCell().getCartesianCoordinates()) <= character.getMovement() ) {
             this.state = CHARACTER_STATE.MOVING;
             MovementAction movementAction = new MovementAction(0.025f);
             movementAction.setTargetCell(newCell);

@@ -3,6 +3,7 @@ package com.mygdx.mdh.game.map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.mdh.game.model.MapCell;
+import com.mygdx.mdh.game.util.Assets;
 
 /**
  * Created by zubisoft on 22/02/2016.
@@ -19,9 +21,9 @@ public class IsoMapCellActor extends Actor {
     Sprite sprite;
     MapCell cell;
 
+    final TextureRegion texture = Assets.instance.maps.get("tiles/tile-transparent-256x128");
+    final TextureRegion highlightTexture = Assets.instance.maps.get("tiles/tile-white-256x128");
 
-
-    final TextureRegion highlightTexture = new TextureRegion(new Texture(Gdx.files.internal("core/assets/graphics/tile-white-256x128.png")));
     //final Sprite highlightSprite = new Sprite(new Texture(Gdx.files.internal("core/assets/graphics/tile-green-256x128.png")));
     boolean showHighlight;
 
@@ -29,19 +31,23 @@ public class IsoMapCellActor extends Actor {
     Label la;
 
 
-    public IsoMapCellActor (Sprite sprite, MapCell cell) {
-        this.sprite = sprite;
+    public IsoMapCellActor (MapCell cell) {
+        this.sprite = new Sprite(texture);
         this.cell = cell;
         showHighlight=false;
 
-        la = (new Label(cell+"", uiSkin, "default-font", Color.ORANGE));
+        la = (new Label(cell.getCartesianCoordinates()+"", uiSkin, "default-font", Color.ORANGE));
     }
 
-
+    @Override
     protected void positionChanged () {
-        /*sprite.setPosition(getX(),getY());*/
+        sprite.setPosition(getX(),getY());
     }
 
+    @Override
+    protected void sizeChanged () {
+        sprite.setSize(getWidth(),getHeight());
+    }
 
     @Override
     public Actor hit(float x, float y, boolean touchable) {
@@ -60,8 +66,8 @@ public class IsoMapCellActor extends Actor {
         return null;
     }
 
-
-    public void draw(SpriteBatch batch) {
+    @Override
+    public void draw (Batch batch, float parentAlpha) {
 
         //Get the current color before drawing (Useful to allow animating the color from actions)
         Color color = getColor();
@@ -69,13 +75,15 @@ public class IsoMapCellActor extends Actor {
 
         sprite.draw(batch);
 
-        //la.setPosition(getX()+60,getY()+30);
-        //la.draw(batch,1);
+        la.setPosition(getX()+60,getY()+30);
+        la.draw(batch,1);
+
 
         if (showHighlight) {
             //highlightSprite.draw(batch,0.2f);
             batch.draw(highlightTexture,getX(),getY(),getWidth(),getHeight());
         }
+
 
         batch.setColor(1f, 1f, 1f, 1f);
 

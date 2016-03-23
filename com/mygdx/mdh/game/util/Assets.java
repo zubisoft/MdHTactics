@@ -28,11 +28,10 @@ public class Assets implements Disposable, AssetErrorListener {
     public static final Assets instance = new Assets();
     private AssetManager assetManager;
 
-
     public AssetFonts fonts;
 
     public Map<String, AssetCharacter> characters = new HashMap<String, AssetCharacter>();
-
+    public Map<String, AtlasRegion> maps = new HashMap<String, AtlasRegion>();
 
     public class AssetFonts {
         public final BitmapFont defaultSmall;
@@ -69,6 +68,7 @@ public class Assets implements Disposable, AssetErrorListener {
         // load texture atlas
         assetManager.load(Constants.TEXTURE_ATLAS_CHARACTERS, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_COMBAT_UI, TextureAtlas.class);
+        assetManager.load(Constants.TEXTURE_ATLAS_MAPS, TextureAtlas.class);
 
         // load sounds
         /*
@@ -97,6 +97,11 @@ public class Assets implements Disposable, AssetErrorListener {
             characters.put(g.name, new AssetCharacter(atlas,g.name));
         }
 
+        atlas = assetManager.get(Constants.TEXTURE_ATLAS_MAPS);
+        for (AtlasRegion g: atlas.getRegions()) {
+            Gdx.app.debug(TAG, "Loading Map: " + g.name);
+            maps.put(g.name, atlas.findRegion(g.name));
+        }
 
         // Create game resource objects
 
@@ -153,7 +158,7 @@ public class Assets implements Disposable, AssetErrorListener {
                 frames[j] = tmp[0][j];
             }
 
-            walkAnimation = new Animation(0.2f, frames);      // #11
+            walkAnimation = new Animation(0.15f, frames);      // #11
 
 
             frames = new TextureRegion[FRAME_COLS];
@@ -162,12 +167,12 @@ public class Assets implements Disposable, AssetErrorListener {
                 frames[j] = tmp[1][j];
             }
 
-            attackAnimation = new Animation(0.2f, frames);      // #11
+            attackAnimation = new Animation(0.15f, frames);      // #11
 
             frames = new TextureRegion[1];
             frames[0] = tmp[2][0];
 
-            idleAnimation = new Animation(0.2f, frames);      // #11
+            idleAnimation = new Animation(0.15f, frames);      // #11
 
         }
     }

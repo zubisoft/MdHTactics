@@ -32,20 +32,6 @@ public class CharacterClickListener extends ClickListener {
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.SELECTION)) {
             stage.setSelectedCharacter(actor);
 
-            if (!actor.getCharacter().isFriendly()) {
-                System.out.println("[CharacterClickListener] Clicked maluto");
-                return;
-            }
-
-                if (actor.getCharacter().isActive()) {
-                    System.out.println("[CharacterClickListener] Selected "+actor.getCharacter().getName());
-                    stage.combatHUD.showAbilityButtons(actor.getCharacter());
-                    stage.showMovementTiles(actor);
-                } else {
-                    System.out.println("[CharacterClickListener] No actions left");
-                }
-
-
             stage.getCombat().setGameStep(Combat.GameStepType.ACTION_SELECTION);
 
         }
