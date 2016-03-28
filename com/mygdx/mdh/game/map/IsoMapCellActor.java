@@ -36,7 +36,7 @@ public class IsoMapCellActor extends Actor {
         this.cell = cell;
         showHighlight=false;
 
-        la = (new Label(cell.getCartesianCoordinates()+"", uiSkin, "default-font", Color.ORANGE));
+        la = (new Label(cell.getMapCoordinates()+"", uiSkin, "default-font", Color.ORANGE));
     }
 
     @Override

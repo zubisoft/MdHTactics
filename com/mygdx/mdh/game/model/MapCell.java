@@ -8,11 +8,15 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class MapCell {
 
+
+
     public enum CellType {
         NORMAL, IMPASSABLE
     }
 
     CellType cellType;
+
+    boolean occupied;
 
     Vector2 mapCoordinates;
     Vector2 cartesianCoordinates;
@@ -38,6 +42,15 @@ public class MapCell {
         return mapCoordinates.toString();
     }
 
+
+
+    public boolean isOccupied() {
+        return occupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        this.occupied = occupied;
+    }
 
 
     /**

@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -28,10 +29,13 @@ public class Assets implements Disposable, AssetErrorListener {
     public static final Assets instance = new Assets();
     private AssetManager assetManager;
 
+    public static Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+
     public AssetFonts fonts;
 
     public Map<String, AssetCharacter> characters = new HashMap<String, AssetCharacter>();
     public Map<String, AtlasRegion> maps = new HashMap<String, AtlasRegion>();
+    public Map<String, AtlasRegion> guiElements = new HashMap<String, AtlasRegion>();
 
     public class AssetFonts {
         public final BitmapFont defaultSmall;
@@ -103,6 +107,13 @@ public class Assets implements Disposable, AssetErrorListener {
             maps.put(g.name, atlas.findRegion(g.name));
         }
 
+
+
+        atlas = assetManager.get(Constants.TEXTURE_ATLAS_COMBAT_UI);
+        for (AtlasRegion g: atlas.getRegions()) {
+            Gdx.app.debug(TAG, "Loading Map: " + g.name);
+            guiElements.put(g.name, atlas.findRegion(g.name));
+        }
         // Create game resource objects
 
 
@@ -139,6 +150,7 @@ public class Assets implements Disposable, AssetErrorListener {
         public final Animation idleAnimation;
         public final Animation walkAnimation;
         public final Animation attackAnimation;
+        public final TextureRegion portrait;
 
         private static final int        FRAME_COLS = 6;         // #1
         private static final int        FRAME_ROWS = 3;         // #2
@@ -147,10 +159,10 @@ public class Assets implements Disposable, AssetErrorListener {
             character = atlas.findRegion(characterName);
 
 
-            TextureRegion tex = new TextureRegion(character ,0 ,0 ,500 ,378);
+            TextureRegion tex = new TextureRegion(character ,0 ,0 ,500 ,500);
 
 
-            TextureRegion[][] tmp = tex.split(83,126);
+            TextureRegion[][] tmp = tex.split(83,125);
             TextureRegion[] frames = new TextureRegion[FRAME_COLS];
 
 
@@ -173,6 +185,11 @@ public class Assets implements Disposable, AssetErrorListener {
             frames[0] = tmp[2][0];
 
             idleAnimation = new Animation(0.15f, frames);      // #11
+
+            portrait = new TextureRegion();
+            portrait.setRegion(tmp[3][0]);
+            portrait.setRegionWidth(83*2);
+
 
         }
     }

@@ -1,5 +1,7 @@
 package com.mygdx.mdh.game.model;
 
+import com.mygdx.mdh.game.util.Dice;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +15,40 @@ public class Ability {
 
 
 
-
-
-
+    /**
+     * Main type of the ability
+     */
     public enum AbilityType {
-        HEAL, RANGED, MELEE
+        RANGED, MELEE, BUFF, DEBUFF, HEAL
     }
+
+    AbilityType type;
+
+    /**
+     * Type of target for the ability
+     */
+    public enum AbilityTarget {
+        SELF, ONE_ALLY, ALL_ALLIES, ONE_ENEMY, ALL_ENEMIES, ONE_ANY, ANY
+    }
+
+    AbilityTarget targetType;
+
+
+
 
     Character source;
     Character target;
 
-    AbilityType type;
     String pic;
     String name;
 
     String message;
+
+    /**
+     * Number and type of dice to roll
+     */
+    int diceNumber;
+    int diceSides;
 
     /**
      * Effects that are applied by using the ability
@@ -38,49 +59,75 @@ public class Ability {
         effects = new ArrayList<Effect>();
         //addEffect(new Effect("FIRE"));
     }
-/*
-    public Ability(Character sourceCharacter, AbilityType actionType) {
-        System.out.println("--------------effect");
-        source = sourceCharacter;
-        type = actionType;
-        if (this.type == AbilityType.HEAL )
-            this.pic="core/assets/btn-heal.png";
-        if (this.type == AbilityType.MELEE )
-            this.pic="core/assets/btn-attack.png";
-        if (this.type == AbilityType.RANGED ) {
-            this.pic = "core/assets/btn-attack.png";
 
-
-        }
-
-        effects = new ArrayList<Effect>();
-    }
-    */
 
     public void apply (Character target) {
 
-        if (this.type == AbilityType.HEAL ) {
-            //Apply the main ability
-            target.hit( -50 );
+        int rolledTotal=0;
+        if (diceNumber>0)  rolledTotal = Dice.roll(diceNumber, diceSides);
 
-            //Apply secondary effects
-            target.addEffect(effects);
+        //TODO Handle any modifiers
+        target.getEffects();
 
-            System.out.println("[Ability] "+ source + " ha curado "+ target);
-            message = "Healed 50 HP";
+        switch (type) {
+            case HEAL:
+                //Apply the main ability
+                target.hit(- rolledTotal);
 
-        } else {
-            //Apply the main ability
-            target.hit( 50 );
+                //Apply secondary effects
+                if (effects != null)
+                    target.addEffect(effects);
 
-            //Apply secondary effects
-            target.addEffect(effects);
+                System.out.println("[Ability] "+ source + " ha curado "+ target);
+                message = "Healed";
+                break;
 
-            System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
-            message = "Hit 50 HP";
+            case RANGED:
+                //Apply the main ability
+                target.hit(rolledTotal );
+
+                //Apply secondary effects
+                if (effects != null)
+                    target.addEffect(effects);
+
+                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
+                message = "Hit";
+                break;
+
+            case MELEE:
+                //Apply the main ability
+                target.hit(rolledTotal );
+
+                //Apply secondary effects
+                if (effects != null)
+                    target.addEffect(effects);
+
+                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
+                message = "Hit";
+                break;
+
+            case BUFF:
+                //Apply secondary effects
+                if (effects != null)
+                    target.addEffect(effects);
+
+                System.out.println("[Ability] Applied BUFF to "+target+" "+effects.size());
+                message = "Applied Buff";
+                break;
+
+            case DEBUFF:
+                //Apply secondary effects
+                if (effects != null)
+                    target.addEffect(effects);
+
+                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
+                message = "Applied DeBuff";
+                break;
         }
 
+
         source.setAvailableActions(source.getAvailableActions() - 1);
+
         System.out.println("[Ability] Actions left: "+ source.getAvailableActions());
     }
 
@@ -131,5 +178,35 @@ public class Ability {
     public String getMessage() {
         return message;
     }
+
+    public int getRange() {
+        return 2;
+    }
+
+    public AbilityTarget getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(AbilityTarget targetType) {
+        this.targetType = targetType;
+    }
+
+
+    public int getDiceSides() {
+        return diceSides;
+    }
+
+    public void setDiceSides(int diceSides) {
+        this.diceSides = diceSides;
+    }
+
+    public int getDiceNumber() {
+        return diceNumber;
+    }
+
+    public void setDiceNumber(int diceNumber) {
+        this.diceNumber = diceNumber;
+    }
+
 
 } //Ability

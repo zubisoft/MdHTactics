@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.AfterAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Queue;
+import com.mygdx.mdh.game.characters.actions.GameAction;
 import com.mygdx.mdh.game.characters.actions.AttackAction;
 import com.mygdx.mdh.game.characters.actions.EffectAction;
 import com.mygdx.mdh.game.characters.actions.MovementAction;
@@ -25,6 +27,7 @@ import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Effect;
+import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.util.Assets;
 
 import java.util.ArrayList;
@@ -44,8 +47,8 @@ public class CharacterActor extends Actor {
     Animation                       idleAnimation;          // #3
     Animation                       attackAnimation;          // #3
     Animation                       walkAnimation;          // #3
-    Texture                         walkSheet;              // #4
-    final Skin                      uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+    public TextureRegion                        portrait;              // #4
+
 
     ShapeRenderer s;
     Sprite selectionCircle;
@@ -54,6 +57,7 @@ public class CharacterActor extends Actor {
 
     //Effects applied on the character
     List<EffectAction> effectActions;
+    static Queue<GameAction> queueActions = new Queue<>();
 
 
     //Effects applied on the character
@@ -93,7 +97,7 @@ public class CharacterActor extends Actor {
         this.setX(startX);
         this.setY(startY);
         this.setWidth(83);
-        this.setHeight(126);
+        this.setHeight(125);
 
         if (!character.isFriendly()) setScaleX(-1);
 
@@ -118,9 +122,6 @@ public class CharacterActor extends Actor {
         messages = new ArrayList<>();
 
     }
-
-
-
 
 
     /**
@@ -160,7 +161,18 @@ public class CharacterActor extends Actor {
 
         this.act(deltaTime);
 
+        this.queuedActionsAct(deltaTime);
+
     }
+
+    public void queuedActionsAct (float deltaTime) {
+        if (queueActions.size == 0 ) return;
+
+        if (queueActions.first().act(deltaTime) == true) {
+            queueActions.removeFirst();
+        }
+    }
+
 
     /**
      * Drawns the CharacterActor.
@@ -213,9 +225,10 @@ public class CharacterActor extends Actor {
      */
     public void loadAnimations () {
 
-        idleAnimation   = Assets.instance.characters.get(character.getName()).idleAnimation;
-        walkAnimation   = Assets.instance.characters.get(character.getName()).walkAnimation;
-        attackAnimation = Assets.instance.characters.get(character.getName()).attackAnimation;
+        idleAnimation   = Assets.instance.characters.get(character.getPic()).idleAnimation;
+        walkAnimation   = Assets.instance.characters.get(character.getPic()).walkAnimation;
+        attackAnimation = Assets.instance.characters.get(character.getPic()).attackAnimation;
+        portrait   = Assets.instance.characters.get(character.getPic()).portrait;
     }
 
     /**
@@ -225,7 +238,7 @@ public class CharacterActor extends Actor {
 
 
         if( IsoMapActor.distance(character.getCell().getCartesianCoordinates(),newCell.getCell().getCartesianCoordinates()) <= character.getMovement() ) {
-            this.state = CHARACTER_STATE.MOVING;
+
             MovementAction movementAction = new MovementAction(0.025f);
             movementAction.setTargetCell(newCell);
 
@@ -236,25 +249,31 @@ public class CharacterActor extends Actor {
     }
 
     /**
-     * Queues an action so it is executed in order after all the previous actions have finished.
-     * @param a Action to be queued.
+     * Executes the actions that should happen when a turn starts.
      */
-    public void queueAction (Action a) {
-        AfterAction action = new AfterAction();
-        action.setAction(a);
-        action.setTarget(this);
-        this.addAction(action);
+    public void turnStart () {
+        character.startTurn();
+        //Execute start of turn effects
+        for (Effect e : this.getCharacter().getEffects()) {
+            System.out.println("Turn start effect "+e.getDiceNumber()+e.getGameSegment());
+            if (e.getGameSegment()== Effect.GameSegmentType.TURN_START) {
+
+                EffectAction ea = new EffectAction(e, 0.15f);
+                this.addEffectAction(ea);
+            }
+        }
     }
 
+
+
+
     /**
-     *
+     * Adds an action to the action queue
      */
     public void useAbility( ) {
-        this.state=CHARACTER_STATE.ABILITY1;
-        AttackAction movementAction = new AttackAction(0.15f);
+        AttackAction action = new AttackAction(0.15f);
 
-        this.addAction(movementAction);
-
+        this.queueAction(action);
     }
 
     /**
@@ -263,7 +282,7 @@ public class CharacterActor extends Actor {
      * @param message
      */
     public void showMessage (String message) {
-        Label la=(new Label(message, uiSkin, "default-font", Color.ORANGE));
+        Label la=(new Label(message, Assets.uiSkin, "default-font", Color.ORANGE));
 
         la.setPosition(getX()+60,getY()+getHeight()-messages.size()*15);
 
@@ -282,12 +301,15 @@ public class CharacterActor extends Actor {
      */
     public void receiveAbility (Ability a) {
         if (a != null) {
+            for (Effect e : a.getTarget().getEffects()) {
+                if (e.getGameSegment()== Effect.GameSegmentType.BEFORE_HIT && a.getSource()!=this.getCharacter()) {
+                    EffectAction ea = new EffectAction(e, 0.15f);
+                    this.addEffectAction(ea);
+                }
+            }
+
             a.apply(this.getCharacter());
             this.showMessage(a.getMessage());
-            for (Effect e : a.getEffects()) {
-                EffectAction ea = new EffectAction(e, 0.15f);
-                this.addEffectAction(ea);
-            }
         }
 
         if (character.isDead()) {
@@ -308,36 +330,25 @@ public class CharacterActor extends Actor {
         }
     }
 
-    /*
-    public void getHit( int value ) {
-
-        showMessage("Hit "+value+" HP");
-
-        character.setHealth(character.getHealth()-50);
-
-        if (character.isDead()) {
-            System.out.println("[CharacterActor] Dying:  "+character);
-            this.addAction(
-                    Actions.sequence(
-                             Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
-                            ,Actions.alpha(0,1,Interpolation.fade)
-
-            ));
 
 
-        }
 
-        System.out.println("[CharacterActor] Attacked "+character+" Dead? "+character.isDead());
 
+    /**
+     * Queues an action so it is executed in order after all the previous actions have finished.
+     * @param a Action to be queued.
+     */
+    public void queueAction (GameAction a) {
+        a.setActor(this);
+        queueActions.addLast(a);
     }
-    */
-
-    public Character getCharacter() {return character;}
 
     public void addEffectAction (EffectAction ea) {
         this.effectActions.add(ea);
         this.addAction(ea);
     }
+
+    public Character getCharacter() {return character;}
 
     public Animation getIdleAnimation() {
         return idleAnimation;
@@ -351,7 +362,6 @@ public class CharacterActor extends Actor {
     public String toString() {
         return "[Character: "+character.name+"] Cell("+character.getCell()+") @ ["+this.getX()+","+getY()+ "] HP:"+character.getHealth()+ " AP:"+character.getAvailableActions();
     }
-
 
     public boolean isReady() {
         return ready;
@@ -376,4 +386,21 @@ public class CharacterActor extends Actor {
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
+
+    public boolean isActive () {
+        return character.isActive();
+    }
+
+    public boolean isFriendly() {
+        return character.isFriendly();
+    }
+
+    public boolean isDead() {
+        return character.isDead();
+    }
+
+    public MapCell getMapCell() {
+        return character.getCell();
+    }
+
 }

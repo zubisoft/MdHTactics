@@ -53,7 +53,6 @@ public class EffectAction  extends Action {
             this.begin = false;
         }
 
-        System.out.println("action");
         if (effectAnimation.isAnimationFinished(stateTime)) {
             actor.removeAction(this);
             finished=true;

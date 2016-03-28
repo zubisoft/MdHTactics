@@ -28,6 +28,8 @@ public class Character  {
 
     //Position
     MapCell cell;
+    int column;
+    int row;
 
     //Abilities of the character
     List<Ability> abilities;
@@ -241,6 +243,23 @@ public class Character  {
 
     public void setCell(MapCell cell) {
         this.cell = cell;
+        cell.setOccupied(true);
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
     }
 } //Character
 

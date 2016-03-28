@@ -12,7 +12,7 @@ import com.mygdx.mdh.game.map.IsoMapCellActor;
 /**
  * Created by zubisoft on 07/03/2016.
  */
-public class MovementAction extends Action {
+public class MovementAction extends GameAction {
 
     boolean begin; //True until the action takes place the first time, false otherwise
 
@@ -53,8 +53,13 @@ public class MovementAction extends Action {
 
         if (this.begin ) {
 
+            //Do not move if the target is occupied
+            if (targetCell.getCell().isOccupied()) return true;
+
             this.stepx = Math.signum(targetx - actor.getX()) * 5;
             this.stepy = Math.signum(targety - actor.getY()) * 5;
+
+            ((CharacterActor)actor).setState(CharacterActor.CHARACTER_STATE.MOVING);
 
             if (Math.signum(targetx - actor.getX()) != Math.signum(actor.getScaleX()))
                 actor.setScaleX(-1 * actor.getScaleX());

@@ -3,6 +3,7 @@ package com.mygdx.mdh.game.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.util.Constants;
 
 /**
@@ -35,12 +36,23 @@ public class Map {
             e.printStackTrace();
         }
 
-        return emp;
+        for (int row = 0; row < emp.getCellWidth(); row++) {
+            for (int column = 0; column < emp.getCellHeight(); column++) {
+                emp.mapCells[row][column].setMapCoordinates(column,row);
+            }
+        }
+
+
+                return emp;
 
     }
 
     public MapCell[][] getMapCells() {
         return mapCells;
+    }
+
+    public MapCell getCell(int row, int column) {
+        return mapCells[row][column];
     }
 
     /**
@@ -66,5 +78,11 @@ public class Map {
 
     public int getCellHeight() {
         return Constants.MAX_MAP_CELLHEIGHT;
+    }
+
+
+    public static float distance (MapCell c1, MapCell c2) {
+
+        return (float)Math.ceil(c1.getCartesianCoordinates().dst(c2.getCartesianCoordinates()));
     }
 }

@@ -9,15 +9,31 @@ public class Effect {
 
 
 
+    /**
+     * Main type of the effect
+     */
     public enum EffectType {
-        FIRE, MEDICAL, STUN
+        FIRE, HEAL, STUN, SHIELD
     }
+
+    EffectType effectType;
+
+    /**
+     * Moment when the effect is applied
+     */
+    public enum GameSegmentType {
+        TURN_START, BEFORE_HIT, AFTER_HIT, IMMEDIATE
+    }
+
+    GameSegmentType gameSegment;
+
+
 
     //Effect definition
     int duration;
     int damage;
     float chance;
-    EffectType effectType;
+
 
     Character source;
     Character target;
@@ -27,9 +43,16 @@ public class Effect {
 
     String outcome;
 
+    /**
+     * Number and type of dice to roll
+     */
+    int diceNumber;
+    int diceSides;
+
 
     public Effect () {}
 
+    /*
     public Effect(String type) {
         //Some sample effects
         if (type=="FIRE") {
@@ -42,15 +65,15 @@ public class Effect {
         if (type=="MEDICAL") {
             damage = -10;
             duration = 2;
-            effectType = EffectType.MEDICAL;
+            effectType = EffectType.HEAL;
             pic="core/assets/graphics/effects/effect_burning.png";
         }
 
     }
+    */
 
     public boolean apply() {
 
-        System.out.println("burning"+target);
         if (target == null) return false;
 
         if (duration <= 0) return false;
@@ -64,7 +87,7 @@ public class Effect {
                 duration--;
                 break;
 
-            case MEDICAL:
+            case HEAL:
                 target.hit(damage);
                 outcome = "Healed! " + damage + "HP";
                 duration--;
@@ -111,6 +134,9 @@ public class Effect {
     }
 
     public void setEffecType(EffectType effecType) {
+
+        //TODO this is just temporary for testing
+
         this.effectType = effecType;
     }
 
@@ -142,6 +168,30 @@ public class Effect {
 
     public String getOutcome() {
         return outcome;
+    }
+
+    public int getDiceSides() {
+        return diceSides;
+    }
+
+    public void setDiceSides(int diceSides) {
+        this.diceSides = diceSides;
+    }
+
+    public int getDiceNumber() {
+        return diceNumber;
+    }
+
+    public void setDiceNumber(int diceNumber) {
+        this.diceNumber = diceNumber;
+    }
+
+    public GameSegmentType getGameSegment() {
+        return gameSegment;
+    }
+
+    public void setGameSegment(GameSegmentType gameSegment) {
+        this.gameSegment = gameSegment;
     }
 
 }

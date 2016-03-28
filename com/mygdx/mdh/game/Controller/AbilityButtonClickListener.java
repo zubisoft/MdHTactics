@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.hud.AbilityButton;
+import com.mygdx.mdh.game.hud.CombatHUD;
 import com.mygdx.mdh.game.model.Combat;
 
 /**
@@ -19,8 +20,8 @@ public class AbilityButtonClickListener extends ClickListener {
     @Override
     public void clicked(InputEvent evt, float x, float y) {
 
-        CombatController.combat.setGameStep(Combat.GameStepType.TARGETING);
-        CombatController.combat.setCurrentSelectedAbility(abilityButton.getAbility());
+        ((CombatHUD)evt.getStage()).controller.combat.setGameStep(Combat.GameStepType.TARGETING);
+        ((CombatHUD)evt.getStage()).controller.setCurrentSelectedAbility(abilityButton.getAbility());
 
         System.out.println("[AbilityButtonCL] Selected "+abilityButton.getAbility().getType()+" ability from "+abilityButton.getAbility().getSource().getName());
 

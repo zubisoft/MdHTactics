@@ -6,7 +6,7 @@ import com.mygdx.mdh.game.characters.CharacterActor;
 /**
  * Created by zubisoft on 07/03/2016.
  */
-public class AttackAction extends SequenceAction {
+public class AttackAction extends GameAction {
 
     boolean begin; //True until the action takes place the first time, false otherwise
 

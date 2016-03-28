@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.Combat;
 import com.mygdx.mdh.game.model.Map;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;

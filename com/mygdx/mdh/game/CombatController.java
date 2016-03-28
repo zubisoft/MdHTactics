@@ -3,6 +3,7 @@ package com.mygdx.mdh.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -45,6 +46,8 @@ public class CombatController extends Stage {
     CharacterActor selectedCharacter;
     MapCell selectedCharacterPosition = new MapCell();
 
+    Ability currentSelectedAbility;
+
     float stateTime;
 
     public IsoMapActor map;
@@ -52,8 +55,11 @@ public class CombatController extends Stage {
 
     public Sprite background;
 
-
+    /**
+     * Flow control variables used to define the logic to run code a single time within the render loop.
+     */
     boolean baddiesBegin;
+    boolean gameEnd;
 
     ScreenManager screenManager;
 
@@ -72,8 +78,7 @@ public class CombatController extends Stage {
         //Initialize game logic
         this.characterActors = new ArrayList<CharacterActor>();
 
-        this.combat = new Combat();
-        combat.populateSampleMap();
+        this.combat = Combat.loadFromJSON("combat01");
 
         map=new IsoMapActor(new Map());
         this.addActor(map);
@@ -107,6 +112,7 @@ public class CombatController extends Stage {
         background.setPosition(0,-275);
 
         baddiesBegin=true;
+        gameEnd = false;
         gameTurn = GameTurn.PLAYER;
 
     }
@@ -143,7 +149,7 @@ public class CombatController extends Stage {
     /** If the player has no characters active, it is the end of his turn.*/
     public boolean isEndOfTurn () {
         for(CharacterActor a: characterActors) {
-            if (a.getCharacter().isActive() & a.getCharacter().isFriendly()) return false;
+            if (a.isActive() & a.isFriendly()) return false;
         }
         return true;
     }
@@ -151,7 +157,7 @@ public class CombatController extends Stage {
     /** If all player characters are dead, it´s game over.*/
     public boolean isGameOver () {
         for(CharacterActor a: characterActors) {
-            if (!a.getCharacter().isDead() & a.getCharacter().isFriendly()) return false;
+            if (!a.isDead() & a.isFriendly()) return false;
         }
         return true;
     }
@@ -170,7 +176,7 @@ public class CombatController extends Stage {
         CombatHUD.notificationText = "Player Start";
         for (CharacterActor c : getCharacterActors()) {
             if(c.getCharacter().isFriendly()) {
-                c.getCharacter().startTurn();
+                c.turnStart();
             }
         }
     }
@@ -181,9 +187,13 @@ public class CombatController extends Stage {
 
         /* Start turn for all characters */
         CombatHUD.notificationText = "Baddies Start";
+
+
+
         for (CharacterActor c : getCharacterActors()) {
             if(!c.getCharacter().isFriendly()) {
-                c.getCharacter().startTurn();
+                System.out.println("baddies starting");
+                c.turnStart();
             }
         }
 
@@ -230,12 +240,18 @@ public class CombatController extends Stage {
        // System.out.println(Gdx.graphics.getDeltaTime());
         stateTime += deltaTime;          // #15
 
+        combatHUD.update(deltaTime);
+
         if (isGameOver()) {
+            if(!gameEnd) combatHUD.showMessageBar("Game Over");
             System.out.println("Game Over");
+            gameEnd=true;
         }
 
         if (isVictory()) {
+            if(!gameEnd) combatHUD.showMessageBar("Victory");
             System.out.println("Victory");
+            gameEnd=true;
         }
 
         for(CharacterActor a: characterActors) {
@@ -260,6 +276,9 @@ public class CombatController extends Stage {
                 if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
                     setSelectedCharacter(selectedCharacter);
                 }
+
+
+
 
     }
 
@@ -297,6 +316,17 @@ public class CombatController extends Stage {
 
     }
 
+    public void deselectCharacter() {
+        map.removeHighlightCells();
+        combatHUD.hideAbilityButtons();
+
+        if(selectedCharacter != null) {
+            selectedCharacter.setSelected(false);
+            selectedCharacterPosition = null;
+            selectedCharacter = null;
+        }
+    }
+
 
 
 
@@ -305,7 +335,9 @@ public class CombatController extends Stage {
      * @param target
      */
     public void executeCurrentAbility(CharacterActor target) {
-        Ability a = combat.getCurrentSelectedAbility();
+
+        Ability a = getCurrentSelectedAbility();
+        a.setTarget(target.getCharacter());
         target.receiveAbility(a);
 
         selectedCharacter.useAbility();
@@ -323,6 +355,14 @@ public class CombatController extends Stage {
 
          map.highlightCells(new Color(0.0f,0.5f,1f,0.2f), map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());
 
+    }
+
+    public Ability getCurrentSelectedAbility() {
+        return currentSelectedAbility;
+    }
+
+    public void setCurrentSelectedAbility(Ability currentSelectedAbility) {
+        this.currentSelectedAbility = currentSelectedAbility;
     }
 
 
