@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 
@@ -17,6 +19,7 @@ public class MessageBar extends Actor {
     TextureRegion messageBarBG;
 
     Label la;
+    Table t;
 
 
     public MessageBar () {
@@ -25,12 +28,18 @@ public class MessageBar extends Actor {
         this.setBounds(0,Constants.VIEWPORT_GUI_HEIGHT/2-100,Constants.VIEWPORT_GUI_WIDTH,200);
         this.setColor(new Color(0xd4be90ff));
 
-        //TODO: this needs a proper layout
-        la =(new Label("", Assets.uiSkin, "default-font", Color.BROWN));
-        la.setFontScale(3.f);
+        t = new Table();
+        t.setBounds(0,Constants.VIEWPORT_GUI_HEIGHT/2-100,Constants.VIEWPORT_GUI_WIDTH,200);
+        t.align(Align.center);
 
+        //TODO: this needs a proper layout
+        la =(new Label("", Assets.uiSkin, "gradient-font", Color.WHITE));
+        t.add(la);
+
+        /*
         la.setY(Constants.VIEWPORT_GUI_HEIGHT/2);
         la.setX(Constants.VIEWPORT_GUI_WIDTH/2-la.getWidth()/2);
+        */
 
     }
 
@@ -57,7 +66,7 @@ public class MessageBar extends Actor {
             Color color = getColor();
             batch.setColor(color.r, color.g, color.b, color.a);
             batch.draw(messageBarBG, getX(), getY(),getWidth(),getHeight());
-            la.draw(batch,1.0f);
+            t.draw(batch,1.0f);
             batch.setColor(1f, 1f, 1f, 1f);
         }
     }

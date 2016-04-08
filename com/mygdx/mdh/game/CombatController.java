@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.mygdx.mdh.game.IA.StrategyManager;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
 import com.mygdx.mdh.game.controller.CombatInputListener;
 import com.mygdx.mdh.game.model.Ability;
@@ -23,7 +24,9 @@ import com.mygdx.mdh.game.hud.CombatHUD;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.MapCell;
+import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
+import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.ScreenManager;
 import com.mygdx.mdh.game.model.Map;
 
@@ -63,12 +66,23 @@ public class CombatController extends Stage {
 
     ScreenManager screenManager;
 
+    public IsoMapActor getMap() {
+        return map;
+    }
+
+    public void setMap(IsoMapActor map) {
+        this.map = map;
+    }
+
 
     public enum GameTurn {
         PLAYER, BADDIES
     }
 
     GameTurn gameTurn;
+
+
+    StrategyManager strategyManager;
 
     public CombatController(ScreenManager screenManager)
     {
@@ -80,7 +94,7 @@ public class CombatController extends Stage {
 
         this.combat = Combat.loadFromJSON("combat01");
 
-        map=new IsoMapActor(new Map());
+        map=new IsoMapActor(combat.getMap());
         this.addActor(map);
 
         createActorsForLayer( combat );
@@ -89,10 +103,6 @@ public class CombatController extends Stage {
         combatHUD = new CombatHUD(this);
         //this.addActor(combatHUD);
 
-        Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
-        //Table layer = new Table();
-        //layer.right().bottom();
-        // + play button
 
         //Initialize elements for graphic control
         stateTime = 0;
@@ -115,6 +125,7 @@ public class CombatController extends Stage {
         gameEnd = false;
         gameTurn = GameTurn.PLAYER;
 
+        strategyManager = new StrategyManager(this);
     }
 
 
@@ -131,8 +142,8 @@ public class CombatController extends Stage {
 
             //Place the character in that cell
             CharacterActor actor = new CharacterActor(character,position.x,position.y);
-            actor.setOrigin(m.getWidth()/2-35,m.getHeight()/2-10);
-            actor.setPosition(position.x,position.y);
+            actor.setOffset(m.getWidth()/2-35,m.getHeight()/2-10);
+            //actor.setPosition(512,139);
 
             //Add interactivity for character
             this.addActor(actor);
@@ -173,10 +184,12 @@ public class CombatController extends Stage {
     public void playerTurnBegin () {
         gameTurn = GameTurn.PLAYER;
 
-        CombatHUD.notificationText = "Player Start";
+        LOG.print(1,"[CombatController] Player Turn Start", LOG.ANSI_YELLOW);
+
         for (CharacterActor c : getCharacterActors()) {
             if(c.getCharacter().isFriendly()) {
                 c.turnStart();
+                LOG.print(3,c.toString());
             }
         }
     }
@@ -186,30 +199,18 @@ public class CombatController extends Stage {
         gameTurn = GameTurn.BADDIES;
 
         /* Start turn for all characters */
-        CombatHUD.notificationText = "Baddies Start";
+        LOG.print(1,"[CombatController] Baddies Turn Start", LOG.ANSI_YELLOW);
 
 
 
         for (CharacterActor c : getCharacterActors()) {
             if(!c.getCharacter().isFriendly()) {
-                System.out.println("baddies starting");
                 c.turnStart();
+                LOG.print(3,c.toString());
             }
         }
 
-        /* Execute orders */
-        for (CharacterActor c : getCharacterActors()) {
-            if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & c.isReady()) {
-                IsoMapCellActor aux = map.getCell(1, 5);
-                c.moveToCell(aux);
-                aux = map.getCell(1, 6);
 
-                c.moveToCell(aux);
-
-                //aux = map.getCell(2,6);
-                //c.moveToCell(aux);
-            }
-        }
     }
 
     public boolean  friendliesActive() {
@@ -231,9 +232,23 @@ public class CombatController extends Stage {
             }
         }
 
-
         return false;
+    }
 
+    public void executeBaddiesTurn() {
+        //If other characters have finished doing their stuff, take action
+        if (CharacterActor.queueActions.size==0) {
+            /* Execute orders */
+            int i = 0;
+            for (CharacterActor c : getCharacterActors()) {
+                if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & !c.actionInProgress()) {
+
+                    strategyManager.nextAction(i);
+
+               }
+                i++;
+            }
+        }
     }
 
     public void update(float deltaTime) {
@@ -259,15 +274,19 @@ public class CombatController extends Stage {
         }
 
 
-        if (!friendliesActive() & gameTurn==GameTurn.PLAYER ) {
+        if (!friendliesActive() && gameTurn==GameTurn.PLAYER ) {
             //Wait for player's action to finish
-            if (selectedCharacter.isReady()) {
+            if (!CharacterActor.actionInProgress()) {
                 baddiesTurnBegin();
             }
         }
 
-        if (!baddiesActive() & gameTurn==GameTurn.BADDIES ) {
+        if (!baddiesActive() && gameTurn==GameTurn.BADDIES ) {
             playerTurnBegin();
+        }
+
+        if (gameTurn==GameTurn.BADDIES) {
+            executeBaddiesTurn();
         }
 
         //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
@@ -308,6 +327,11 @@ public class CombatController extends Stage {
                 selectedCharacterPosition = selectedCharacter.getCharacter().getCell();
                 combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
                 showMovementTiles(selectedCharacter);
+
+                combatHUD.notificationText = "";
+                for (Effect e: selectedCharacter.getCharacter().getEffects()) {
+                    combatHUD.notificationText += "* "+e.toString()+"\n";
+                }
             }
 
         }
@@ -335,12 +359,12 @@ public class CombatController extends Stage {
      * @param target
      */
     public void executeCurrentAbility(CharacterActor target) {
-
+        LOG.print(3,"[CombatController] Targeted:  "+target.getCharacter().getName());
         Ability a = getCurrentSelectedAbility();
         a.setTarget(target.getCharacter());
         target.receiveAbility(a);
 
-        selectedCharacter.useAbility();
+        getCharacterActor(a.getSource()).useAbility();
 
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 
@@ -353,7 +377,7 @@ public class CombatController extends Stage {
      */
     public void showMovementTiles(CharacterActor actor) {
 
-         map.highlightCells(new Color(0.0f,0.5f,1f,0.2f), map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());
+         map.highlightCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());
 
     }
 
@@ -365,5 +389,17 @@ public class CombatController extends Stage {
         this.currentSelectedAbility = currentSelectedAbility;
     }
 
+
+    /**
+     * Returns the CharacterActor encapsulating a given character
+     * @param character
+     * @return
+     */
+    public CharacterActor getCharacterActor (Character character) {
+        for(CharacterActor c: characterActors) {
+            if(c.getCharacter() == character) return c;
+        }
+        return null;
+    }
 
 }

@@ -17,6 +17,7 @@ public class Combat {
     List<Character> characters;
     Map map;
 
+
     public enum GameStepType {
         START_TURN,MOVING,SELECTION,TARGETING,ACTION_SELECTION,BADDIES
     }
@@ -128,4 +129,12 @@ public class Combat {
 
     }
 
+
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
 }

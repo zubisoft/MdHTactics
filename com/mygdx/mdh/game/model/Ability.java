@@ -1,5 +1,6 @@
 package com.mygdx.mdh.game.model;
 
+import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Dice;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class Ability {
 
     public void apply (Character target) {
 
+        /*
         int rolledTotal=0;
         if (diceNumber>0)  rolledTotal = Dice.roll(diceNumber, diceSides);
 
@@ -124,7 +126,11 @@ public class Ability {
                 message = "Applied DeBuff";
                 break;
         }
+        */
 
+        //Apply secondary effects
+        if (effects != null)
+            target.addEffect(effects);
 
         source.setAvailableActions(source.getAvailableActions() - 1);
 
@@ -173,6 +179,9 @@ public class Ability {
 
     public void setTarget(Character target) {
         this.target = target;
+        if (effects.size() >0) {
+            for(Effect e: effects) e.setTarget(target);
+        }
     }
 
     public String getMessage() {

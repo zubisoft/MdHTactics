@@ -24,7 +24,7 @@ public class Constants {
 
 
     public static final String TEXTURE_ATLAS_FONT =
-            "core/assets/graphics/fonts/default.fnt";
+            "core/assets/graphics/fonts/gradient-america-captain.fnt";
 
 
     public static final int MAX_MAP_CELLWIDTH = 10;

@@ -2,6 +2,7 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 01/02/2016.
@@ -16,7 +17,9 @@ public class MapCell {
 
     CellType cellType;
 
-    boolean occupied;
+    Character character;
+
+    protected boolean occupied;
 
     Vector2 mapCoordinates;
     Vector2 cartesianCoordinates;
@@ -27,6 +30,7 @@ public class MapCell {
         this.cellType = CellType.NORMAL;
         this.mapCoordinates = new Vector2();
         this.cartesianCoordinates = new Vector2();
+        character=null;
     }
 
     public MapCell(int column, int row) {
@@ -34,6 +38,7 @@ public class MapCell {
         this.mapCoordinates = new Vector2();
         this.cartesianCoordinates = new Vector2();
         setMapCoordinates(column,row);
+        character=null;
     }
 
 
@@ -48,8 +53,19 @@ public class MapCell {
         return occupied;
     }
 
-    public void setOccupied(boolean occupied) {
-        this.occupied = occupied;
+    public Character getCharacter() {
+        return character;
+    }
+
+    void setOccupied(Character c) {
+
+        if (c==null)  this.occupied = false;
+        else          this.occupied = true;
+
+        LOG.print("[MapCell] setting occupied "+toString()+this.occupied+" "+System.identityHashCode(this));
+
+        this.character=c;
+
     }
 
 

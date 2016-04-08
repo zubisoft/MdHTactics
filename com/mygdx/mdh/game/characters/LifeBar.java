@@ -48,8 +48,8 @@ public class LifeBar {
         //Update graphics
         bar.setX(actor.getX()+10);
         bar.setY(actor.getY());
-        bar.setOriginX(actor.getOriginX());
-        bar.setOriginY(actor.getOriginY());
+        //bar.setOriginX(actor.getOriginX());
+        //bar.setOriginY(actor.getOriginY());
         bar.draw(batch,1.0f);
 
 

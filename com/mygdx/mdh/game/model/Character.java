@@ -5,6 +5,9 @@ import java.util.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygdx.mdh.game.EffectManager;
+import com.mygdx.mdh.game.model.effects.Effect;
+import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 27/01/2016.
@@ -37,8 +40,13 @@ public class Character  {
     //Effects currently applied on this character
     List<Effect> effects;
 
+
+
     //Graphic info
     String pic;
+
+    //Auxiliary
+    private List<Effect> effectsAux;
 
 
     public Character() {
@@ -46,6 +54,7 @@ public class Character  {
         abilities = new ArrayList<Ability>();
 
         effects = new ArrayList<Effect> ();
+        effectsAux = new ArrayList<Effect> ();
     }
 
     /*
@@ -79,6 +88,17 @@ public class Character  {
         if (!isDead()) {
             availableActions = maxActions;
             this.setActive(true);
+
+            if (effects.size() > 0) {
+                for (Effect tmp : effects) {
+                    //tmp.setTarget(this);
+                    //Resolve immediate effects
+                    LOG.print(4, "[Character] Starting turn effects: "+tmp.getEffectType());
+                    //if(tmp.getGameSegment()== Effect.GameSegmentType.TURN_START)
+                        EffectManager.instance.execute(tmp);
+                }
+                cleanEffects();
+            }
         }
     }
 
@@ -139,6 +159,9 @@ public class Character  {
         this.abilities = abilities;
         for (Ability a: abilities) {
             a.setSource(this);
+            for(Effect e: a.getEffects()) {
+                e.setSource(this);
+            }
         }
     }
 
@@ -195,11 +218,33 @@ public class Character  {
     }
 
     public void addEffect (Effect e) {
+        LOG.print(3, "[Character] Adding Effect");
         effects.add(e);
     }
 
     public void addEffect (List<Effect> e) {
-        if (e != null) effects.addAll(e);
+       // if (e != null) effects.addAll(e);
+        if (e==null ) return;
+
+        for (Effect tmp: e) {
+            tmp.setTarget(this);
+            //Resolve immediate effects
+
+            //TODO it might be necessary to create new effect objects every time an ability is applied?
+            EffectManager.instance.apply(tmp);
+        }
+
+        cleanEffects();
+    }
+
+    private void cleanEffects () {
+        if(effects.size()==0) return;
+
+        effectsAux = effects;
+        for (Effect tmp: effectsAux) {
+            if (tmp.getDuration()<=0)
+                effects.remove(tmp);
+        }
     }
 
 
@@ -242,8 +287,10 @@ public class Character  {
     }
 
     public void setCell(MapCell cell) {
+        if(this.cell !=null)  this.cell.setOccupied(null);
         this.cell = cell;
-        cell.setOccupied(true);
+        this.cell.setOccupied(this);
+        LOG.print(3,"[Character] Occupied cell:"+cell+" "+cell.isOccupied()+" "+System.identityHashCode(cell) );
     }
 
     public int getRow() {

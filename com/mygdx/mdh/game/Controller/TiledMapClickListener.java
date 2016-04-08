@@ -26,7 +26,10 @@ public class TiledMapClickListener extends ClickListener {
 
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
-        if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION) &&  stage.getSelectedCharacter().getCharacter().isActive() && event.getButton() == Input.Buttons.RIGHT ) {
+        if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
+                && stage.getSelectedCharacter().isActive()
+                && event.getButton() == Input.Buttons.RIGHT
+                && !actor.getCell().isOccupied()) {
             System.out.println("[Tile Clicked] Moving character to "+actor.getMapCoordinates());
 
             stage.map.removeHighlightCells();
@@ -36,8 +39,7 @@ public class TiledMapClickListener extends ClickListener {
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
-            stage.setSelectedCharacter(null);
-            stage.combatHUD.hideAbilityButtons();
+            stage.deselectCharacter();
             System.out.println("[Tile Clicked] "+actor.toString() );
             stage.getCombat().setGameStep(Combat.GameStepType.SELECTION);
         }

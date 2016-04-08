@@ -52,7 +52,6 @@ public class IsoMapCellActor extends Actor {
     @Override
     public Actor hit(float x, float y, boolean touchable) {
 
-
         if (x<=getWidth()/2 & y < 0.5f*x+getHeight()/2 & y>=-0.5f*x+getHeight()/2) {
             //sprite.setColor(1, 0, 0, 1);
             return this;
@@ -79,7 +78,7 @@ public class IsoMapCellActor extends Actor {
         la.draw(batch,1);
 
 
-        if (showHighlight) {
+        if (showHighlight ) {
             //highlightSprite.draw(batch,0.2f);
             batch.draw(highlightTexture,getX(),getY(),getWidth(),getHeight());
         }

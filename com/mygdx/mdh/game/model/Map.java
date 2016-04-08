@@ -2,9 +2,14 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.LOG;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zubisoft on 20/03/2016.
@@ -13,7 +18,12 @@ public class Map {
 
     MapCell[][] mapCells = new MapCell[Constants.MAX_MAP_CELLWIDTH][Constants.MAX_MAP_CELLHEIGHT];
 
-    public Map() {}
+
+
+    public Map() {
+
+
+    }
 
 
     public static Map loadFromJSON (String name) {
@@ -39,7 +49,7 @@ public class Map {
         for (int row = 0; row < emp.getCellWidth(); row++) {
             for (int column = 0; column < emp.getCellHeight(); column++) {
                 emp.mapCells[row][column].setMapCoordinates(column,row);
-            }
+             }
         }
 
 
@@ -85,4 +95,26 @@ public class Map {
 
         return (float)Math.ceil(c1.getCartesianCoordinates().dst(c2.getCartesianCoordinates()));
     }
+
+    /**
+     * Getll all cells in the map within the given radius (in cells) from the cell.
+     * @param cell
+     * @param radius
+     * @return
+     */
+    public List<MapCell> getCells (MapCell cell, int radius) {
+        List<MapCell> cells = new ArrayList<>();
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                if ( distance(mapCells[y][x],cell) <= radius &&  !mapCells[y][x].isOccupied()  ) {
+                    cells.add(mapCells[y][x]);
+                }
+            }
+        }
+
+        return cells;
+    }
+
 }
+

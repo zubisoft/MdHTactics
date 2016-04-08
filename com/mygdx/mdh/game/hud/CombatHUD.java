@@ -67,8 +67,6 @@ public class CombatHUD extends Stage {
 
     public void showAbilityButtons(Character selectedCharacter) {
 
-        Skin skin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
-
         hudTableLayout = new Table();
         hudTableLayout.center().bottom();
         hudTableLayout.pad(10);
@@ -76,9 +74,6 @@ public class CombatHUD extends Stage {
         hudTableLayout.setSize(200,50);
 
 
-
-
-        int i = 0;
         for (Ability ability : selectedCharacter.getAbilities()) {
             AbilityButton actor = new AbilityButton(ability);
 
@@ -128,7 +123,6 @@ public class CombatHUD extends Stage {
     public void render (SpriteBatch batch) {
 
         batch.setColor(1f, 1f, 1f,  1f);
-
         batch.draw(sprite,950,0);
         batch.setColor(1f, 1f, 1f, 1f);
 
@@ -136,7 +130,7 @@ public class CombatHUD extends Stage {
         font.setColor(Color.BLACK);
         font.draw(batch, notificationText, 1000, 100);
 
-        //Draw current character abilities
+        //Draw current character HUD
         if (controller.getSelectedCharacter() != null ) {
 
 
@@ -147,9 +141,13 @@ public class CombatHUD extends Stage {
                 a.draw(batch);
             }
             */
-            if (controller.getSelectedCharacter().isReady())
-                batch.draw(abilityBarSprite,500,0);
-                hudTableLayout.draw(batch,1.0f);
+            if (    controller.getSelectedCharacter().isActive() &&
+                    controller.getSelectedCharacter().isFriendly() &&
+                    !controller.getSelectedCharacter().actionInProgress()
+                    ) {
+                batch.draw(abilityBarSprite, 500, 0);
+                hudTableLayout.draw(batch, 1.0f);
+            }
 
         }
 

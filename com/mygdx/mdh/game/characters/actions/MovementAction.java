@@ -53,8 +53,8 @@ public class MovementAction extends GameAction {
 
         if (this.begin ) {
 
-            //Do not move if the target is occupied
-            if (targetCell.getCell().isOccupied()) return true;
+            //TODO Do not move if the target is occupied  - but please dont break the bloody game
+            //if (targetCell.getCell().isOccupied()) return true;
 
             this.stepx = Math.signum(targetx - actor.getX()) * 5;
             this.stepy = Math.signum(targety - actor.getY()) * 5;

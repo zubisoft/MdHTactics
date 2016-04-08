@@ -1,4 +1,4 @@
-package com.mygdx.mdh.screens.Transitions;
+package com.mygdx.mdh.screens;
 
 /**
  * Created by zubisoft on 20/03/2016.
@@ -8,8 +8,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.screens.AbstractGameScreen;
-import com.mygdx.mdh.screens.ScreenManager;
 
 
 public class GameScreen extends AbstractGameScreen {

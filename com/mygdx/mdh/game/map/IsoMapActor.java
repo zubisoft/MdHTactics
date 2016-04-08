@@ -15,6 +15,7 @@ import com.mygdx.mdh.game.controller.TiledMapClickListener;
 import com.mygdx.mdh.game.model.Map;
 import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.util.Assets;
+import com.mygdx.mdh.game.util.LOG;
 
 
 /**
@@ -26,6 +27,9 @@ public class IsoMapActor extends Group{
 
     final int CELLWIDTH = 128;
     final int CELLHEIGTH = 64;
+
+    Color blueHighlight = new Color(0.0f,0.5f,1f,0.2f);
+    Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
 
 
 /*
@@ -68,7 +72,7 @@ public class IsoMapActor extends Group{
 
     public IsoMapActor(Map map) {
 
-        map = Map.loadFromJSON("core/assets/maps/map01.txt");
+        //map = Map.loadFromJSON("core/assets/maps/map01.txt");
 
 
         for (int row = 0; row < map.getCellWidth(); row++) {
@@ -147,17 +151,28 @@ public class IsoMapActor extends Group{
 
     }
 
-    public void highlightCells (Color c, IsoMapCellActor cell, int radius) {
+    public void highlightCells (IsoMapCellActor cell, int radius) {
         removeHighlightCells();
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
 
                 if ( distance(mapCells[y][x],cell) <= 3 ) {
                     //System.out.println("Highlighted "+mapCells[y][x].getMapCell()+" "+cell.getMapCell()+" "+Math.ceil(distance(mapCells[y][x],cell)));
-                    mapCells[y][x].highlight(c);
+                    if (mapCells[y][x].getCell().getCharacter() == null) {
+                        mapCells[y][x].highlight(blueHighlight);
+                    } else
+                    if (!mapCells[y][x].getCell().getCharacter().isFriendly()
+                            && !mapCells[y][x].getCell().getCharacter().isDead() )
+                    {
+                        mapCells[y][x].highlight(redHighlight);
+                        LOG.print(3,"[Map] Red highlight",LOG.ANSI_CYAN);
+
+                    }
                 }
             }
         }
+
+
     }
 
     public void removeHighlightCells () {

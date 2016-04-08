@@ -1,8 +1,8 @@
 package com.mygdx.mdh.game.characters;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -10,14 +10,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.AfterAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.characters.actions.GameAction;
 import com.mygdx.mdh.game.characters.actions.AttackAction;
 import com.mygdx.mdh.game.characters.actions.EffectAction;
@@ -26,9 +25,12 @@ import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.Effect;
+import com.mygdx.mdh.game.model.effects.Effect;
+import com.mygdx.mdh.game.model.effects.EffectListener;
 import com.mygdx.mdh.game.model.MapCell;
+import com.mygdx.mdh.game.model.effects.EffectManagerListener;
 import com.mygdx.mdh.game.util.Assets;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.List;
  */
 
 
-public class CharacterActor extends Actor {
+public class CharacterActor extends Actor implements EffectManagerListener, EffectListener {
 
     private static final int        FRAME_COLS = 6;         // #1
     private static final int        FRAME_ROWS = 3;         // #2
@@ -49,6 +51,10 @@ public class CharacterActor extends Actor {
     Animation                       walkAnimation;          // #3
     public TextureRegion                        portrait;              // #4
 
+    float offsetx=0;
+    float offsety=0;
+
+    public TextureRegion debugBorder;              // #4
 
     ShapeRenderer s;
     Sprite selectionCircle;
@@ -57,7 +63,7 @@ public class CharacterActor extends Actor {
 
     //Effects applied on the character
     List<EffectAction> effectActions;
-    static Queue<GameAction> queueActions = new Queue<>();
+    public static Queue<GameAction> queueActions = new Queue<>();
 
 
     //Effects applied on the character
@@ -72,15 +78,51 @@ public class CharacterActor extends Actor {
     //Game Logic
     private Character character;
 
+
+
     public enum CHARACTER_STATE {
         IDLE, MOVING, ABILITY1, ABILITY2
     }
 
 
     boolean selected;
-    boolean ready;
+
     CHARACTER_STATE state;
 
+
+    public Actor hit (float x, float y, boolean touchable) {
+
+        float adjusted_x;
+
+        if (getScaleX()==-1) {
+            adjusted_x = (getWidth()-(x+offsetx));
+        } else {
+            adjusted_x = x-offsetx;
+        }
+
+        if (super.hit(adjusted_x,y-offsety,touchable) != null) {
+
+            currentFrame.getTexture().getTextureData().prepare();
+            Pixmap pixmap = currentFrame.getTexture().getTextureData().consumePixmap();
+
+            int pixel ;
+            if (getScaleX()==-1) {
+                pixel = pixmap.getPixel((int) (currentFrame.getRegionX() + getWidth() - adjusted_x), (int) (currentFrame.getRegionY() + y - offsety));
+            } else {
+                pixel = pixmap.getPixel((int) (currentFrame.getRegionX() + adjusted_x), (int) (currentFrame.getRegionY() + y - offsety));
+            }
+
+
+            //If not transparent, clicked
+            if ((pixel & 0x000000ff) != 0) {
+                return this;
+            }
+
+        }
+
+        return null;
+
+    }
 
     /**
      * Creates a new CharacterActor from the character specified, at the position (startX,startY)
@@ -99,7 +141,10 @@ public class CharacterActor extends Actor {
         this.setWidth(83);
         this.setHeight(125);
 
-        if (!character.isFriendly()) setScaleX(-1);
+        this.setOriginX(getWidth()/2);
+
+//TODO revisar esto
+        if (character.isFriendly()) setScaleX(-1);
 
 
         lifebar = new CharacterLifeBar(this);
@@ -116,13 +161,20 @@ public class CharacterActor extends Actor {
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
         selectionCircle = new Sprite(texture);
 
+        debugBorder = new TextureRegion(new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_square.png")));
+
 
         effectActions = new ArrayList<>();
         actionQueue = new ArrayList<>();
         messages = new ArrayList<>();
 
+        EffectManager.instance.addEffectListener(this);
+
     }
 
+    public static boolean actionInProgress () {
+        return queueActions.size>0;
+    }
 
     /**
      * Updates the CharacterActor according to the current status.
@@ -142,24 +194,28 @@ public class CharacterActor extends Actor {
         //Update the current frame
         switch(state) {
             case IDLE:
-                this.setReady(true);
                 currentFrame = getIdleAnimation().getKeyFrame(stateTime, true);
                 break;
             case MOVING:
-                this.setReady(false);
                 currentFrame = getWalkAnimation().getKeyFrame(stateTime, true);
                 break;
             case ABILITY1:
-                this.setReady(false);
                 currentFrame = attackAnimation.getKeyFrame(stateTime, true);
                 break;
-            case ABILITY2:  this.setReady(false);break;
+            case ABILITY2: break;
 
         }
 
         //Update actions attached to this Actor
 
         this.act(deltaTime);
+
+        //Draw effects
+        /*
+        for (EffectAction effect: effectActions ) {
+            effect.act(deltaTime);
+        }
+    */
 
         this.queuedActionsAct(deltaTime);
 
@@ -172,6 +228,15 @@ public class CharacterActor extends Actor {
             queueActions.removeFirst();
         }
     }
+
+    public void setOffset(float x, float y) {
+        offsetx=x;
+        offsety=y;
+
+    }
+
+
+
 
 
     /**
@@ -186,18 +251,20 @@ public class CharacterActor extends Actor {
         batch.setColor(color.r, color.g, color.b, color.a);
 
         //Grey out if inactive
-        if (!character.isActive() & !character.isDead())  batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+        if (!character.isActive() && !character.isDead() && character.isFriendly() && !this.actionInProgress() )
+            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
 
         //Draw selection circle when selected
         if (isSelected() ) {
-            selectionCircle.setPosition(getX()+16,getY()+8);
+            selectionCircle.setPosition(getX()+20,getY()+10);
             selectionCircle.setSize(100,50);
             selectionCircle.draw(batch,0.7f);
         }
 
         //Draw current animation
-        batch.draw(currentFrame,getX()+getOriginX()
-                ,getY()+getOriginY()
+
+        batch.draw(currentFrame,getX()+offsetx
+                ,getY()+offsety
                 ,getOriginX()
                 ,getOriginY()
                 ,getWidth()
@@ -205,6 +272,19 @@ public class CharacterActor extends Actor {
                 ,getScaleX()
                 ,getScaleY()
                 ,getRotation());
+
+        batch.draw(debugBorder,getX()+offsetx
+                ,getY()+offsety
+                ,getOriginX()
+                ,getOriginY()
+                ,getWidth()
+                ,getHeight()
+                ,getScaleX()
+                ,getScaleY()
+                ,getRotation());
+
+
+
 
         //Draw effects
         for (EffectAction effect: effectActions ) {
@@ -236,7 +316,7 @@ public class CharacterActor extends Actor {
      */
     public void moveToCell(IsoMapCellActor newCell) {
 
-
+        LOG.print("[CharacterActor] movetocell"+" "+newCell.getCell().hashCode());
         if( IsoMapActor.distance(character.getCell().getCartesianCoordinates(),newCell.getCell().getCartesianCoordinates()) <= character.getMovement() ) {
 
             MovementAction movementAction = new MovementAction(0.025f);
@@ -254,14 +334,16 @@ public class CharacterActor extends Actor {
     public void turnStart () {
         character.startTurn();
         //Execute start of turn effects
+        /*
         for (Effect e : this.getCharacter().getEffects()) {
-            System.out.println("Turn start effect "+e.getDiceNumber()+e.getGameSegment());
+            LOG.print(3,"Turn start effect "+e.getDiceNumber()+e.getGameSegment());
             if (e.getGameSegment()== Effect.GameSegmentType.TURN_START) {
 
                 EffectAction ea = new EffectAction(e, 0.15f);
                 this.addEffectAction(ea);
             }
         }
+        */
     }
 
 
@@ -301,19 +383,22 @@ public class CharacterActor extends Actor {
      */
     public void receiveAbility (Ability a) {
         if (a != null) {
+
+            /*
             for (Effect e : a.getTarget().getEffects()) {
                 if (e.getGameSegment()== Effect.GameSegmentType.BEFORE_HIT && a.getSource()!=this.getCharacter()) {
                     EffectAction ea = new EffectAction(e, 0.15f);
                     this.addEffectAction(ea);
                 }
             }
+            */
 
             a.apply(this.getCharacter());
             this.showMessage(a.getMessage());
         }
 
         if (character.isDead()) {
-            System.out.println("[CharacterActor] Dying:  "+character);
+            LOG.print(1,"[CharacterActor] Dying:  "+character,LOG.ANSI_RED);
             this.addAction(
                     Actions.sequence(
                             Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
@@ -344,8 +429,29 @@ public class CharacterActor extends Actor {
     }
 
     public void addEffectAction (EffectAction ea) {
+        LOG.print(4,"[CharacterActor] Adding effect action to "+this.getCharacter().getName(),LOG.ANSI_GREEN);
         this.effectActions.add(ea);
         this.addAction(ea);
+    }
+
+
+
+    public void onEffectProcessed (Effect e) {
+        if (e.getTarget()==this.getCharacter()) {
+            LOG.print(4,"[CharacterActor] "+character.getName()+" has been targeted for an effect.", LOG.ANSI_RED);
+            e.addEffectListener(this);
+
+        }
+
+    }
+
+    public void onEffectTriggered (Effect e) {
+        LOG.print(3,"[CharacterActor] "+character.getName()+" effect triggered.");
+
+        EffectAction ea = new EffectAction(e, 0.15f);
+        this.addEffectAction(ea);
+        this.showMessage(e.notification());
+
     }
 
     public Character getCharacter() {return character;}
@@ -361,14 +467,6 @@ public class CharacterActor extends Actor {
 
     public String toString() {
         return "[Character: "+character.name+"] Cell("+character.getCell()+") @ ["+this.getX()+","+getY()+ "] HP:"+character.getHealth()+ " AP:"+character.getAvailableActions();
-    }
-
-    public boolean isReady() {
-        return ready;
-    }
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
     }
 
     public CHARACTER_STATE getState() {
@@ -388,6 +486,8 @@ public class CharacterActor extends Actor {
     }
 
     public boolean isActive () {
+        if (this.isDead()) return false;
+
         return character.isActive();
     }
 
@@ -402,5 +502,16 @@ public class CharacterActor extends Actor {
     public MapCell getMapCell() {
         return character.getCell();
     }
+
+    public void takeDamage(int damage) {
+        character.hit(damage);
+        //TODO: animate when hit
+    }
+
+    public void substractAction () {
+        character.setAvailableActions(character.getAvailableActions() - 1);
+    }
+
+
 
 }

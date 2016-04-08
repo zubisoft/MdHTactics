@@ -1,14 +1,14 @@
 package com.mygdx.mdh.game.characters.actions;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.mygdx.mdh.game.characters.CharacterActor;
-import com.mygdx.mdh.game.model.Effect;
+import com.mygdx.mdh.game.model.effects.Effect;
+import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 09/03/2016.
@@ -26,7 +26,14 @@ public class EffectAction  extends Action {
 
     Effect effect;
 
-    final static int FRAME_COLS = 5;
+    int width;
+    int height;
+
+    int offsetX=0;
+    int offsetY=0;
+
+
+    int FRAME_COLS = 5;
 
     public EffectAction(Effect effect, float frameDuration) {
         this.frameDuration = frameDuration;
@@ -35,25 +42,25 @@ public class EffectAction  extends Action {
         this.effect = effect;
         this.loadAnimations();
         this.finished = false;
+        currentFrame = effectAnimation.getKeyFrame(0, true);
     }
 
 
     @Override
     public boolean act (float delta)  {
 
-
-
         //Effects are applied first, when the animation starts
         if (this.begin ) {
             effect.setTarget(((CharacterActor) target).getCharacter());
-            effect.apply();
+            //effect.apply();
 
-            ((CharacterActor) target).showMessage(effect.getOutcome());
+            //((CharacterActor) target).showMessage(effect.getOutcome());
 
             this.begin = false;
         }
 
         if (effectAnimation.isAnimationFinished(stateTime)) {
+            LOG.print(3,"[EffectAction] Action Removed");
             actor.removeAction(this);
             finished=true;
             return true;
@@ -68,13 +75,14 @@ public class EffectAction  extends Action {
 
 
     public void draw (SpriteBatch batch) {
+
         if(!finished)
-            batch.draw(currentFrame,target.getX()+target.getOriginX()
-                ,target.getY()+target.getOriginY()+50
+            batch.draw(currentFrame,target.getX()
+                ,target.getY()
                 ,target.getOriginX()
                 ,target.getOriginY()
-                ,target.getWidth()
-                ,50
+                ,width
+                ,height
                 ,target.getScaleX()
                 ,target.getScaleY()
                 ,target.getRotation());
@@ -84,6 +92,9 @@ public class EffectAction  extends Action {
 
 
     public void loadAnimations () {
+
+
+        //
         Texture texture = new Texture(Gdx.files.internal(effect.getPic())); // #9
         TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/FRAME_COLS, texture.getHeight());              // #10
         TextureRegion[] frames = new TextureRegion[FRAME_COLS];
@@ -94,6 +105,17 @@ public class EffectAction  extends Action {
         }
 
         effectAnimation = new Animation(0.2f, frames);      // #11
+
+
+
+        width = texture.getWidth()/FRAME_COLS;
+        height = texture.getHeight();
+
+
+        //TODO configurar efectos como dios manda
+        if(effect.getEffectType()== Effect.EffectType.SHIELD) {
+            offsetX=-width/2+30;
+        }
 
     }
 
