@@ -7,6 +7,7 @@ import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.model.effects.EffectListener;
 import com.mygdx.mdh.game.model.effects.EffectManagerListener;
 import com.mygdx.mdh.game.util.Dice;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class EffectManager {
 
     public boolean apply( Effect e ) {
 
-        //Gdx.app.debug("[EffectManager]", "Applying: "+e.getClass()+" to "+e.getTarget());
+        System.out.println("[EffectManager] Applying: "+e.getClass()+" to "+e.getTarget());
 
         if (e.getTarget() == null) return false;
         //target = c.getCharacterActor(e.getTarget());
@@ -43,7 +44,13 @@ public class EffectManager {
             e.execute();
         }
 
+        System.out.println("[EffectManager] Ready to apply effect!");
+
         e.apply();
+
+
+
+
 
         return true;
     }

@@ -29,6 +29,7 @@ public class IsoMapActor extends Group{
     final int CELLHEIGTH = 64;
 
     Color blueHighlight = new Color(0.0f,0.5f,1f,0.2f);
+    Color greenHighlight = new Color(0.2f,1f,0.f,0.2f);
     Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
 
 
@@ -151,24 +152,26 @@ public class IsoMapActor extends Group{
 
     }
 
-    public void highlightCells (IsoMapCellActor cell, int radius) {
+    public void highlightCells (IsoMapCellActor cell, int movementRadius, int abilityRadius) {
         removeHighlightCells();
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
-
-                if ( distance(mapCells[y][x],cell) <= 3 ) {
+                if (!mapCells[y][x].getCell().isOccupied()) {
+                if ( distance(mapCells[y][x],cell) <= movementRadius ) {
                     //System.out.println("Highlighted "+mapCells[y][x].getMapCell()+" "+cell.getMapCell()+" "+Math.ceil(distance(mapCells[y][x],cell)));
-                    if (mapCells[y][x].getCell().getCharacter() == null) {
-                        mapCells[y][x].highlight(blueHighlight);
-                    } else
-                    if (!mapCells[y][x].getCell().getCharacter().isFriendly()
-                            && !mapCells[y][x].getCell().getCharacter().isDead() )
-                    {
-                        mapCells[y][x].highlight(redHighlight);
-                        LOG.print(3,"[Map] Red highlight",LOG.ANSI_CYAN);
 
+                        mapCells[y][x].highlight(blueHighlight);
                     }
+                } else { //occupied
+                        if (distance(mapCells[y][x], cell) <= abilityRadius
+                                //&&!mapCells[y][x].getCell().getCharacter().isFriendly()
+                                && distance(mapCells[y][x], cell) >0
+                                && !mapCells[y][x].getCell().getCharacter().isDead()) {
+                            mapCells[y][x].highlight(redHighlight);
+
+                        }
                 }
+
             }
         }
 

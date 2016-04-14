@@ -2,6 +2,7 @@ package com.mygdx.mdh.game.model;
 
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Dice;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +128,7 @@ public class Ability {
                 break;
         }
         */
+
 
         //Apply secondary effects
         if (effects != null)

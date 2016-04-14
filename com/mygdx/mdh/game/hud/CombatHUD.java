@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.controller.AbilityButtonClickListener;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.model.Ability;
@@ -44,6 +45,15 @@ public class CombatHUD extends Stage {
     Texture characterHUDSprite = new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_hud.png"));
 
 
+    Label characterInfoAttack;
+    Label characterInfoDefense;
+    Label characterInfoMovement;
+    Label characterInfoHealth;
+    Label characterInfoAP;
+
+    static InfoBox infoBox;
+    static boolean showInfo;
+
     public CombatHUD (CombatController controller) {
 
         this.controller = controller;
@@ -62,6 +72,22 @@ public class CombatHUD extends Stage {
         this.addActor(messageBar);
 
 
+        characterInfoAttack = new  Label("",Assets.uiSkin, "default-font", Color.YELLOW);
+        characterInfoDefense = new  Label("",Assets.uiSkin, "default-font", Color.YELLOW);
+        characterInfoMovement = new  Label("",Assets.uiSkin, "default-font", Color.YELLOW);
+        characterInfoHealth = new Label("",Assets.uiSkin, "default-font", Color.YELLOW);
+        characterInfoAP = new Label("",Assets.uiSkin, "default-font", Color.YELLOW);
+
+        characterInfoHealth.setPosition(180,75);
+        characterInfoAP.setPosition(255,75);
+
+        characterInfoAttack.setPosition(180,45);
+        characterInfoDefense.setPosition(235,45);
+        characterInfoMovement.setPosition(290,45);
+
+        infoBox = new InfoBox();
+
+        this.addListener(new InputListener());
     }
 
 
@@ -120,7 +146,35 @@ public class CombatHUD extends Stage {
         messageBar.act(deltaTime);
     }
 
+    public void renderCharacterInfoBox (SpriteBatch batch) {
+        batch.draw(characterHUDSprite,0,0);
+        batch.draw(controller.getSelectedCharacter().portrait,15,15);
+
+        characterInfoAttack.setText(""+controller.getSelectedCharacter().getCharacter().getAttack());
+        characterInfoDefense.setText(""+controller.getSelectedCharacter().getCharacter().getDefence());
+        characterInfoMovement.setText(""+controller.getSelectedCharacter().getCharacter().getMovement());
+        characterInfoHealth.setText(""+controller.getSelectedCharacter().getCharacter().getHealth()+"/"+controller.getSelectedCharacter().getCharacter().getMaxHealth());
+        characterInfoAP.setText(""+controller.getSelectedCharacter().getCharacter().getAvailableActions()+"/"+controller.getSelectedCharacter().getCharacter().getMaxActions());
+
+        characterInfoHealth.draw(batch,1.0f);
+        characterInfoAP.draw(batch,1.0f);
+        characterInfoAttack.draw(batch,1.0f);
+                characterInfoDefense.draw(batch,1.0f);
+        characterInfoMovement.draw(batch,1.0f);
+
+    }
+
+    public static void showInfo (String text, float x, float y) {
+        if(text != null) showInfo = true;
+        else showInfo = false;
+
+        infoBox.setText(text);
+        infoBox.setPosition(x,y);
+    }
+
     public void render (SpriteBatch batch) {
+
+        this.act();
 
         batch.setColor(1f, 1f, 1f,  1f);
         batch.draw(sprite,950,0);
@@ -130,12 +184,15 @@ public class CombatHUD extends Stage {
         font.setColor(Color.BLACK);
         font.draw(batch, notificationText, 1000, 100);
 
+        if (showInfo)
+            infoBox.draw(batch,1.0f);
+
+
         //Draw current character HUD
         if (controller.getSelectedCharacter() != null ) {
 
+            renderCharacterInfoBox (batch);
 
-            batch.draw(characterHUDSprite,0,0);
-            batch.draw(controller.getSelectedCharacter().portrait,15,15);
             /*
             for (AbilityButton a : this.getAbilityButtons()) {
                 a.draw(batch);

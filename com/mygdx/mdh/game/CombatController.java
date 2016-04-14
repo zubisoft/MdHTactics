@@ -151,7 +151,7 @@ public class CombatController extends Stage {
             EventListener eventListener = new CharacterClickListener(actor);
             actor.addListener(eventListener);
 
-            System.out.println("[CombatController] Adding actor "+actor.toString());
+            LOG.print(10,"[CombatController] Adding actor "+actor.toString());
 
         }
 
@@ -327,11 +327,11 @@ public class CombatController extends Stage {
                 selectedCharacterPosition = selectedCharacter.getCharacter().getCell();
                 combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
                 showMovementTiles(selectedCharacter);
+            }
 
-                combatHUD.notificationText = "";
-                for (Effect e: selectedCharacter.getCharacter().getEffects()) {
-                    combatHUD.notificationText += "* "+e.toString()+"\n";
-                }
+            combatHUD.notificationText = "";
+            for (Effect e: selectedCharacter.getCharacter().getEffects()) {
+                combatHUD.notificationText += "* "+e.toString()+"\n";
             }
 
         }
@@ -360,6 +360,9 @@ public class CombatController extends Stage {
      */
     public void executeCurrentAbility(CharacterActor target) {
         LOG.print(3,"[CombatController] Targeted:  "+target.getCharacter().getName());
+
+
+
         Ability a = getCurrentSelectedAbility();
         a.setTarget(target.getCharacter());
         target.receiveAbility(a);
@@ -367,6 +370,7 @@ public class CombatController extends Stage {
         getCharacterActor(a.getSource()).useAbility();
 
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
+
 
         combat.setGameStep(Combat.GameStepType.SELECTION);
     }
@@ -377,7 +381,7 @@ public class CombatController extends Stage {
      */
     public void showMovementTiles(CharacterActor actor) {
 
-         map.highlightCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement());
+         map.highlightCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement(),-1);
 
     }
 
@@ -387,6 +391,17 @@ public class CombatController extends Stage {
 
     public void setCurrentSelectedAbility(Ability currentSelectedAbility) {
         this.currentSelectedAbility = currentSelectedAbility;
+
+        if (selectedCharacter == null) return;
+
+        if(selectedCharacter.isFriendly()) {
+            map.highlightCells(
+                    map.getCell(selectedCharacter.getCharacter().getCell().getMapCoordinates()),
+                    selectedCharacter.getCharacter().getMovement(),
+                    currentSelectedAbility.getRange());
+        }
+
+
     }
 
 

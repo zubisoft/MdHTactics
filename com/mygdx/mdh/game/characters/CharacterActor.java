@@ -17,10 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Queue;
 import com.mygdx.mdh.game.EffectManager;
-import com.mygdx.mdh.game.characters.actions.GameAction;
-import com.mygdx.mdh.game.characters.actions.AttackAction;
-import com.mygdx.mdh.game.characters.actions.EffectAction;
-import com.mygdx.mdh.game.characters.actions.MovementAction;
+import com.mygdx.mdh.game.characters.actions.*;
+import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Ability;
@@ -40,7 +38,7 @@ import java.util.List;
  */
 
 
-public class CharacterActor extends Actor implements EffectManagerListener, EffectListener {
+public class CharacterActor extends Actor implements EffectManagerListener, EffectListener, CharacterChangeListener {
 
     private static final int        FRAME_COLS = 6;         // #1
     private static final int        FRAME_ROWS = 3;         // #2
@@ -169,6 +167,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         messages = new ArrayList<>();
 
         EffectManager.instance.addEffectListener(this);
+
+
+        character.addListener(this);
 
     }
 
@@ -364,16 +365,16 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      * @param message
      */
     public void showMessage (String message) {
-        Label la=(new Label(message, Assets.uiSkin, "default-font", Color.ORANGE));
+        Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
 
-        la.setPosition(getX()+60,getY()+getHeight()-messages.size()*15);
+        la.setPosition(getX()+offsetx,getY()+getHeight()-messages.size()*15);
 
 
         messages.add(la);
 
         la.addAction(Actions.sequence(
-                Actions.moveTo(getX()+60, getY()+getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
-                ,Actions.alpha(0,1000,Interpolation.fade)
+                Actions.moveTo(getX()+offsetx, getY()+getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
+                ,Actions.alpha(0,2000,Interpolation.fade)
         ));
     }
 
@@ -394,25 +395,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
             */
 
             a.apply(this.getCharacter());
+
             this.showMessage(a.getMessage());
         }
 
-        if (character.isDead()) {
-            LOG.print(1,"[CharacterActor] Dying:  "+character,LOG.ANSI_RED);
-            this.addAction(
-                    Actions.sequence(
-                            Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
-                            ,Actions.alpha(0,1,Interpolation.fade)
-
-                    ));
-
-            lifebar.addAction(
-                    Actions.sequence(
-                            Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
-                            ,Actions.alpha(0,1,Interpolation.fade)
-
-                    ));
-        }
     }
 
 
@@ -429,11 +415,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
     public void addEffectAction (EffectAction ea) {
-        LOG.print(4,"[CharacterActor] Adding effect action to "+this.getCharacter().getName(),LOG.ANSI_GREEN);
+
         this.effectActions.add(ea);
         this.addAction(ea);
     }
-
 
 
     public void onEffectProcessed (Effect e) {
@@ -450,7 +435,32 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         EffectAction ea = new EffectAction(e, 0.15f);
         this.addEffectAction(ea);
+
         this.showMessage(e.notification());
+        this.queueAction(new GameWaitAction(2));
+
+    }
+
+
+
+    public void onCharacterHit (int damage)  {
+        LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);
+        if (character.isDead()) {
+            LOG.print(1,"[CharacterActor] Dying:  "+character,LOG.ANSI_RED);
+            this.addAction(
+                    Actions.sequence(
+                            Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
+                            ,Actions.alpha(0,1,Interpolation.fade)
+
+                    ));
+
+            lifebar.addAction(
+                    Actions.sequence(
+                            Actions.color(new Color(1,0.2f,0.2f,0.5f),1,Interpolation.fade)
+                            ,Actions.alpha(0,1,Interpolation.fade)
+
+                    ));
+        }
 
     }
 

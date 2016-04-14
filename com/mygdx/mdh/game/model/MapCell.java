@@ -62,8 +62,6 @@ public class MapCell {
         if (c==null)  this.occupied = false;
         else          this.occupied = true;
 
-        LOG.print("[MapCell] setting occupied "+toString()+this.occupied+" "+System.identityHashCode(this));
-
         this.character=c;
 
     }

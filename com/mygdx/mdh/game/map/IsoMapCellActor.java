@@ -30,6 +30,8 @@ public class IsoMapCellActor extends Actor {
     final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
     Label la;
 
+    boolean debug = false;
+
 
     public IsoMapCellActor (MapCell cell) {
         this.sprite = new Sprite(texture);
@@ -74,9 +76,10 @@ public class IsoMapCellActor extends Actor {
 
         sprite.draw(batch);
 
-        la.setPosition(getX()+60,getY()+30);
-        la.draw(batch,1);
-
+        if (debug) {
+            la.setPosition(getX() + 60, getY() + 30);
+            la.draw(batch, 1);
+        }
 
         if (showHighlight ) {
             //highlightSprite.draw(batch,0.2f);

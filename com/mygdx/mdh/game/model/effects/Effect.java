@@ -1,13 +1,12 @@
 package com.mygdx.mdh.game.model.effects;
 
 
-import com.badlogic.gdx.Gdx;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.Dice;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +20,8 @@ import java.util.List;
 @JsonSubTypes({
           @JsonSubTypes.Type(value = ShieldEffect.class, name = "SHIELD")
         , @JsonSubTypes.Type(value = DamageEffect.class, name = "DAMAGE")
-        , @JsonSubTypes.Type(value = Effect.class, name = "HEAL")
-        , @JsonSubTypes.Type(value = DamageEffect.class, name = "STUN")
+        , @JsonSubTypes.Type(value = HealEffect.class, name = "HEAL")
+        , @JsonSubTypes.Type(value = StunEffect.class, name = "STUN")
 })
 
 
@@ -70,6 +69,8 @@ public class Effect {
     float percentModifier;
     int rolledResult;
 
+    int stacking = 0;
+
     List<EffectListener> effectListeners;
 
     public Effect () {
@@ -114,9 +115,15 @@ public class Effect {
 
     /**
      * Applies the effect to the target, according to the current status of the roll.
-     * Default implementation simply attaches the effect to the target.
+     * Default implementation simply attaches the effect to the target if the stacking is not maxed.
      */
     public void apply() {
+        System.out.println("[Effect] Applying Effect "+this.getName()+" stacking: "+target.getEffectsByName(this.getName()).size());
+        for (Effect e: target.getEffects()) {
+            System.out.println( "* "+e.getName()+"\n");
+        }
+
+        if (target.getEffectsByName(this.getName()).size() <= stacking)
             target.addEffect(this);
     }
 
@@ -136,6 +143,14 @@ public class Effect {
         if (effectListeners.contains(l)) return;
 
         effectListeners.add(l);
+    }
+
+    public String getDescription () {
+        if (duration == 0)
+            return "Applies "+effectType;
+        else
+            return "Applies "+effectType+" during "+duration+" turns";
+
     }
 
     public void startTurn() {

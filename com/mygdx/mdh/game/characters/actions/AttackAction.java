@@ -37,7 +37,7 @@ public class AttackAction extends GameAction {
             stateTime=0;
 
 
-            if (totalTime > 2) {
+            if (totalTime > 5) {
                 //Stop moving
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 

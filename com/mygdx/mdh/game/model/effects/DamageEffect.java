@@ -31,8 +31,6 @@ public class DamageEffect extends Effect {
             roll.setEffectType(Roll.RollType.DAMAGE);
         }
 
-        Gdx.app.debug("[DamageEffect]", "Rolled: "+roll.getTotalRoll());
-
     }
 
 

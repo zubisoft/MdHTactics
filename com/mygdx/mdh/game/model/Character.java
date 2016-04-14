@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygdx.mdh.game.EffectManager;
+import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.LOG;
 
@@ -38,7 +39,11 @@ public class Character  {
     List<Ability> abilities;
 
     //Effects currently applied on this character
-    List<Effect> effects;
+    private List<Effect> effects;
+
+    //event handling
+    private List<CharacterChangeListener> listeners;
+
 
 
 
@@ -55,6 +60,7 @@ public class Character  {
 
         effects = new ArrayList<Effect> ();
         effectsAux = new ArrayList<Effect> ();
+        listeners = new ArrayList<> ();
     }
 
     /*
@@ -95,16 +101,26 @@ public class Character  {
                     //Resolve immediate effects
                     LOG.print(4, "[Character] Starting turn effects: "+tmp.getEffectType());
                     //if(tmp.getGameSegment()== Effect.GameSegmentType.TURN_START)
-                        EffectManager.instance.execute(tmp);
+                    EffectManager.instance.execute(tmp);
+                    tmp.startTurn();
                 }
                 cleanEffects();
             }
         }
     }
 
+    public void addListener(CharacterChangeListener cl) {
+        listeners.add(cl);
+    }
+
     public void hit(int damage) {
         setHealth(getHealth()-damage);
+        for(CharacterChangeListener cl: listeners) {
+            cl.onCharacterHit(damage);
+        }
+
     }
+
     public int getHealth() { return health; }
     public void setHealth(int h) {
         health=h;
@@ -166,7 +182,7 @@ public class Character  {
     }
 
     public void setPic(String pic) {
-        System.out.println("Setting  "+pic); this.pic = pic;
+         this.pic = pic;
     }
 
     public List<Ability> addAbility(Ability ab) {
@@ -203,6 +219,17 @@ public class Character  {
     }
 
 
+    public List<Effect> getEffectsByName(String name) {
+        List<Effect> list = new ArrayList<>();
+
+        for (Effect e: effects) {
+            if (e.getName().equals(name))
+                list.add(e);
+        }
+
+        return list;
+    }
+
 
     /******************** Generic getters and setters ********************/
     public boolean isDead() {
@@ -218,32 +245,48 @@ public class Character  {
     }
 
     public void addEffect (Effect e) {
-        LOG.print(3, "[Character] Adding Effect");
+        LOG.print(4, "[Character] Adding Effect "+e.getEffectType()+" to "+getName()+" duration: "+e.getDuration());
         effects.add(e);
+
+        for (Effect x: this.getEffects()) {
+            LOG.print(4,"* "+x.toString()+"\n");
+        }
+
     }
 
     public void addEffect (List<Effect> e) {
+        LOG.print("[Character] Adding effect list");
+
        // if (e != null) effects.addAll(e);
         if (e==null ) return;
+
 
         for (Effect tmp: e) {
             tmp.setTarget(this);
             //Resolve immediate effects
-
+            LOG.print("[Character] Calling effect manager");
             //TODO it might be necessary to create new effect objects every time an ability is applied?
             EffectManager.instance.apply(tmp);
         }
 
+
+
         cleanEffects();
+
+
     }
 
     private void cleanEffects () {
         if(effects.size()==0) return;
 
-        effectsAux = effects;
-        for (Effect tmp: effectsAux) {
-            if (tmp.getDuration()<=0)
-                effects.remove(tmp);
+        Iterator<Effect> iterator = effects.iterator();
+
+        while (iterator.hasNext()) {
+            Effect tmp = iterator.next();
+            if (tmp.getDuration()<=0) {
+                LOG.print(4, "[Character] Remove Effect " + tmp.getEffectType() + " from " + getName());
+                iterator.remove();
+            }
         }
     }
 
@@ -290,7 +333,6 @@ public class Character  {
         if(this.cell !=null)  this.cell.setOccupied(null);
         this.cell = cell;
         this.cell.setOccupied(this);
-        LOG.print(3,"[Character] Occupied cell:"+cell+" "+cell.isOccupied()+" "+System.identityHashCode(cell) );
     }
 
     public int getRow() {

@@ -121,7 +121,6 @@ public class Combat {
 
         //Important step, link characters with the map
         for (Character c: emp.characters) {
-            System.out.println("row"+emp.map.getCell(c.getRow(),c.getColumn()));
             c.setCell(emp.map.getCell(c.getRow(),c.getColumn()));
         }
 

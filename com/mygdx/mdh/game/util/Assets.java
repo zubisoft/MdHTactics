@@ -97,35 +97,24 @@ public class Assets implements Disposable, AssetErrorListener {
             t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         for (AtlasRegion g: atlas.getRegions()) {
-            Gdx.app.debug(TAG, "Loading Character: " + g.name);
+            LOG.print(10, "[Assets] Loading Character: " + g.name);
             characters.put(g.name, new AssetCharacter(atlas,g.name));
         }
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_MAPS);
         for (AtlasRegion g: atlas.getRegions()) {
-            Gdx.app.debug(TAG, "Loading Map: " + g.name);
+            LOG.print(10, "[Assets] Loading Map: " + g.name);
             maps.put(g.name, atlas.findRegion(g.name));
         }
 
-
-
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_COMBAT_UI);
         for (AtlasRegion g: atlas.getRegions()) {
-            Gdx.app.debug(TAG, "Loading Map: " + g.name);
+            LOG.print(10, "[Assets] Loading GUI: " + g.name);
             guiElements.put(g.name, atlas.findRegion(g.name));
         }
         // Create game resource objects
 
 
-
-        /*
-        rock = new AssetRock(atlas);
-        goldCoin = new AssetGoldCoin(atlas);
-        feather = new AssetFeather(atlas);
-        levelDecoration = new AssetLevelDecoration(atlas);
-        sounds = new AssetSounds(assetManager);
-        music = new AssetMusic(assetManager);
-        */
 
         fonts = new AssetFonts();
     }
