@@ -114,6 +114,10 @@ public class Character  {
     }
 
     public void hit(int damage) {
+        //Do not allow to surpass max hitpoints when healed
+        if (damage<0 && (getHealth()-damage)>maxHealth)
+            health=maxHealth;
+
         setHealth(getHealth()-damage);
         for(CharacterChangeListener cl: listeners) {
             cl.onCharacterHit(damage);
@@ -245,11 +249,12 @@ public class Character  {
     }
 
     public void addEffect (Effect e) {
-        LOG.print(4, "[Character] Adding Effect "+e.getEffectType()+" to "+getName()+" duration: "+e.getDuration());
+
+        LOG.print(3, "[Character] Adding Effect "+e.hashCode()+" "+e.getEffectType()+" to "+getName()+" duration: "+e.getDuration(),LOG.ANSI_GREEN);
         effects.add(e);
 
-        for (Effect x: this.getEffects()) {
-            LOG.print(4,"* "+x.toString()+"\n");
+        for (Effect ee: this.getEffects()) {
+            LOG.print(4,"* "+ee.toString()+"\n");
         }
 
     }
@@ -267,6 +272,7 @@ public class Character  {
             LOG.print("[Character] Calling effect manager");
             //TODO it might be necessary to create new effect objects every time an ability is applied?
             EffectManager.instance.apply(tmp);
+
         }
 
 
@@ -293,7 +299,15 @@ public class Character  {
 
     public boolean isActive() { return active; }
 
-    public void setActive(boolean a) { this.active=a; }
+    public void setActive(boolean a) {
+        this.active=a;
+
+        if(!active)
+        for(CharacterChangeListener cl: listeners) {
+            cl.onCharacterInactive(this);
+        }
+
+    }
 
 
     public String getName() {

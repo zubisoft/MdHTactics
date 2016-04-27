@@ -27,9 +27,10 @@ public class EffectManager {
         effectListeners= new ArrayList<>();
     }
 
-    public boolean apply( Effect e ) {
+    public boolean apply( Effect effectTemplate ) {
 
-        System.out.println("[EffectManager] Applying: "+e.getClass()+" to "+e.getTarget());
+        Effect e = effectTemplate.copy();
+        System.out.println("[EffectManager] Applying: "+e.getEffectType()+" to "+e.getTarget()+" "+e.hashCode());
 
         if (e.getTarget() == null) return false;
         //target = c.getCharacterActor(e.getTarget());

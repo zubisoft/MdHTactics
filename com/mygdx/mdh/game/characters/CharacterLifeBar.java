@@ -59,8 +59,12 @@ public class CharacterLifeBar extends Actor {
 
         //barBackground.draw(batch,1.0f);
 
-        batch.draw(barBackground,actor.getX()+actor.offsetx,actor.getY()+actor.offsety);
-        batch.draw(barFill,actor.getX()+actor.offsetx,actor.getY()+actor.offsety);
+        batch.draw(barBackground
+                ,actor.getX()+actor.offsetx+Math.round(actor.getWidth()/2-BARWIDTH/2)
+                ,actor.getY()+actor.offsety-10);
+        batch.draw(barFill
+                ,actor.getX()+actor.offsetx+Math.round(actor.getWidth()/2-BARWIDTH/2)
+                ,actor.getY()+actor.offsety-10);
 
         //Return color to normal
         batch.setColor(1f, 1f, 1f, 1f);

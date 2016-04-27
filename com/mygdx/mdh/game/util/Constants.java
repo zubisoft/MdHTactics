@@ -27,6 +27,9 @@ public class Constants {
             "core/assets/graphics/fonts/gradient-america-captain.fnt";
 
 
+    public static final String TEXTURE_ATLAS_EFFECTS =
+            "core/assets/graphics/mdhtactics-effects.pack.atlas";
+
     public static final int MAX_MAP_CELLWIDTH = 10;
     public static final int MAX_MAP_CELLHEIGHT = 10;
 }

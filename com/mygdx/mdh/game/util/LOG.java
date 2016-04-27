@@ -41,13 +41,13 @@ import java.awt.*;
     }
 
     public static void print(String s) {
-        System.out.println (s);
+        System.out.println (ANSI_RESET+s);
     }
 
 
     public static void print(int l, String s) {
         if (l<=level)
-            System.out.println (s);
+            System.out.println (ANSI_RESET+s);
     }
 
     public static void print(int l, String s, String color) {

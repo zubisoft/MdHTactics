@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.mygdx.mdh.game.IA.StrategyManager;
+import com.mygdx.mdh.game.characters.actions.GameWaitAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
 import com.mygdx.mdh.game.controller.CombatInputListener;
 import com.mygdx.mdh.game.model.Ability;
@@ -52,6 +53,7 @@ public class CombatController extends Stage {
     Ability currentSelectedAbility;
 
     float stateTime;
+    boolean combatPaused;
 
     public IsoMapActor map;
 
@@ -74,6 +76,14 @@ public class CombatController extends Stage {
         this.map = map;
     }
 
+    public boolean isCombatPaused() {
+        return combatPaused;
+    }
+
+    public void setCombatPaused(boolean combatPaused) {
+        this.combatPaused = combatPaused;
+    }
+
 
     public enum GameTurn {
         PLAYER, BADDIES
@@ -93,6 +103,7 @@ public class CombatController extends Stage {
         this.characterActors = new ArrayList<CharacterActor>();
 
         this.combat = Combat.loadFromJSON("combat01");
+       // this.combat = Combat.loadFromJSON("combat_minimal");
 
         map=new IsoMapActor(combat.getMap());
         this.addActor(map);
@@ -205,6 +216,7 @@ public class CombatController extends Stage {
 
         for (CharacterActor c : getCharacterActors()) {
             if(!c.getCharacter().isFriendly()) {
+                c.queueAction(new GameWaitAction(3f));
                 c.turnStart();
                 LOG.print(3,c.toString());
             }
@@ -235,6 +247,8 @@ public class CombatController extends Stage {
         return false;
     }
 
+
+
     public void executeBaddiesTurn() {
         //If other characters have finished doing their stuff, take action
         if (CharacterActor.queueActions.size==0) {
@@ -244,12 +258,16 @@ public class CombatController extends Stage {
                 if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & !c.actionInProgress()) {
 
                     strategyManager.nextAction(i);
+                    c.queueAction(new GameWaitAction(10f));
 
                }
                 i++;
             }
         }
     }
+
+
+    boolean messageInProgress = false;
 
     public void update(float deltaTime) {
        // System.out.println(Gdx.graphics.getDeltaTime());
@@ -269,32 +287,58 @@ public class CombatController extends Stage {
             gameEnd=true;
         }
 
-        for(CharacterActor a: characterActors) {
-            a.update(deltaTime);
+        if (!messageInProgress && !baddiesActive() && gameTurn==GameTurn.BADDIES && !CharacterActor.actionInProgress()) {
+
+            LOG.print(3,"[Controller] Player Start",LOG.ANSI_BLUE);
+            combatHUD.showMessageBar("Player Turn",3);
+            messageInProgress = true;
+
+        }
+
+        if (!messageInProgress && !friendliesActive() && gameTurn==GameTurn.PLAYER  && !CharacterActor.actionInProgress() ) {
+
+            LOG.print(3,"[Controller] Baddies Start - Effect Action Executing: "+CharacterActor.effectActions.size,LOG.ANSI_BLUE);
+            combatHUD.showMessageBar("Enemy Turn",3);
+            messageInProgress = true;
+
         }
 
 
-        if (!friendliesActive() && gameTurn==GameTurn.PLAYER ) {
-            //Wait for player's action to finish
-            if (!CharacterActor.actionInProgress()) {
-                baddiesTurnBegin();
+
+        if (!combatPaused) {
+
+            if (!baddiesActive() && gameTurn==GameTurn.BADDIES && !CharacterActor.actionInProgress()) {
+
+                LOG.print(3,"[Controller] Player Start",LOG.ANSI_BLUE);
+                playerTurnBegin();
+                messageInProgress = false;
             }
-        }
 
-        if (!baddiesActive() && gameTurn==GameTurn.BADDIES ) {
-            playerTurnBegin();
-        }
+            if (!friendliesActive() && gameTurn==GameTurn.PLAYER  && !CharacterActor.actionInProgress() ) {
 
-        if (gameTurn==GameTurn.BADDIES) {
-            executeBaddiesTurn();
-        }
+                LOG.print(3,"[Controller] Baddies Start - Effect Action Executing: "+CharacterActor.effectActions.size,LOG.ANSI_BLUE);
+                baddiesTurnBegin();
+                messageInProgress = false;
 
-        //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
-        if (selectedCharacter != null)
-            if(selectedCharacter.getCharacter().getCell()!=selectedCharacterPosition)
-                if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
-                    setSelectedCharacter(selectedCharacter);
-                }
+            }
+
+            if (gameTurn==GameTurn.BADDIES) {
+                executeBaddiesTurn();
+            }
+
+            for(CharacterActor a: characterActors) {
+                a.update(deltaTime);
+            }
+
+
+            //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
+            if (selectedCharacter != null)
+                if(selectedCharacter.getCharacter().getCell()!=selectedCharacterPosition)
+                    if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
+                        setSelectedCharacter(selectedCharacter);
+                    }
+
+        }
 
 
 
@@ -351,9 +395,6 @@ public class CombatController extends Stage {
         }
     }
 
-
-
-
     /**
      * Executes the current selected ability on a target.
      * @param target
@@ -365,9 +406,10 @@ public class CombatController extends Stage {
 
         Ability a = getCurrentSelectedAbility();
         a.setTarget(target.getCharacter());
-        target.receiveAbility(a);
 
-        getCharacterActor(a.getSource()).useAbility();
+        //TODO probably beter doing this in the action instead
+        getCharacterActor(a.getSource()).useAbility(a, target);
+
 
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 

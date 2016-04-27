@@ -31,6 +31,7 @@ import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     TextureRegion currentFrame;
 
     //Effects applied on the character
-    List<EffectAction> effectActions;
+    public static Queue<EffectAction> effectActions = new Queue<>();
     public static Queue<GameAction> queueActions = new Queue<>();
 
 
@@ -72,6 +73,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     CharacterLifeBar lifebar;
     List<Label> messages;
     float stateTime;
+
+    CharacterMessenger characterMessenger;
 
     //Game Logic
     private Character character;
@@ -162,7 +165,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         debugBorder = new TextureRegion(new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_square.png")));
 
 
-        effectActions = new ArrayList<>();
+       // effectActions = new ArrayList<>();
         actionQueue = new ArrayList<>();
         messages = new ArrayList<>();
 
@@ -171,10 +174,14 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         character.addListener(this);
 
+         characterMessenger= new CharacterMessenger(this);
+
+
     }
 
     public static boolean actionInProgress () {
-        return queueActions.size>0;
+        //LOG.print("[CharacterActor] Effects running "+effectActions.size);
+        return (queueActions.size>0)||(effectActions.size>0);
     }
 
     /**
@@ -190,7 +197,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         lifebar.update(deltaTime);
 
         //Update character messages
-        for(Label l: messages) l.act(stateTime);
+        /*
+        Iterator<Label> iterator = messages.iterator();
+        while(iterator.hasNext()) iterator.next().act(stateTime);*/
+        characterMessenger.update(stateTime);
 
         //Update the current frame
         switch(state) {
@@ -219,6 +229,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     */
 
         this.queuedActionsAct(deltaTime);
+        this.effectActionsAct(deltaTime);
 
     }
 
@@ -226,18 +237,25 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (queueActions.size == 0 ) return;
 
         if (queueActions.first().act(deltaTime) == true) {
+            LOG.print(3,"[CharacterActor] Removed Action "+queueActions.first());
             queueActions.removeFirst();
         }
     }
+
+    public void effectActionsAct (float deltaTime) {
+        if (effectActions.size == 0 ) return;
+
+        if (effectActions.first().act(deltaTime) == true) {
+            effectActions.removeFirst();
+        }
+    }
+
 
     public void setOffset(float x, float y) {
         offsetx=x;
         offsety=y;
 
     }
-
-
-
 
 
     /**
@@ -274,6 +292,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
                 ,getScaleY()
                 ,getRotation());
 
+        /*
         batch.draw(debugBorder,getX()+offsetx
                 ,getY()+offsety
                 ,getOriginX()
@@ -283,18 +302,21 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
                 ,getScaleX()
                 ,getScaleY()
                 ,getRotation());
+                */
 
 
 
 
         //Draw effects
-        for (EffectAction effect: effectActions ) {
-            effect.draw(batch);
-        }
+        //for (EffectAction effect: effectActions ) {
+        if (effectActions.size>0)
+            effectActions.first().draw(batch);
+        //}
 
         //Draw attached actors
         lifebar.draw(batch);
-        for(Label l: messages) l.draw(batch,1);
+        //for(Label l: messages) l.draw(batch,1);
+        characterMessenger.draw(batch);
 
         //Return color to normal
         if (!character.isActive()) batch.setColor(1f, 1f, 1f, 1f);
@@ -353,29 +375,48 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     /**
      * Adds an action to the action queue
      */
-    public void useAbility( ) {
-        AttackAction action = new AttackAction(0.15f);
+    public void useAbility( Ability a, CharacterActor target) {
+        AttackAction action = new AttackAction(0.15f, a, target);
 
         this.queueAction(action);
     }
+
+
 
     /**
      * Adds an message to the actor that will displayed for a short time.
      * Multiple messages can be displayed at the same time.
      * @param message
      */
-    public void showMessage (String message) {
+    public void showMessage (String message, Color c) {
+        /*
         Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
 
-        la.setPosition(getX()+offsetx,getY()+getHeight()-messages.size()*15);
+        la.setColor(c);
 
+        la.setPosition(getX()+offsetx,getY()+getHeight()-messages.size()*15);
 
         messages.add(la);
 
         la.addAction(Actions.sequence(
                 Actions.moveTo(getX()+offsetx, getY()+getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
+                ,Actions.delay(200)
                 ,Actions.alpha(0,2000,Interpolation.fade)
-        ));
+                , new Action () {
+                    public boolean act(float deltaTime) {
+
+                        return true;
+                    }
+
+                }
+             ));
+             */
+        characterMessenger.showMessage(message,c);
+    }
+
+    public void showMessage (String message) {
+        //showMessage (message, Color.WHITE);
+        characterMessenger.showMessage(message, Color.WHITE);
     }
 
     /**
@@ -411,19 +452,20 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void queueAction (GameAction a) {
         a.setActor(this);
+        LOG.print(3,"[CharacterActor] Added Action "+a+" for "+this.getCharacter().getName());
         queueActions.addLast(a);
     }
 
     public void addEffectAction (EffectAction ea) {
 
-        this.effectActions.add(ea);
+        this.effectActions.addLast(ea);
         this.addAction(ea);
     }
 
 
     public void onEffectProcessed (Effect e) {
         if (e.getTarget()==this.getCharacter()) {
-            LOG.print(4,"[CharacterActor] "+character.getName()+" has been targeted for an effect.", LOG.ANSI_RED);
+            LOG.print(3,"[CharacterActor] "+character.hashCode()+" has been targeted for an effect."+e.hashCode(), LOG.ANSI_RED);
             e.addEffectListener(this);
 
         }
@@ -431,13 +473,14 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
     public void onEffectTriggered (Effect e) {
-        LOG.print(3,"[CharacterActor] "+character.getName()+" effect triggered.");
+        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.hashCode());
 
-        EffectAction ea = new EffectAction(e, 0.15f);
-        this.addEffectAction(ea);
+            EffectAction ea = new EffectAction(e, 0.15f);
+            this.addEffectAction(ea);
 
-        this.showMessage(e.notification());
-        this.queueAction(new GameWaitAction(2));
+            this.showMessage(e.notification(), e.getColor());
+
+        //this.queueAction(new GameWaitAction(2));
 
     }
 
@@ -463,6 +506,13 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         }
 
     }
+
+    public void onCharacterActive (Character c)  {
+    }
+
+    public void onCharacterInactive (Character c)  {
+    }
+
 
     public Character getCharacter() {return character;}
 

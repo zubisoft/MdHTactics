@@ -1,8 +1,11 @@
 package com.mygdx.mdh.game.model.effects;
 
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
+
+import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 14/04/2016.
@@ -14,6 +17,7 @@ public class HealEffect  extends Effect{
             super();
 
             effectType=EffectType.HEAL;
+            color= Color.GREEN;
         }
 
         @Override
@@ -53,6 +57,30 @@ public class HealEffect  extends Effect{
             return "+"+roll.getTotalRoll()+" HP";
         }
 
+    public HealEffect copy () {
+        HealEffect e = new HealEffect();
+        e.name = name;
+        e.effectType = effectType;
+        e.effectSubType = effectSubType;
+        e.gameSegment = gameSegment;
+        e.duration = duration;
+        e.roll = roll;
+        e.chance = chance;
+        e.source = source;
+        e.target = target;
+        e.pic = pic;
+        e.icon = icon;
+        e.outcome = outcome;
+        e.color = color;
+        e.diceNumber = diceNumber;
+        e.diceSides = diceSides;
+        e.percentModifier = percentModifier;
+        e.rolledResult = rolledResult;
+        e.stacking = stacking;
+        e.effectListeners  = new ArrayList<>();
+        e.modifier = modifier;
 
+        return e;
+    }
 
 }

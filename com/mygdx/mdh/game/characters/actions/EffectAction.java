@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.effects.Effect;
@@ -61,7 +62,7 @@ public class EffectAction  extends Action {
 
         if (effectAnimation.isAnimationFinished(stateTime)) {
             LOG.print(3,"[EffectAction] Action Removed");
-            actor.removeAction(this);
+            //actor.removeAction(this);
             finished=true;
             return true;
         }
@@ -77,15 +78,18 @@ public class EffectAction  extends Action {
     public void draw (SpriteBatch batch) {
 
         if(!finished)
-            batch.draw(currentFrame,target.getX()
+            batch.draw(currentFrame
+                    ,target.getX()+offsetX
                 ,target.getY()
+            );
+                    /*
                 ,target.getOriginX()
                 ,target.getOriginY()
                 ,width
                 ,height
                 ,target.getScaleX()
                 ,target.getScaleY()
-                ,target.getRotation());
+                ,target.getRotation());*/
 
     }
 
@@ -104,7 +108,7 @@ public class EffectAction  extends Action {
             frames[index++] = tmp[0][j];
         }
 
-        effectAnimation = new Animation(0.2f, frames);      // #11
+        effectAnimation = new Animation(0.5f, frames);      // #11
 
 
 
@@ -112,9 +116,11 @@ public class EffectAction  extends Action {
         height = texture.getHeight();
 
 
+        offsetX=0;
         //TODO configurar efectos como dios manda
         if(effect.getEffectType()== Effect.EffectType.SHIELD) {
-            offsetX=-width/2+30;
+            //83 is the width of a charaacteractor
+            offsetX=0;
         }
 
     }

@@ -1,6 +1,7 @@
 package com.mygdx.mdh.game.model.effects;
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mygdx.mdh.game.model.Character;
@@ -9,6 +10,8 @@ import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -25,10 +28,12 @@ import java.util.List;
 })
 
 
-public class Effect {
+public class Effect  /*implements Cloneable*/  {
 
 
     public String name;
+
+
 
     /**
      * Main type of the effect
@@ -38,6 +43,13 @@ public class Effect {
     }
 
     EffectType effectType;
+
+
+    public enum EffectSubType {
+        FIRE, ICE, PHYSICAL, MAGIC
+    }
+
+    EnumSet<EffectSubType> effectSubType;
 
     /**
      * Moment when the effect is applied
@@ -58,7 +70,9 @@ public class Effect {
 
     //File with the textures
     String pic;
+    String icon;
     String outcome;
+    Color color;
 
     /**
      * Number and type of dice to roll, plus roll modifier (e.g. 2d6+3)
@@ -71,6 +85,34 @@ public class Effect {
 
     int stacking = 0;
 
+
+    public Effect copy () {
+        Effect e = new Effect();
+        e.name = name;
+        e.effectType = effectType;
+        e.effectSubType = effectSubType;
+        e.gameSegment = gameSegment;
+        e.duration = duration;
+        e.roll = roll;
+        e.chance = chance;
+        e.source = source;
+        e.target = target;
+        e.pic = pic;
+        e.icon = icon;
+        e.outcome = outcome;
+        e.color = color;
+        e.diceNumber = diceNumber;
+        e.diceSides = diceSides;
+        e.percentModifier = percentModifier;
+        e.rolledResult = rolledResult;
+        e.stacking = stacking;
+        e.effectListeners = new ArrayList<>();
+        e.modifier = modifier;
+
+        return e;
+    }
+
+
     List<EffectListener> effectListeners;
 
     public Effect () {
@@ -80,6 +122,9 @@ public class Effect {
         duration =0;
         chance=1;
         effectListeners = new ArrayList<>();
+        effectSubType = EnumSet.noneOf(EffectSubType.class);
+        icon="effect-icon-generic";
+        color=Color.WHITE;
     }
 
 
@@ -118,7 +163,7 @@ public class Effect {
      * Default implementation simply attaches the effect to the target if the stacking is not maxed.
      */
     public void apply() {
-        System.out.println("[Effect] Applying Effect "+this.getName()+" stacking: "+target.getEffectsByName(this.getName()).size());
+        System.out.println("[Effect] Applying Effect "+this.getEffectType()+" stacking: "+target.getEffectsByName(this.getName()).size());
         for (Effect e: target.getEffects()) {
             System.out.println( "* "+e.getName()+"\n");
         }
@@ -141,6 +186,7 @@ public class Effect {
 
     public void addEffectListener (EffectListener l) {
         if (effectListeners.contains(l)) return;
+        LOG.print(3,"[Effect] "+l.hashCode()+" listening to "+ this.hashCode(),LOG.ANSI_CYAN);
 
         effectListeners.add(l);
     }
@@ -149,7 +195,7 @@ public class Effect {
         if (duration == 0)
             return "Applies "+effectType;
         else
-            return "Applies "+effectType+" during "+duration+" turns";
+            return "Applies "+effectType+" "+effectSubType +" during "+duration+" turns";
 
     }
 
@@ -157,6 +203,22 @@ public class Effect {
         duration--;
     }
 
+
+
+    public void setEffectSubType(EnumSet<EffectSubType> list) {
+        effectSubType=list;
+        /*
+        effectSubType=EnumSet.noneOf(EffectSubType.class);
+        effectSubType.addAll(list);*/
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public Roll getRoll() {
         return roll;
@@ -195,6 +257,18 @@ public class Effect {
         this.effectType = effecType;
     }
 
+
+    public EnumSet<EffectSubType> getEffectSubType() {
+        return effectSubType;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
     public Character getSource() {
         return source;
@@ -272,4 +346,16 @@ public class Effect {
     public String notification() {
         return "*"+getEffectType()+" ("+getDuration()+" rounds)";
     }
+
+    /*
+    public Object clone()  {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            LOG.print("error cloning");
+        }
+        return null;
+    }
+    */
+
 }

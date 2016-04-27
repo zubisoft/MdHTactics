@@ -33,6 +33,8 @@ public class AbilityButtonClickListener extends ClickListener {
 
     @Override
     public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+        if (!abilityButton.isVisible()) return;
+
         String description=abilityButton.getAbility().getName()+"\n";
         for (Effect e: abilityButton.getAbility().getEffects())
             description += "- "+ e.getDescription()+"\n";
@@ -45,6 +47,8 @@ public class AbilityButtonClickListener extends ClickListener {
 
     @Override
     public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+        if (!abilityButton.isVisible()) return;
+
         super.exit(event, x, y, pointer, toActor);
         CombatHUD.showInfo(null,0,0);
     }

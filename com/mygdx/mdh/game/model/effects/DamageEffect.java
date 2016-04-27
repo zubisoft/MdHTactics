@@ -1,9 +1,12 @@
 package com.mygdx.mdh.game.model.effects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
+
+import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 29/03/2016.
@@ -14,6 +17,7 @@ public class DamageEffect extends Effect {
         super();
 
         effectType=EffectType.DAMAGE;
+        color= Color.RED;
     }
 
     @Override
@@ -50,7 +54,36 @@ public class DamageEffect extends Effect {
     }
 
     public String notification() {
+        if (roll.getTotalRoll()>0) {
+            if (effectSubType.contains(EffectSubType.FIRE))  return "Burning! -"+roll.getTotalRoll()+" HP";
+        }
         return "-"+roll.getTotalRoll()+" HP";
+    }
+
+    public DamageEffect copy () {
+        DamageEffect e = new DamageEffect();
+        e.name = name;
+        e.effectType = effectType;
+        e.effectSubType = effectSubType;
+        e.gameSegment = gameSegment;
+        e.duration = duration;
+        e.roll = roll;
+        e.chance = chance;
+        e.source = source;
+        e.target = target;
+        e.pic = pic;
+        e.icon = icon;
+        e.outcome = outcome;
+        e.color = color;
+        e.diceNumber = diceNumber;
+        e.diceSides = diceSides;
+        e.percentModifier = percentModifier;
+        e.rolledResult = rolledResult;
+        e.stacking = stacking;
+        e.effectListeners = new ArrayList<>();
+        e.modifier = modifier;
+
+        return e;
     }
 
 }

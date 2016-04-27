@@ -2,9 +2,12 @@ package com.mygdx.mdh.game.model.effects;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
+
+import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 29/03/2016.
@@ -17,7 +20,9 @@ public class ShieldEffect extends Effect {
     public ShieldEffect () {
         super();
 
+        initialized = false;
         effectType=EffectType.SHIELD;
+        color= Color.BLUE;
     }
 
     /**
@@ -64,6 +69,34 @@ public class ShieldEffect extends Effect {
 
     public String notification() {
         return " Shielded: "+rolledResult+"/"+initialRoll;
+    }
+
+    public ShieldEffect copy () {
+
+        ShieldEffect e = new ShieldEffect();
+            e.name = name;
+            e.effectType = effectType;
+            e.effectSubType = effectSubType;
+            e.gameSegment = gameSegment;
+            e.duration = duration;
+            e.roll = roll;
+            e.chance = chance;
+            e.source = source;
+            e.target = target;
+            e.pic = pic;
+            e.icon = icon;
+            e.outcome = outcome;
+            e.color = color;
+            e.diceNumber = diceNumber;
+            e.diceSides = diceSides;
+            e.percentModifier = percentModifier;
+            e.rolledResult = rolledResult;
+            e.stacking = stacking;
+            e.effectListeners  = new ArrayList<>();
+            e.modifier = modifier;
+
+            return e;
+
     }
 
 }
