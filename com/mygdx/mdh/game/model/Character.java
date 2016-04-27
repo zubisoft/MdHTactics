@@ -61,6 +61,7 @@ public class Character  {
         effects = new ArrayList<Effect> ();
         effectsAux = new ArrayList<Effect> ();
         listeners = new ArrayList<> ();
+
     }
 
     /*
@@ -92,7 +93,7 @@ public class Character  {
 
     public void startTurn() {
         if (!isDead()) {
-            availableActions = maxActions;
+            setAvailableActions(maxActions);
             this.setActive(true);
 
             if (effects.size() > 0) {
@@ -136,6 +137,12 @@ public class Character  {
 
     public int getAvailableActions() {return availableActions;}
     public void setAvailableActions(int a) {
+        if (this.availableActions<=0 && a>0) {
+            for(CharacterChangeListener cl: listeners) {
+                cl.onCharacterActive(this);
+            }
+        }
+
         this.availableActions=a;
         if (this.availableActions<=0) this.setActive(false);
     }

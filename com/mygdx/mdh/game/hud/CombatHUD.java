@@ -264,7 +264,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
             */
 
 
-            if (    controller.getSelectedCharacter().isActive() &&
+            if (    showAbilities &&
+                    controller.getSelectedCharacter().isActive() &&
                     controller.getSelectedCharacter().isFriendly() &&
                     !controller.getSelectedCharacter().actionInProgress()
                     ) {
@@ -298,9 +299,14 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     }
 
     public void onCharacterActive (Character c)  {
+        if (controller.getSelectedCharacter()==null) return;
+        if (c == controller.getSelectedCharacter().getCharacter()) {
+            showAbilityButtons(c);
+        }
     }
 
     public void onCharacterInactive (Character c)  {
+        if (controller.getSelectedCharacter()==null) return;
         if (c == controller.getSelectedCharacter().getCharacter()) {
             hideAbilityButtons();
         }

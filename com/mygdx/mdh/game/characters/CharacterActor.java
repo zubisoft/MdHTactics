@@ -194,13 +194,12 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         stateTime +=deltaTime;
 
-        lifebar.update(deltaTime);
 
         //Update character messages
         /*
         Iterator<Label> iterator = messages.iterator();
         while(iterator.hasNext()) iterator.next().act(stateTime);*/
-        characterMessenger.update(stateTime);
+        characterMessenger.update(deltaTime);
 
         //Update the current frame
         switch(state) {

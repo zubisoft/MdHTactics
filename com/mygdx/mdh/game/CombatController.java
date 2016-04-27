@@ -47,8 +47,8 @@ public class CombatController extends Stage {
 
     public CameraManager cameraManager;
 
-    CharacterActor selectedCharacter;
-    MapCell selectedCharacterPosition = new MapCell();
+    private CharacterActor selectedCharacter;
+    private MapCell selectedCharacterPosition = new MapCell();
 
     Ability currentSelectedAbility;
 
@@ -266,6 +266,17 @@ public class CombatController extends Stage {
         }
     }
 
+    public boolean  characterActionsInProgress() {
+
+        for(CharacterActor c: getCharacterActors()) {
+            if(c.actionInProgress() || c.getState()!= CharacterActor.CHARACTER_STATE.IDLE) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
 
     boolean messageInProgress = false;
 
@@ -287,7 +298,7 @@ public class CombatController extends Stage {
             gameEnd=true;
         }
 
-        if (!messageInProgress && !baddiesActive() && gameTurn==GameTurn.BADDIES && !CharacterActor.actionInProgress()) {
+        if (!messageInProgress && !baddiesActive() && gameTurn==GameTurn.BADDIES && !characterActionsInProgress()) {
 
             LOG.print(3,"[Controller] Player Start",LOG.ANSI_BLUE);
             combatHUD.showMessageBar("Player Turn",3);
@@ -295,7 +306,7 @@ public class CombatController extends Stage {
 
         }
 
-        if (!messageInProgress && !friendliesActive() && gameTurn==GameTurn.PLAYER  && !CharacterActor.actionInProgress() ) {
+        if (!messageInProgress && !friendliesActive() && gameTurn==GameTurn.PLAYER  && !characterActionsInProgress() ) {
 
             LOG.print(3,"[Controller] Baddies Start - Effect Action Executing: "+CharacterActor.effectActions.size,LOG.ANSI_BLUE);
             combatHUD.showMessageBar("Enemy Turn",3);
@@ -307,14 +318,14 @@ public class CombatController extends Stage {
 
         if (!combatPaused) {
 
-            if (!baddiesActive() && gameTurn==GameTurn.BADDIES && !CharacterActor.actionInProgress()) {
+            if (!baddiesActive() && gameTurn==GameTurn.BADDIES && !characterActionsInProgress()) {
 
                 LOG.print(3,"[Controller] Player Start",LOG.ANSI_BLUE);
                 playerTurnBegin();
                 messageInProgress = false;
             }
 
-            if (!friendliesActive() && gameTurn==GameTurn.PLAYER  && !CharacterActor.actionInProgress() ) {
+            if (!friendliesActive() && gameTurn==GameTurn.PLAYER  && !characterActionsInProgress() ) {
 
                 LOG.print(3,"[Controller] Baddies Start - Effect Action Executing: "+CharacterActor.effectActions.size,LOG.ANSI_BLUE);
                 baddiesTurnBegin();
@@ -326,9 +337,6 @@ public class CombatController extends Stage {
                 executeBaddiesTurn();
             }
 
-            for(CharacterActor a: characterActors) {
-                a.update(deltaTime);
-            }
 
 
             //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
@@ -341,6 +349,9 @@ public class CombatController extends Stage {
         }
 
 
+        for(CharacterActor a: characterActors) {
+            a.update(deltaTime);
+        }
 
 
     }

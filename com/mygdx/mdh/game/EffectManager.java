@@ -35,9 +35,9 @@ public class EffectManager {
         if (e.getTarget() == null) return false;
         //target = c.getCharacterActor(e.getTarget());
 
-        notifyEffect(e);
-
         e.init();
+
+        notifyEffect(e);
 
         if (e.getGameSegment()== Effect.GameSegmentType.IMMEDIATE) {
             applySourceEffects(e);
@@ -109,7 +109,7 @@ public class EffectManager {
     public void notifyEffect (Effect e) {
 
         if (effectListeners.size()==0) return;
-
+        /*TODO character should listen here to show messages when effects are being applied, will require improving the notification methods in Effect*/
         for (EffectManagerListener l: effectListeners)
             l.onEffectProcessed(e);
     }

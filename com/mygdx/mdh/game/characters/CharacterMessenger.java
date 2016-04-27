@@ -65,9 +65,9 @@ public class CharacterMessenger extends Actor {
 
         LOG.print("[Messenger] LA hash: "+la.hashCode());
         la.addAction(Actions.sequence(
-                Actions.moveTo(actor.getX()+actor.offsetx, actor.getY()+actor.getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
-                ,Actions.delay(200)
-                ,Actions.alpha(0,2000,Interpolation.fade)
+                Actions.moveTo(actor.getX()+actor.offsetx, actor.getY()+actor.getHeight()+50-messages.size()*15,1, Interpolation.exp5Out)
+                ,Actions.delay(1)
+                ,Actions.alpha(0,2,Interpolation.fade)
                 ,new RemoveFromListAction(messages )
         ));
     }
@@ -76,13 +76,13 @@ public class CharacterMessenger extends Actor {
         showMessage (message, Color.WHITE);
     }
 
-    public void update (float stateTime) {
+    public void update (float deltaTime) {
         //Update character messages
         messagesAux.clear();
         messagesAux.addAll(messages);
 
         Iterator<Label> iterator = messagesAux.iterator();
-        while(iterator.hasNext()) iterator.next().act(stateTime);
+        while(iterator.hasNext()) iterator.next().act(deltaTime);
 
     }
 
