@@ -37,7 +37,7 @@ public class EffectManager {
 
         e.init();
 
-        notifyEffect(e);
+
 
         if (e.getGameSegment()== Effect.GameSegmentType.IMMEDIATE) {
             applySourceEffects(e);
@@ -47,6 +47,7 @@ public class EffectManager {
 
         System.out.println("[EffectManager] Ready to apply effect!");
 
+        notifyEffect(e);
         e.apply();
 
 

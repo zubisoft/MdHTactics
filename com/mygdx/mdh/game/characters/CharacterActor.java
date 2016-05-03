@@ -48,6 +48,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     Animation                       idleAnimation;          // #3
     Animation                       attackAnimation;          // #3
     Animation                       walkAnimation;          // #3
+    Animation                       hitAnimation;          // #3
     public TextureRegion                        portrait;              // #4
 
     float offsetx=0;
@@ -82,7 +83,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public enum CHARACTER_STATE {
-        IDLE, MOVING, ABILITY1, ABILITY2
+        IDLE, MOVING, ABILITY1, ABILITY2,HIT
     }
 
 
@@ -213,6 +214,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
                 currentFrame = attackAnimation.getKeyFrame(stateTime, true);
                 break;
             case ABILITY2: break;
+            case HIT: currentFrame = hitAnimation.getKeyFrame(stateTime, true); break;
 
         }
 
@@ -330,6 +332,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         idleAnimation   = Assets.instance.characters.get(character.getPic()).idleAnimation;
         walkAnimation   = Assets.instance.characters.get(character.getPic()).walkAnimation;
         attackAnimation = Assets.instance.characters.get(character.getPic()).attackAnimation;
+        hitAnimation = Assets.instance.characters.get(character.getPic()).hitAnimation;
         portrait   = Assets.instance.characters.get(character.getPic()).portrait;
     }
 
@@ -387,6 +390,13 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      * Multiple messages can be displayed at the same time.
      * @param message
      */
+
+    public void showMessage (String icon, String message, Color c) {
+
+        characterMessenger.showMessage(icon, message,c);
+    }
+
+
     public void showMessage (String message, Color c) {
         /*
         Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
@@ -466,7 +476,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (e.getTarget()==this.getCharacter()) {
             LOG.print(3,"[CharacterActor] "+character.hashCode()+" has been targeted for an effect."+e.hashCode(), LOG.ANSI_RED);
             e.addEffectListener(this);
-
+            this.showMessage(e.getIcon(),e.notification(), e.getColor());
         }
 
     }
@@ -477,7 +487,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);
 
-            this.showMessage(e.notification(), e.getColor());
+            this.showMessage(e.getIcon(),e.notification(), e.getColor());
 
         //this.queueAction(new GameWaitAction(2));
 
@@ -487,6 +497,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     public void onCharacterHit (int damage)  {
         LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);
+
+        this.addAction(new TakeDamageAction(1));
         if (character.isDead()) {
             LOG.print(1,"[CharacterActor] Dying:  "+character,LOG.ANSI_RED);
             this.addAction(

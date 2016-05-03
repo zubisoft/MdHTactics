@@ -146,6 +146,7 @@ public class Assets implements Disposable, AssetErrorListener {
         public final Animation idleAnimation;
         public final Animation walkAnimation;
         public final Animation attackAnimation;
+        public final Animation hitAnimation;
         public final TextureRegion portrait;
 
         private static final int        FRAME_COLS = 6;         // #1
@@ -182,9 +183,17 @@ public class Assets implements Disposable, AssetErrorListener {
 
             idleAnimation = new Animation(0.15f, frames);      // #11
 
+            frames = new TextureRegion[1];
+            frames[0] = tmp[2][1];
+            hitAnimation = new Animation(0.15f, frames);      // #11
+
             portrait = new TextureRegion();
             portrait.setRegion(tmp[3][0]);
             portrait.setRegionWidth(83*2);
+
+
+
+
 
 
         }

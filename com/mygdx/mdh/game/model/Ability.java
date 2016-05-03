@@ -35,8 +35,7 @@ public class Ability {
 
     AbilityTarget targetType;
 
-
-
+    int range;
 
     Character source;
     Character target;
@@ -60,6 +59,7 @@ public class Ability {
     public Ability() {
         effects = new ArrayList<Effect>();
         //addEffect(new Effect("FIRE"));
+        range = 1;
     }
 
 
@@ -191,7 +191,11 @@ public class Ability {
     }
 
     public int getRange() {
-        return 2;
+        return range;
+    }
+
+    public void setRange(int r) {
+        range = r;
     }
 
     public AbilityTarget getTargetType() {

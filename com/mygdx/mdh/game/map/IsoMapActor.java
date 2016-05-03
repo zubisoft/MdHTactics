@@ -160,20 +160,93 @@ public class IsoMapActor extends Group{
                 if ( distance(mapCells[y][x],cell) <= movementRadius ) {
                     //System.out.println("Highlighted "+mapCells[y][x].getMapCell()+" "+cell.getMapCell()+" "+Math.ceil(distance(mapCells[y][x],cell)));
 
-                        mapCells[y][x].highlight(blueHighlight);
+                        if (mapCells[y][x].getCell().getCellType()!=MapCell.CellType.IMPASSABLE) mapCells[y][x].highlight(blueHighlight);
                     }
                 } else { //occupied
                         if (distance(mapCells[y][x], cell) <= abilityRadius
                                 //&&!mapCells[y][x].getCell().getCharacter().isFriendly()
                                 && distance(mapCells[y][x], cell) >0
-                                && !mapCells[y][x].getCell().getCharacter().isDead()) {
+                                && !mapCells[y][x].getCell().getCharacter().isDead()
+                                ) {
                             mapCells[y][x].highlight(redHighlight);
 
                         }
                 }
 
+                //if (distance(mapCells[y][x], cell) <= abilityRadius) mapCells[y][x].highlight(redHighlight);
+
             }
         }
+
+        int a,b;
+        MapCell tmpCell;
+
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+
+
+                tmpCell=getCell(x,y).getCell();
+                a=(int)tmpCell.getMapCoordinates().x;
+                b=(int)tmpCell.getMapCoordinates().y;
+
+
+                LOG.print("MAP "+tmpCell+" "+IsoMapActor.distance(getCell(x,y),cell));
+                if (getCell(a,b).isInRange(cell,abilityRadius)) {
+
+                    //LOG.print("MAP: "+abilityRadius+"  "+getCell(x,y)+" "+(getCell(x,y).isInRange(cell,abilityRadius)));
+
+                    boolean borderTopLeft=false, borderTopRight=false,borderBottomLeft=false, borderBottomRight=false;
+
+                    if (getCell(a-(1-Math.floorMod(b,2)),b+1)  !=null) {
+                        //if(!getCell(a-(1-Math.floorMod(b,2)),b+1).isShowHighlight())    borderBottomLeft=true;
+                        if(!getCell(a-(1-Math.floorMod(b,2)),b+1).isInRange(cell,abilityRadius))    borderBottomLeft=true;
+
+                    }
+                    else  borderBottomLeft=true;
+
+                    if (getCell(a+1-(1-Math.floorMod(b,2)),b+1)!=null) {
+                        //if(!getCell(a+1-(1-Math.floorMod(b,2)),b+1).isShowHighlight())  borderBottomRight=true;
+                        if(!getCell(a+1-(1-Math.floorMod(b,2)),b+1).isInRange(cell,abilityRadius))  borderBottomRight=true;
+                    }
+                    else  borderBottomRight=true;
+
+                    if (getCell(a-(1-Math.floorMod(b,2)),b-1)  !=null) {
+                        //if(!getCell(a-(1-Math.floorMod(b,2)),b-1).isShowHighlight())    borderTopLeft=true;
+                        if(!getCell(a-(1-Math.floorMod(b,2)),b-1).isInRange(cell,abilityRadius))    borderTopLeft=true;
+                    }
+                    else  borderTopLeft=true;
+
+                    if (getCell(a+1-(1-Math.floorMod(b,2)),b-1)!=null) {
+                        //if(!getCell(a+1-(1-Math.floorMod(b,2)),b-1).isShowHighlight())  borderTopRight=true;
+                        if(!getCell(a+1-(1-Math.floorMod(b,2)),b-1).isInRange(cell,abilityRadius))  borderTopRight=true;
+                    }
+                    else  borderTopRight=true;
+
+                    getCell(x,y).setBorders(borderBottomLeft, borderBottomRight, borderTopLeft, borderTopRight);
+
+
+                    if(a==5 && b==0) {
+
+                        LOG.print("MAP: " + mapCells[y][x].isShowHighlight()+" "+(!getCell(a-(1-Math.floorMod(b,2)),b+1).isShowHighlight()));
+/*
+                        LOG.print("MAP: " + getCell(a-(1-Math.floorMod(b,2)),b-1).getCell().getMapCoordinates()+ " " +getCell(a+1-(1-Math.floorMod(b,2)),b-1).getCell().getMapCoordinates());*/
+                        LOG.print("MAP: " + getCell(a-(1-Math.floorMod(b,2)),b+1).getCell().getMapCoordinates()+ " " +getCell(a+1-(1-Math.floorMod(b,2)),b+1).getCell().getMapCoordinates());
+
+                        LOG.print("MAP: " + borderTopLeft+" "+borderTopRight);
+                        LOG.print("MAP: " + borderBottomLeft+" "+borderBottomRight);
+                    }
+
+                }
+
+
+
+
+
+            }
+        }
+
+
 
 
     }
