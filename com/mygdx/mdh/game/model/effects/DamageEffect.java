@@ -28,7 +28,8 @@ public class DamageEffect extends Effect {
         //if ( Math.random() > chance) return ;
 
         if(diceNumber>=0) {
-            rolledResult = Dice.roll(diceNumber, diceSides) + modifier;
+            //A damage roll can never be negative - Use heal for that
+            rolledResult = Math.max(Dice.roll(diceNumber, diceSides) + modifier,0);
             roll.setBaseRoll(rolledResult);
             roll.setModifier(modifier);
             roll.setPercentModifier(percentModifier);

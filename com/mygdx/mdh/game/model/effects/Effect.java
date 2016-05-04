@@ -25,6 +25,7 @@ import java.util.List;
         , @JsonSubTypes.Type(value = DamageEffect.class, name = "DAMAGE")
         , @JsonSubTypes.Type(value = HealEffect.class, name = "HEAL")
         , @JsonSubTypes.Type(value = StunEffect.class, name = "STUN")
+        , @JsonSubTypes.Type(value = DamageModifierEffect.class, name = "DAMAGE_MODIFIER")
 })
 
 
@@ -39,14 +40,14 @@ public class Effect  /*implements Cloneable*/  {
      * Main type of the effect
      */
     public enum EffectType {
-        DAMAGE, HEAL, STUN, SHIELD
+        DAMAGE, HEAL, STUN, SHIELD, DAMAGE_MODIFIER
     }
 
     EffectType effectType;
 
 
     public enum EffectSubType {
-        FIRE, ICE, PHYSICAL, MAGIC
+        FIRE, ICE, MELEE, RANGED, MAGIC
     }
 
     EnumSet<EffectSubType> effectSubType;
