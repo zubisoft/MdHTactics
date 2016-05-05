@@ -236,6 +236,16 @@ public class CombatController extends Stage {
 
     }
 
+    public List<CharacterActor>  getFriendlies() {
+        List<CharacterActor> list = new ArrayList<CharacterActor>();
+        for(CharacterActor c: getCharacterActors()) {
+            if(c.getCharacter().isFriendly() ) {
+                list.add(c);
+            }
+        }
+        return list;
+    }
+
     public boolean  baddiesActive() {
 
         for(CharacterActor c: getCharacterActors()) {
@@ -245,6 +255,16 @@ public class CombatController extends Stage {
         }
 
         return false;
+    }
+
+    public List<CharacterActor>  getBaddies() {
+        List<CharacterActor> list = new ArrayList<CharacterActor>();
+        for(CharacterActor c: getCharacterActors()) {
+            if(!c.getCharacter().isFriendly() ) {
+                list.add(c);
+            }
+        }
+        return list;
     }
 
 
@@ -416,10 +436,31 @@ public class CombatController extends Stage {
 
 
         Ability a = getCurrentSelectedAbility();
-        a.setTarget(target.getCharacter());
+        //a.setTarget(target.getCharacter());
 
-        //TODO probably beter doing this in the action instead
-        getCharacterActor(a.getSource()).useAbility(a, target);
+        //TODO probably better doing this in the action instead
+        switch (a.getTargetType()) {
+            case SELF:
+                getCharacterActor(a.getSource()).useAbility(a, target);
+                break;
+            case ONE_ALLY:
+                getCharacterActor(a.getSource()).useAbility(a, target);
+                break;
+            case ONE_ENEMY:
+                getCharacterActor(a.getSource()).useAbility(a, target);
+                break;
+            case ONE_ANY:
+                getCharacterActor(a.getSource()).useAbility(a, target);
+                break;
+            case ALL_ALLIES:
+                getCharacterActor(a.getSource()).useAbility(a, getFriendlies());
+                break;
+            case ALL_ENEMIES:
+                getCharacterActor(a.getSource()).useAbility(a, getBaddies());
+                break;
+        }
+
+        //getCharacterActor(a.getSource()).useAbility(a, target);
 
 
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);

@@ -1,8 +1,11 @@
 package com.mygdx.mdh.game.characters.actions;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import java.util.List;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.Ability;
+
+import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 07/03/2016.
@@ -14,7 +17,8 @@ public class AttackAction extends GameAction {
     float stateTime;
     float totalTime;
     Ability ability;
-    CharacterActor target;
+    //CharacterActor target;
+    List<CharacterActor> targets;
 
 
     float frameDuration;
@@ -25,7 +29,20 @@ public class AttackAction extends GameAction {
         this.stateTime=0;
         this.totalTime=0;
         this.ability=ability;
-        this.target=target;
+
+        targets = new ArrayList<CharacterActor>();
+        targets.add(target);
+    }
+
+    public AttackAction(float frameDuration, Ability ability, List<CharacterActor> target) {
+        this.frameDuration = frameDuration;
+        this.begin=true;
+        this.stateTime=0;
+        this.totalTime=0;
+        this.ability=ability;
+
+        targets = new ArrayList<CharacterActor>();
+        targets.addAll(target);
     }
 
 
@@ -44,7 +61,9 @@ public class AttackAction extends GameAction {
 
             if (totalTime > 3) {
                 //Stop moving
-                target.receiveAbility(ability);
+                for(CharacterActor target: targets)
+                    target.receiveAbility(ability);
+
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
                 return true;

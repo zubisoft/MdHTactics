@@ -383,6 +383,12 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         this.queueAction(action);
     }
 
+    public void useAbility( Ability a, List<CharacterActor> target) {
+        AttackAction action = new AttackAction(0.15f, a, target);
+
+        this.queueAction(action);
+    }
+
 
 
     /**
