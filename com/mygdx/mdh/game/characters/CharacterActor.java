@@ -441,16 +441,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public void receiveAbility (Ability a) {
         if (a != null) {
 
-            /*
-            for (Effect e : a.getTarget().getEffects()) {
-                if (e.getGameSegment()== Effect.GameSegmentType.BEFORE_HIT && a.getSource()!=this.getCharacter()) {
-                    EffectAction ea = new EffectAction(e, 0.15f);
-                    this.addEffectAction(ea);
-                }
-            }
-            */
-
-            a.apply(this.getCharacter());
+            if(IsoMapActor.distance(a.getSource().getCell(),this.getCharacter().getCell()) <= a.getRange())
+                a.apply(this.getCharacter());
 
             this.showMessage(a.getMessage());
         }

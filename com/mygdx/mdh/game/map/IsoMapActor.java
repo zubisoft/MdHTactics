@@ -269,6 +269,11 @@ public class IsoMapActor extends Group{
         return (float)Math.ceil(c1.getCell().getCartesianCoordinates().dst(c2.getCell().getCartesianCoordinates()));
     }
 
+    public static float distance (MapCell c1, MapCell c2) {
+
+        return (float)Math.ceil(c1.getCartesianCoordinates().dst(c2.getCartesianCoordinates()));
+    }
+
     public static float distance (Vector2 c1, Vector2 c2) {
         return (float)Math.ceil(c1.dst(c2));
     }
