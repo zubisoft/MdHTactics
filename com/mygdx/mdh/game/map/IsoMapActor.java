@@ -191,7 +191,6 @@ public class IsoMapActor extends Group{
                 b=(int)tmpCell.getMapCoordinates().y;
 
 
-                LOG.print("MAP "+tmpCell+" "+IsoMapActor.distance(getCell(x,y),cell));
                 if (getCell(a,b).isInRange(cell,abilityRadius)) {
 
                     //LOG.print("MAP: "+abilityRadius+"  "+getCell(x,y)+" "+(getCell(x,y).isInRange(cell,abilityRadius)));
@@ -226,16 +225,6 @@ public class IsoMapActor extends Group{
                     getCell(x,y).setBorders(borderBottomLeft, borderBottomRight, borderTopLeft, borderTopRight);
 
 
-                    if(a==5 && b==0) {
-
-                        LOG.print("MAP: " + mapCells[y][x].isShowHighlight()+" "+(!getCell(a-(1-Math.floorMod(b,2)),b+1).isShowHighlight()));
-/*
-                        LOG.print("MAP: " + getCell(a-(1-Math.floorMod(b,2)),b-1).getCell().getMapCoordinates()+ " " +getCell(a+1-(1-Math.floorMod(b,2)),b-1).getCell().getMapCoordinates());*/
-                        LOG.print("MAP: " + getCell(a-(1-Math.floorMod(b,2)),b+1).getCell().getMapCoordinates()+ " " +getCell(a+1-(1-Math.floorMod(b,2)),b+1).getCell().getMapCoordinates());
-
-                        LOG.print("MAP: " + borderTopLeft+" "+borderTopRight);
-                        LOG.print("MAP: " + borderBottomLeft+" "+borderBottomRight);
-                    }
 
                 }
 
@@ -266,15 +255,24 @@ public class IsoMapActor extends Group{
 
     public static float distance (IsoMapCellActor c1, IsoMapCellActor c2) {
 
-        return (float)Math.ceil(c1.getCell().getCartesianCoordinates().dst(c2.getCell().getCartesianCoordinates()));
+        return distance(c1.getCell(),c2.getCell());
     }
 
     public static float distance (MapCell c1, MapCell c2) {
 
-        return (float)Math.ceil(c1.getCartesianCoordinates().dst(c2.getCartesianCoordinates()));
+
+        return distance(c1.getCartesianCoordinates(),c2.getCartesianCoordinates());
     }
 
     public static float distance (Vector2 c1, Vector2 c2) {
+
+        //Distance 1 to include all the surrounding cells of the actor.
+
+        if (c1.dst(c2) < 2.0f) {
+            //LOG.print("distancia "+c1.getMapCoordinates()+c2.getMapCoordinates()+" "+distance(c1.getCartesianCoordinates(),c2.getCartesianCoordinates()));
+            return 1.0f;
+        }
+
         return (float)Math.ceil(c1.dst(c2));
     }
 
