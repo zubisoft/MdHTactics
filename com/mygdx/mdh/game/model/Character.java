@@ -225,6 +225,10 @@ public class Character  {
 
     }
 
+    public static Character loadByName (String name) {
+        return Character.loadFromJSON("core/assets/characters/" + name+ ".txt");
+    }
+
     public String toString() {
         return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions;
     }

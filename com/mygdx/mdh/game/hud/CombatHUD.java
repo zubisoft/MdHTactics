@@ -156,6 +156,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
         messageBar.setMessage(message);
         messageBar.show();
+        controller.setCombatPaused(true);
 
     }
 
@@ -164,6 +165,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
         messageBar.setMessage(message);
         messageBar.show(duration);
+        controller.setCombatPaused(true);
 
 
 

@@ -34,7 +34,10 @@ public class MainMenuScreen extends AbstractGameScreen {
         public void clicked(InputEvent evt, float x, float y) {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-            game.setScreen(new GameScreen(game), transition);
+
+
+            //game.setScreen(new GameScreen(game), transition);
+            game.setScreen(new StoryScreen(game), transition);
 
         }
     }

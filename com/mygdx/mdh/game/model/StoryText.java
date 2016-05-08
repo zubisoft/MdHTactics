@@ -9,7 +9,7 @@ public class StoryText {
 
     public StoryText (String text, String character) {
         this.text=text;
-        this.character=Character.loadFromJSON(character);
+        this.character=Character.loadByName(character);
 
     }
 }
