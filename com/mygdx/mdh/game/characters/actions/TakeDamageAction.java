@@ -3,6 +3,9 @@ package com.mygdx.mdh.game.characters.actions;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.Ability;
+import com.mygdx.mdh.game.util.LOG;
+
+import java.awt.*;
 
 /**
  * Created by zubisoft on 07/03/2016.
@@ -34,11 +37,7 @@ public class TakeDamageAction extends Action {
         CharacterActor characterActor = (CharacterActor)actor;
 
 
-        stateTime += delta;
         totalTime += delta;
-        if (stateTime >= frameDuration) {
-            stateTime=0;
-
 
             if (totalTime > 3) {
                 //Stop moving
@@ -52,7 +51,7 @@ public class TakeDamageAction extends Action {
 
 
             }
-        }
+
 
         return false;
 

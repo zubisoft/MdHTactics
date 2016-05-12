@@ -190,12 +190,12 @@ public class IsoMapActor extends Group{
                 a=(int)tmpCell.getMapCoordinates().x;
                 b=(int)tmpCell.getMapCoordinates().y;
 
+                boolean borderTopLeft=false, borderTopRight=false,borderBottomLeft=false, borderBottomRight=false;
+
 
                 if (getCell(a,b).isInRange(cell,abilityRadius)) {
 
                     //LOG.print("MAP: "+abilityRadius+"  "+getCell(x,y)+" "+(getCell(x,y).isInRange(cell,abilityRadius)));
-
-                    boolean borderTopLeft=false, borderTopRight=false,borderBottomLeft=false, borderBottomRight=false;
 
                     if (getCell(a-(1-Math.floorMod(b,2)),b+1)  !=null) {
                         //if(!getCell(a-(1-Math.floorMod(b,2)),b+1).isShowHighlight())    borderBottomLeft=true;
@@ -222,11 +222,10 @@ public class IsoMapActor extends Group{
                     }
                     else  borderTopRight=true;
 
-                    getCell(x,y).setBorders(borderBottomLeft, borderBottomRight, borderTopLeft, borderTopRight);
-
-
-
                 }
+
+
+                getCell(x,y).setBorders(borderBottomLeft, borderBottomRight, borderTopLeft, borderTopRight);
 
 
 

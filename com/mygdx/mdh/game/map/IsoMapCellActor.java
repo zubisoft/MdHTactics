@@ -114,7 +114,6 @@ public class IsoMapCellActor extends Actor {
             if(borderTopLeft) batch.draw(texture_topleft,getX(),getY()+64/2,128/2,64/2);
             if(borderTopRight) batch.draw(texture_topright,getX()+128/2,getY()+64/2,128/2,64/2);
 
-
         }
 
 

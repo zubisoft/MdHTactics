@@ -29,8 +29,6 @@ public class StoryMessageBar extends Actor {
     Image portraitImage;
 
 
-
-
     boolean waitToShow = false;
 
 

@@ -187,7 +187,6 @@ public class Effect  /*implements Cloneable*/  {
 
     public void addEffectListener (EffectListener l) {
         if (effectListeners.contains(l)) return;
-        LOG.print(3,"[Effect] "+l.hashCode()+" listening to "+ this.hashCode(),LOG.ANSI_CYAN);
 
         effectListeners.add(l);
     }

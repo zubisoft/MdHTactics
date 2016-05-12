@@ -20,6 +20,8 @@ public class AttackAction extends GameAction {
     //CharacterActor target;
     List<CharacterActor> targets;
 
+    boolean applied;
+
 
     float frameDuration;
 
@@ -29,6 +31,7 @@ public class AttackAction extends GameAction {
         this.stateTime=0;
         this.totalTime=0;
         this.ability=ability;
+        this.applied=false;
 
         targets = new ArrayList<CharacterActor>();
         targets.add(target);
@@ -61,8 +64,7 @@ public class AttackAction extends GameAction {
 
             if (totalTime > 3) {
                 //Stop moving
-                for(CharacterActor target: targets)
-                    target.receiveAbility(ability);
+
 
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
@@ -72,6 +74,11 @@ public class AttackAction extends GameAction {
 
                 characterActor.setState(CharacterActor.CHARACTER_STATE.ABILITY1);
 
+                if(!applied) {
+                    for (CharacterActor target : targets)
+                        target.receiveAbility(ability);
+                    applied=true;
+                }
 
             }
         }

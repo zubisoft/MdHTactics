@@ -81,7 +81,6 @@ public class CharacterMessenger extends Actor {
         messages.add(la);
 
 
-        LOG.print("[Messenger] LA hash: "+la.hashCode());
         la.addAction(Actions.sequence(
                 Actions.moveTo(actor.getX()+actor.offsetx, actor.getY()+actor.getHeight()+50-messages.size()*15,1, Interpolation.exp5Out)
                 ,Actions.delay(1)
@@ -119,7 +118,6 @@ public class CharacterMessenger extends Actor {
 
         messages.add(la);
 
-        LOG.print("[Messenger] LA hash: "+la.hashCode());
         la.addAction(Actions.sequence(
                 Actions.moveTo(actor.getX()+actor.offsetx, actor.getY()+actor.getHeight()+50-messages.size()*15,1, Interpolation.exp5Out)
                 ,Actions.delay(1)
