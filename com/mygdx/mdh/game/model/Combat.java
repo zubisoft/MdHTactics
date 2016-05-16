@@ -44,7 +44,7 @@ public class Combat {
     public void addCharacter(Character c) {
         characters.add(c);
     }
-
+/*
     public void populateSampleMap() {
 
 
@@ -58,7 +58,7 @@ public class Combat {
         this.addCharacter(c);
 
     }
-
+*/
     public GameStepType getGameStep() {
         return gameStep;
     }
@@ -76,7 +76,7 @@ public class Combat {
      * @param mapName
      */
     public void setMapFile(String mapName) {
-        map = Map.loadFromJSON("core/assets/maps/"+mapName+".txt");
+        map = Map.loadFromJSON(mapName);
     }
 
     /**
@@ -86,7 +86,7 @@ public class Combat {
      */
     public void setCharacterFiles(List<Character> chars) {
         for(Character character: chars) {
-            Character c = Character.loadFromJSON("core/assets/characters/" + character.getName() + ".txt");
+            Character c = Character.loadFromJSON(character.getName() );
             c.setRow(character.getRow());
             c.setColumn(character.getColumn());
 
@@ -101,6 +101,7 @@ public class Combat {
      * @param name
      * @return
      */
+
     public static Combat loadFromJSON (String name) {
 
         FileHandle file = Gdx.files.internal("core/assets/combats/"+name+".txt");

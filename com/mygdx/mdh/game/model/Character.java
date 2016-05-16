@@ -4,6 +4,8 @@ import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
@@ -201,9 +203,11 @@ public class Character  {
         return abilities;
     }
 
+
+
     public static Character loadFromJSON (String name) {
 
-        FileHandle file = Gdx.files.internal(name);
+        FileHandle file = Gdx.files.internal("core/assets/data/characters/" + name+ ".txt");
         String jsonData = file.readString();
 
 
@@ -226,7 +230,7 @@ public class Character  {
     }
 
     public static Character loadByName (String name) {
-        return Character.loadFromJSON("core/assets/characters/" + name+ ".txt");
+        return Character.loadFromJSON(name);
     }
 
     public String toString() {

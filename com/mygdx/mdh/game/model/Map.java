@@ -3,6 +3,9 @@ package com.mygdx.mdh.game.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.util.Constants;
@@ -22,15 +25,40 @@ public class Map {
 
     public Map() {
 
-
     }
 
+    /*
+    @JsonCreator
+    public  Map(@JsonProperty("mapId") String mapId) {
 
-    public static Map loadFromJSON (String name) {
-
-        FileHandle file = Gdx.files.internal(name);
+        FileHandle file = Gdx.files.internal("core/assets/data/maps/"+"map_C01M01"+".txt");
         String jsonData = file.readString();
 
+
+        //create ObjectMapper instance
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map emp = new Map();
+
+        try {
+
+            //System.out.println("Employee Object\n"+jsonData);
+            emp = objectMapper.readValue(jsonData, Map.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+    */
+
+
+
+
+    public static Map loadFromJSON (String mapId) {
+        FileHandle file = Gdx.files.internal("core/assets/data/maps/"+mapId+".txt");
+        String jsonData = file.readString();
 
         //create ObjectMapper instance
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,7 +81,7 @@ public class Map {
         }
 
 
-                return emp;
+        return emp;
 
     }
 

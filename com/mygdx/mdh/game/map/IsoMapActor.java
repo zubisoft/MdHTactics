@@ -228,9 +228,6 @@ public class IsoMapActor extends Group{
                 getCell(x,y).setBorders(borderBottomLeft, borderBottomRight, borderTopLeft, borderTopRight);
 
 
-
-
-
             }
         }
 
