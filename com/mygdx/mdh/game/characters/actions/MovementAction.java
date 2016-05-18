@@ -53,7 +53,7 @@ public class MovementAction extends GameAction {
 
         if (this.begin ) {
 
-            //TODO Do not move if the target is occupied  - but please dont break the bloody game
+            //TODO Do not move if the target is occupied  - but please dont break the bloody gameScreen
             //if (targetCell.getCell().isOccupied()) return true;
 
             this.stepx = Math.signum(targetx - actor.getX()) * 2;
@@ -84,7 +84,7 @@ public class MovementAction extends GameAction {
                 //Stop moving
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
-                //Assign final destination in the game logic
+                //Assign final destination in the gameScreen logic
                 characterActor.getCharacter().setCell(targetCell.getCell());
                 characterActor.getCharacter().setAvailableActions(characterActor.getCharacter().getAvailableActions()-1);
 

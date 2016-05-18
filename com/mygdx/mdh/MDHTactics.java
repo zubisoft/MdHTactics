@@ -60,7 +60,7 @@ public class MDHTactics extends ApplicationAdapter {
 		// Load preferences for audio settings and start playing music
         GamePreferences.instance.load();
         AudioManager.instance.play(Assets.instance.music.song01);
-		// Start game at menu screen
+		// Start gameScreen at menu screen
 		ScreenTransition transition = ScreenTransitionSlice.init(2,
 				ScreenTransitionSlice.UP_DOWN, 10, Interpolation. pow5Out);
 		setScreen(new MenuScreen(this), transition);
@@ -69,7 +69,7 @@ public class MDHTactics extends ApplicationAdapter {
 		//Initialize graphics
 		//Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
-		//Initialize main game logic
+		//Initialize main gameScreen logic
 		//combatController = new CombatController();
 		//combatRenderer = new CombatRenderer(combatController);
 

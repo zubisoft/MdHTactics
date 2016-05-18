@@ -49,9 +49,9 @@ public class CombatInputListener extends InputAdapter {
         if(keycode == Input.Keys.DOWN)
             combatController.cameraManager.move(0,32);
         if(keycode == Input.Keys.NUM_1);
-        //game.getTiledMap().getLayers().get(0).setVisible(!game.getTiledMap().getLayers().get(0).isVisible());
+        //gameScreen.getTiledMap().getLayers().get(0).setVisible(!gameScreen.getTiledMap().getLayers().get(0).isVisible());
         if(keycode == Input.Keys.NUM_2);
-        //game.getTiledMap().getLayers().get(1).setVisible(!game.getTiledMap().getLayers().get(1).isVisible());
+        //gameScreen.getTiledMap().getLayers().get(1).setVisible(!gameScreen.getTiledMap().getLayers().get(1).isVisible());
         return false;
     }
 

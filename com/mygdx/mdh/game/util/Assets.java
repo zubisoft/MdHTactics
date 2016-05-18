@@ -114,7 +114,7 @@ public class Assets implements Disposable, AssetErrorListener {
             LOG.print(10, "[Assets] Loading GUI: " + g.name);
             guiElements.put(g.name, atlas.findRegion(g.name));
         }
-        // Create game resource objects
+        // Create gameScreen resource objects
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_EFFECTS);
         for (AtlasRegion g: atlas.getRegions()) {

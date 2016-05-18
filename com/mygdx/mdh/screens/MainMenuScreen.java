@@ -5,7 +5,6 @@ package com.mygdx.mdh.screens;
  */
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,26 +17,44 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.game.hud.CombatHUD;
-import com.mygdx.mdh.game.model.Combat;
+import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
-import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 
 public class MainMenuScreen extends AbstractGameScreen {
 
+    private enum ButtonType {
+        NEW_GAME, LOAD_GAME, QUIT
+    }
+
     private class MenuClickListener extends ClickListener {
+
+        ButtonType buttonType;
+
+        public MenuClickListener (ButtonType type) {
+            super();
+            this.buttonType = type;
+
+        }
+
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
 
+            switch (buttonType) {
+                case NEW_GAME:
+                    gameScreen.setGame(Game.loadNewGame());
+                    gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                    break;
+                case LOAD_GAME: gameScreen.setScreen(new GameScreen(gameScreen), transition); break;
+                case QUIT: break;
+            }
 
-            //game.setScreen(new GameScreen(game), transition);
-            game.setScreen(new StoryScreen(game), transition);
+            //new StoryScreen(gameScreen)
 
         }
     }
@@ -76,14 +93,17 @@ public class MainMenuScreen extends AbstractGameScreen {
         backgroundLayout.add(background);
 
         btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_top_button"))));
-        btnLoad = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_loadbutton"))));
-        btnQuit = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_quitbutton"))));
-
-        listener = new MenuClickListener();
-
+        listener = new MenuClickListener(ButtonType.NEW_GAME);
         btnNew.addListener(listener);
+
+        btnLoad = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_loadbutton"))));
+        listener = new MenuClickListener(ButtonType.LOAD_GAME);
         btnLoad.addListener(listener);
+
+        btnQuit = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_quitbutton"))));
+        listener = new MenuClickListener(ButtonType.QUIT);
         btnQuit.addListener(listener);
+
 
         buttonList = new Table();
         buttonList.pad(10);
@@ -117,7 +137,7 @@ public class MainMenuScreen extends AbstractGameScreen {
         batch.begin();
 /*
         background.draw(batch,0,0,1280,720);
-        buttonList.draw(batch,1.0f);*/
+        layout.draw(batch,1.0f);*/
         stage.act(deltaTime);
         stage.draw();
 

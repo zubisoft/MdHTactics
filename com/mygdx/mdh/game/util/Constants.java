@@ -4,7 +4,7 @@ package com.mygdx.mdh.game.util;
  * Created by zubisoft on 19/03/2016.
  */
 public class Constants {
-    // Visible game world is 5 meters
+    // Visible gameScreen world is 5 meters
     public static final float VIEWPORT_WIDTH = 5.0f;
     public static final float VIEWPORT_HEIGHT = 5.0f;
 

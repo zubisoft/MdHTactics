@@ -99,7 +99,7 @@ public class CombatController extends Stage {
         super();
         this.screenManager = screenManager;
 
-        //Initialize game logic
+        //Initialize gameScreen logic
         this.characterActors = new ArrayList<CharacterActor>();
 
         this.combat = Combat.loadFromJSON("combat01");
@@ -176,7 +176,7 @@ public class CombatController extends Stage {
         return true;
     }
 
-    /** If all player characters are dead, it´s game over.*/
+    /** If all player characters are dead, it´s gameScreen over.*/
     public boolean isGameOver () {
         for(CharacterActor a: characterActors) {
             if (!a.isDead() & a.isFriendly()) return false;

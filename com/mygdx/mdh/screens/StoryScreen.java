@@ -12,18 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Queue;
-import com.mygdx.mdh.game.CombatController;
-import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.game.hud.MessageBar;
 import com.mygdx.mdh.game.hud.StoryMessageBar;
 import com.mygdx.mdh.game.model.StoryText;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
-
-import java.util.List;
 
 
 public class StoryScreen extends AbstractGameScreen {
@@ -34,7 +28,7 @@ public class StoryScreen extends AbstractGameScreen {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
             if(messageBar.hasMoreMessages()==false)
-                game.setScreen(new GameScreen(game), transition);
+                gameScreen.setScreen(new GameScreen(gameScreen), transition);
             else {
                 messageBar.hide();
                 messageBar.show();
@@ -112,7 +106,7 @@ public class StoryScreen extends AbstractGameScreen {
         batch.begin();
 /*
         background.draw(batch,0,0,1280,720);
-        buttonList.draw(batch,1.0f);*/
+        layout.draw(batch,1.0f);*/
         stage.act(deltaTime);
 
 

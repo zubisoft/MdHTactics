@@ -36,6 +36,10 @@ public class Game {
         }
     }
 
+    public static Game loadNewGame () {
+        return loadFromJSON ("DefaultGame");
+    }
+
     public static Game loadFromJSON (String name) {
 
         FileHandle file = Gdx.files.internal("core/assets/data/games/"+name+".txt");

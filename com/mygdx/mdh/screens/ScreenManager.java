@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 
 
@@ -17,6 +18,17 @@ public abstract class ScreenManager implements ApplicationListener {
     private SpriteBatch batch;
     private float t;
     private ScreenTransition screenTransition;
+
+
+    Game game;
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public void setScreen(AbstractGameScreen screen) {
         setScreen(screen, null);

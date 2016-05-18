@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
@@ -32,11 +29,14 @@ public class CharSelectionScreen extends AbstractGameScreen {
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
 
 
-            //game.setScreen(new GameScreen(game), transition);
-            game.setScreen(new StoryScreen(game), transition);
+            //gameScreen.setScreen(new GameScreen(gameScreen), transition);
+            gameScreen.setScreen(new StoryScreen(gameScreen), transition);
 
         }
     }
+
+
+
 
     private Stage stage;
 
@@ -58,15 +58,11 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
     private boolean paused;
 
-    public CharSelectionScreen(ScreenManager game) {
-        super(game);
-
-
+    public CharSelectionScreen(ScreenManager gameManager) {
+        super(gameManager);
     }
 
     public  void buildStage () {
-
-
 
         //background layout
         Table backgroundLayout = new Table();
@@ -86,16 +82,35 @@ public class CharSelectionScreen extends AbstractGameScreen {
         Table portraitsLayout = new Table();
         portraitsLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
 
+        Stack[] portraits = new Stack[12];
         buttons = new ImageButton[12];
 
         for (int i=0; i<12; i++) {
-            buttons[i] = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("charselection_portrait"))));
 
             listener = new MenuClickListener();
 
-            buttons[i].addListener(listener);
+            portraits[i] = new Stack();
+            portraits[i].setSize(140,140);
+            portraits[i].addListener(listener);
 
-            portraitsLayout.add(buttons[i]).pad(10);
+            //portraits[i].add(buttons[i]);
+            if (gameScreen.game.getCharacterCollection().size()>i) {
+
+
+                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
+
+                Container c = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(i).getPic()).portrait));
+                c.padLeft(25);
+                portraits[i].add(c);
+
+                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
+
+            }
+
+            //portraitsLayout.add(buttons[i]).pad(10);
+            portraitsLayout.add(portraits[i]).pad(10);
+
+
 
             if(Math.floorMod(i+1,3)==0)   portraitsLayout.row();
 

@@ -7,10 +7,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.mygdx.mdh.game.util.Assets;
 
 public abstract class AbstractGameScreen implements Screen {
-    protected ScreenManager game;
+    protected ScreenManager gameScreen;
 
     public AbstractGameScreen(ScreenManager game) {
-        this.game = game;
+        this.gameScreen = game;
     }
 
     public abstract void render(float delta);
