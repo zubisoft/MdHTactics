@@ -13,11 +13,17 @@ import java.util.List;
  */
 public class Game {
 
+    final int MAX_PARTY = 3;
+
     String name;
 
     List<Character> characterCollection;
     List<Campaign> gameCampaign;
+    List<Character> currentParty;
 
+    public Game () {
+        this.currentParty = new ArrayList<>();
+    }
 
     @JsonProperty("characterList")
     public void setCharacterList(List<String> baddiesId) {
@@ -38,6 +44,7 @@ public class Game {
 
     public static Game loadNewGame () {
         return loadFromJSON ("DefaultGame");
+
     }
 
     public static Game loadFromJSON (String name) {
@@ -87,4 +94,18 @@ public class Game {
     public void setName(String name) {
         this.name = name;
     }
+
+    public List<Character> getCurrentParty() {
+        return currentParty;
+    }
+
+    public void addCurrentParty(Character character) {
+        if (currentParty.size()<MAX_PARTY)
+            this.currentParty.add(character);
+    }
+
+    public void removeCurrentParty(Character character) {
+            this.currentParty.remove(character);
+    }
+
 }

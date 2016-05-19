@@ -18,19 +18,33 @@ import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
+import com.mygdx.mdh.screens.widgets.Portrait;
 
 
 public class CharSelectionScreen extends AbstractGameScreen {
 
     private class MenuClickListener extends ClickListener {
+
+        Portrait portrait;
+
+        MenuClickListener(Portrait p) {
+            this.portrait = p;
+        }
+
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+            if (!portrait.isSelected()) {
+                gameScreen.game.addCurrentParty(portrait.getCharacter());
+                portrait.setSelected(true);
+            } else {
+                gameScreen.game.removeCurrentParty(portrait.getCharacter());
+                portrait.setSelected(false);
+            }
+
+            System.out.println(gameScreen.game.getCurrentParty());
 
 
-            //gameScreen.setScreen(new GameScreen(gameScreen), transition);
-            gameScreen.setScreen(new StoryScreen(gameScreen), transition);
 
         }
     }
@@ -82,21 +96,19 @@ public class CharSelectionScreen extends AbstractGameScreen {
         Table portraitsLayout = new Table();
         portraitsLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
 
-        Stack[] portraits = new Stack[12];
+        Portrait[] portraits = new Portrait[12];
         buttons = new ImageButton[12];
 
         for (int i=0; i<12; i++) {
 
-            listener = new MenuClickListener();
 
-            portraits[i] = new Stack();
-            portraits[i].setSize(140,140);
-            portraits[i].addListener(listener);
+
+
 
             //portraits[i].add(buttons[i]);
             if (gameScreen.game.getCharacterCollection().size()>i) {
 
-
+/*
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
 
                 Container c = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(i).getPic()).portrait));
@@ -104,8 +116,18 @@ public class CharSelectionScreen extends AbstractGameScreen {
                 portraits[i].add(c);
 
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
+*/
+                portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
+                listener = new MenuClickListener(portraits[i]);
+                portraits[i].addListener(listener);
 
+                System.out.println("portrait "+portraits[i]);
+
+            } else {
+                portraits[i] = new Portrait(null);
             }
+
+
 
             //portraitsLayout.add(buttons[i]).pad(10);
             portraitsLayout.add(portraits[i]).pad(10);
