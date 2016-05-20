@@ -3,13 +3,17 @@ package com.mygdx.mdh.screens;
 /**
  * Created by zubisoft on 20/03/2016.
  */
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
@@ -19,33 +23,29 @@ import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
+import com.mygdx.mdh.screens.widgets.MissionPortrait;
 import com.mygdx.mdh.screens.widgets.Portrait;
 
 
-public class CharSelectionScreen extends AbstractGameScreen {
+public class MissionSelectionScreen extends AbstractGameScreen {
 
     private class PortraitClickListener extends ClickListener {
 
-        Portrait portrait;
+        MissionPortrait portrait;
 
-        PortraitClickListener(Portrait p) {
+        PortraitClickListener(MissionPortrait p) {
             this.portrait = p;
         }
 
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            if (!portrait.isSelected()) {
-                gameScreen.game.addCurrentParty(portrait.getCharacter());
-                portrait.setSelected(true);
-            } else {
-                gameScreen.game.removeCurrentParty(portrait.getCharacter());
-                portrait.setSelected(false);
-            }
+            if (currentSelectedMission != null) currentSelectedMission.setSelected(false);
+            currentSelectedMission = portrait;
+            portrait.setSelected(true);
+
 
             System.out.println(gameScreen.game.getCurrentParty());
-
-
 
         }
     }
@@ -89,7 +89,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
     PortraitClickListener listener;
 
-    private static final String TAG = CharSelectionScreen.class.getName();
+    private static final String TAG = MissionSelectionScreen.class.getName();
 
     CombatController combatController;
     CombatRenderer combatRenderer;
@@ -99,6 +99,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
     Image background;
 
     ImageButton btnContinue;
+    MissionPortrait currentSelectedMission;
 
 
 
@@ -107,8 +108,10 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
     private boolean paused;
 
-    public CharSelectionScreen(ScreenManager gameManager) {
+    public MissionSelectionScreen(ScreenManager gameManager) {
+
         super(gameManager);
+
         //TODO remove this, this is for testing only
         if(gameScreen.game == null) gameScreen.setGame(Game.loadNewGame());
     }
@@ -136,12 +139,12 @@ public class CharSelectionScreen extends AbstractGameScreen {
         Table portraitsLayout = new Table();
         portraitsLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
 
-        Portrait[] portraits = new Portrait[12];
+        MissionPortrait[] portraits = new MissionPortrait[12];
 
         for (int i=0; i<12; i++) {
 
             //portraits[i].add(buttons[i]);
-            if (gameScreen.game.getCharacterCollection().size()>i) {
+            if (gameScreen.game.getCurrentCampaign().getCampaignMissions().size()>i) {
 
 /*
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
@@ -152,14 +155,14 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
 */
-                portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
+                portraits[i] = new MissionPortrait(gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
 
                 System.out.println("portrait "+portraits[i]);
 
             } else {
-                portraits[i] = new Portrait(null);
+                portraits[i] = new MissionPortrait(null);
             }
 
 

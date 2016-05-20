@@ -19,7 +19,11 @@ public class Game {
 
     List<Character> characterCollection;
     List<Campaign> gameCampaign;
+
     List<Character> currentParty;
+
+
+    Campaign currentCampaign;
 
     public Game () {
         this.currentParty = new ArrayList<>();
@@ -69,7 +73,17 @@ public class Game {
 
     }
 
+
+    public Campaign getCurrentCampaign() {
+        if (currentCampaign == null)  currentCampaign=gameCampaign.get(0);
+        return currentCampaign;
+    }
+
     //Generic getters and setters
+
+    public void setCurrentCampaign(Campaign currentCampaign) {
+        this.currentCampaign = currentCampaign;
+    }
 
     public List<Character> getCharacterCollection() {
         return characterCollection;

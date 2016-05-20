@@ -21,11 +21,8 @@ import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
-import com.mygdx.mdh.screens.CharSelectionScreen;
-import com.mygdx.mdh.screens.MainMenuScreen;
-import com.mygdx.mdh.screens.ScreenManager;
+import com.mygdx.mdh.screens.*;
 
-import com.mygdx.mdh.screens.GameScreen;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
@@ -51,13 +48,12 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
-
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
         ScreenTransition transition = ScreenTransitionFade.init(2.0f);
-        //setScreen(new CharSelectionScreen(this), transition);
+        setScreen(new MissionSelectionScreen(this), transition);
         //setScreen(new GameScreen(this), transition);
-        setScreen(new MainMenuScreen(this), transition);
+        //setScreen(new MainMenuScreen(this), transition);
     }
 
     public void combatTest () {
