@@ -18,9 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
+import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 import com.mygdx.mdh.screens.widgets.MissionPortrait;
@@ -46,6 +48,8 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
 
             System.out.println(gameScreen.game.getCurrentParty());
+            System.out.println(gameScreen.game.getCurrentMission().getMissionMap());
+            System.out.println(gameScreen.game.getCurrentMission().getBaddies());
 
         }
     }
@@ -73,8 +77,10 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
             switch (buttonType) {
                 case CONTINUE:
-                    gameScreen.setGame(Game.loadNewGame());
-                    gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition);
+                    StoryScreen screen = new StoryScreen(gameScreen);
+                    screen.setMessages(currentSelectedMission.getMission().getIntroText());
+                    LOG.print(1,"texto"+currentSelectedMission.getMission().getIntroText(),LOG.ANSI_GREEN);
+                    gameScreen.setScreen(screen, transition);
                     break;
             }
 
@@ -112,8 +118,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
         super(gameManager);
 
-        //TODO remove this, this is for testing only
-        if(gameScreen.game == null) gameScreen.setGame(Game.loadNewGame());
+
     }
 
     public  void buildStage () {
@@ -159,7 +164,6 @@ public class MissionSelectionScreen extends AbstractGameScreen {
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
 
-                System.out.println("portrait "+portraits[i]);
 
             } else {
                 portraits[i] = new MissionPortrait(null);

@@ -73,7 +73,6 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
             switch (buttonType) {
                 case CONTINUE:
-                    gameScreen.setGame(Game.loadNewGame());
                     gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition);
                     break;
             }

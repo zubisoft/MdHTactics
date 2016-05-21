@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -15,6 +16,8 @@ import com.badlogic.gdx.utils.Queue;
 import com.mygdx.mdh.game.model.StoryText;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
+
+import java.util.*;
 
 /**
  * Created by zubisoft on 25/03/2016.
@@ -90,6 +93,13 @@ public class StoryMessageBar extends Actor {
     public void addMessage( StoryText storyText) {
             story.addLast(storyText);
     }
+
+
+    public void addMessages(java.util.List<StoryText> storyText) {
+        for(StoryText t: storyText)
+            story.addLast(t);
+    }
+
 
 
     public void show ()  {

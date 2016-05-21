@@ -64,7 +64,6 @@ public class Mission {
         for(String baddy: baddiesId) {
             this.baddies.add(Character.loadFromJSON(baddy));
         }
-
     }
 
 

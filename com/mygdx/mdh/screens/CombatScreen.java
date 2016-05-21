@@ -10,16 +10,19 @@ import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
 
 
-public class GameScreen extends AbstractGameScreen {
-    private static final String TAG = GameScreen.class.getName();
+public class CombatScreen extends AbstractGameScreen {
+    private static final String TAG = CombatScreen.class.getName();
 
     CombatController combatController;
     CombatRenderer combatRenderer;
 
     private boolean paused;
 
-    public GameScreen(ScreenManager game) {
+    public CombatScreen(ScreenManager game) {
+
         super(game);
+
+
     }
 
     @Override

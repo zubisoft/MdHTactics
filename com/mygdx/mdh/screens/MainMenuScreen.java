@@ -50,7 +50,7 @@ public class MainMenuScreen extends AbstractGameScreen {
                     gameScreen.setGame(Game.loadNewGame());
                     gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
                     break;
-                case LOAD_GAME: gameScreen.setScreen(new GameScreen(gameScreen), transition); break;
+                case LOAD_GAME: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
                 case QUIT: break;
             }
 

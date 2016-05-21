@@ -94,6 +94,7 @@ public class Assets implements Disposable, AssetErrorListener {
 
         TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_CHARACTERS);
 
+
         // Enable texture filtering for pixel smoothing
         for (Texture t : atlas.getTextures())
             t.setFilter(TextureFilter.Linear, TextureFilter.Linear);

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -28,7 +29,7 @@ public class StoryScreen extends AbstractGameScreen {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
             if(messageBar.hasMoreMessages()==false)
-                gameScreen.setScreen(new GameScreen(gameScreen), transition);
+                gameScreen.setScreen(new CombatScreen(gameScreen), transition);
             else {
                 messageBar.hide();
                 messageBar.show();
@@ -57,15 +58,19 @@ public class StoryScreen extends AbstractGameScreen {
     public StoryScreen(ScreenManager game) {
         super(game);
 
-
         messageBar = new StoryMessageBar();
 
-
+        /*
         StoryText x = new StoryText("Que pasa hagen, pedazo de pardo, que habra que hacer el mensaje de navidad no?","zubi");
         messageBar.addMessage(x);
         x = new StoryText("Pues habra que repartir unas buenas hostias pardas...","hagen");
         messageBar.addMessage(x);
+        */
 
+    }
+
+    public void setMessages (java.util.List<StoryText> textList) {
+        messageBar.addMessages(textList);
     }
 
     public  void buildStage () {

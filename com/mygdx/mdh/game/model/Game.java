@@ -25,8 +25,12 @@ public class Game {
 
     Campaign currentCampaign;
 
+
+    Mission currentMission;
+
     public Game () {
         this.currentParty = new ArrayList<>();
+
     }
 
     @JsonProperty("characterList")
@@ -79,8 +83,19 @@ public class Game {
         return currentCampaign;
     }
 
+    public Mission getCurrentMission() {
+        if (currentMission==null) currentMission=getCurrentCampaign().getCampaignMissions().get(0);
+        return currentMission;
+    }
+
+
+
+
     //Generic getters and setters
 
+    public void setCurrentMission(Mission currentMission) {
+        this.currentMission = currentMission;
+    }
     public void setCurrentCampaign(Campaign currentCampaign) {
         this.currentCampaign = currentCampaign;
     }

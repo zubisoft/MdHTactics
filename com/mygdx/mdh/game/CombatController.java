@@ -102,8 +102,30 @@ public class CombatController extends Stage {
         //Initialize gameScreen logic
         this.characterActors = new ArrayList<CharacterActor>();
 
-        this.combat = Combat.loadFromJSON("combat01");
+        //this.combat = Combat.loadFromJSON("combat01");
        // this.combat = Combat.loadFromJSON("combat_minimal");
+
+        combat = new Combat();
+        combat.setMap(screenManager.getGame().getCurrentMission().getMissionMap());
+
+        for(Character c: screenManager.getGame().getCurrentParty()) {
+            combat.addCharacter(c);
+            LOG.print("Added "+c);
+        }
+
+        for(Character c: screenManager.getGame().getCurrentMission().getBaddies()) {
+            combat.addCharacter(c);
+            LOG.print("Added "+c);
+        }
+
+        //Important step, link characters with the map
+        int i = 0;
+        for (Character c: combat.getCharacters()) {
+            c.setRow(i);
+            c.setColumn(i++);
+            c.setCell(combat.getMap().getCell(c.getRow(),c.getColumn()));
+        }
+
 
         map=new IsoMapActor(combat.getMap());
         this.addActor(map);
