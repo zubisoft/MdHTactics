@@ -102,44 +102,51 @@ public class CombatController extends Stage {
         //Initialize gameScreen logic
         this.characterActors = new ArrayList<CharacterActor>();
 
-        //this.combat = Combat.loadFromJSON("combat01");
-       // this.combat = Combat.loadFromJSON("combat_minimal");
+        if (screenManager.getGame() == null) {
+            LOG.print(1,"[Combat Controller] Loading debug combat", LOG.ANSI_RED);
+            this.combat = Combat.loadFromJSON("combat01");
+        } else {
+            //
+            // this.combat = Combat.loadFromJSON("combat_minimal");
 
-        combat = new Combat();
-        combat.setMap(screenManager.getGame().getCurrentMission().getMissionMap());
+            combat = new Combat();
+            combat.setMap(screenManager.getGame().getCurrentMission().getMissionMap());
 
-        for(Character c: screenManager.getGame().getCurrentParty()) {
-            combat.addCharacter(c);
-            LOG.print("Added "+c);
-        }
+            for (Character c : screenManager.getGame().getCurrentParty()) {
+                combat.addCharacter(c);
+                LOG.print("Added " + c);
+            }
 
-        for(Character c: screenManager.getGame().getCurrentMission().getBaddies()) {
-            combat.addCharacter(c);
-            LOG.print("Added "+c);
-        }
+            for (Character c : screenManager.getGame().getCurrentMission().getBaddies()) {
+                combat.addCharacter(c);
+                LOG.print("Added " + c);
+            }
 
-        //Important step, link characters with the map
-        int i = 0;
-        for (Character c: combat.getCharacters()) {
-            c.setRow(i);
-            c.setColumn(i++);
-            c.setCell(combat.getMap().getCell(c.getRow(),c.getColumn()));
+            //Important step, link characters with the map
+            int i = 0;
+            for (Character c : combat.getCharacters()) {
+                c.setRow(i);
+                c.setColumn(i++);
+                c.setCell(combat.getMap().getCell(c.getRow(), c.getColumn()));
+            }
         }
 
 
         map=new IsoMapActor(combat.getMap());
         this.addActor(map);
 
+        background = new Sprite(Assets.instance.maps.get("map01"));
+        background.setPosition(0,-275);
+
         createActorsForLayer( combat );
 
         //Initialize HUD
         combatHUD = new CombatHUD(this);
-        //this.addActor(combatHUD);
+
 
 
         //Initialize elements for graphic control
         stateTime = 0;
-
         cameraManager = new CameraManager();
         cameraManager.setPosition(new Vector2(map.getCellWidth()*64,map.getCellHeigth()*32));
 
@@ -150,10 +157,7 @@ public class CombatController extends Stage {
         multiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(multiplexer);
 
-
-        background = new Sprite(Assets.instance.maps.get("map01"));
-        background.setPosition(0,-275);
-
+        //Initialize game logic
         baddiesBegin=true;
         gameEnd = false;
         gameTurn = GameTurn.PLAYER;

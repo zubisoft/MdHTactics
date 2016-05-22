@@ -74,10 +74,14 @@ public class AttackAction extends GameAction {
 
                 characterActor.setState(CharacterActor.CHARACTER_STATE.ABILITY1);
 
-                if(!applied) {
-                    for (CharacterActor target : targets)
-                        target.receiveAbility(ability);
-                    applied=true;
+                if (!applied) {
+                    for (int i=0; i<ability.getHits();i++) {
+                        for (CharacterActor target : targets)
+                            target.receiveAbility(ability);
+
+                    }
+                    applied = true;
+
                 }
 
             }

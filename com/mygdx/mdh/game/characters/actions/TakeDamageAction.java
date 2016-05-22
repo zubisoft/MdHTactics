@@ -39,7 +39,7 @@ public class TakeDamageAction extends Action {
 
         totalTime += delta;
 
-            if (totalTime > 3) {
+            if (totalTime > 1) {
                 //Stop moving
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 

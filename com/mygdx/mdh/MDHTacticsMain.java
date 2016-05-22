@@ -50,9 +50,9 @@ public class MDHTacticsMain extends ScreenManager {
 
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
-        ScreenTransition transition = ScreenTransitionFade.init(2.0f);
-        setScreen(new CharSelectionScreen(this), transition);
-        //setScreen(new CombatScreen(this), transition);
+        ScreenTransition transition = ScreenTransitionFade.init(1.0f);
+        //setScreen(new CharSelectionScreen(this), transition);
+        setScreen(new CombatScreen(this), transition);
         //setScreen(new MainMenuScreen(this), transition);
     }
 

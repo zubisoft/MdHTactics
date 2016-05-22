@@ -317,7 +317,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         //Draw attached actors
         lifebar.draw(batch);
         //for(Label l: messages) l.draw(batch,1);
-        characterMessenger.draw(batch);
+        characterMessenger.draw(batch,1.0f);
 
         //Return color to normal
         if (!character.isActive()) batch.setColor(1f, 1f, 1f, 1f);

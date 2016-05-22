@@ -51,6 +51,16 @@ public class Ability {
     int diceNumber;
     int diceSides;
 
+    public int getHits() {
+        return hits;
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
+    }
+
+    int hits;
+
     /**
      * Effects that are applied by using the ability
      */
@@ -60,6 +70,7 @@ public class Ability {
         effects = new ArrayList<Effect>();
         //addEffect(new Effect("FIRE"));
         range = 1;
+        hits = 1;
     }
 
 
