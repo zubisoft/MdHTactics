@@ -5,4 +5,6 @@ package com.mygdx.mdh.game.model.effects;
  */
 public interface EffectManagerListener {
     void onEffectProcessed (Effect e);
+    void onEffectApply (Effect e);
+
 }

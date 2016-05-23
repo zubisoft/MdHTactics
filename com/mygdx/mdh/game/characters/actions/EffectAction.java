@@ -79,8 +79,8 @@ public class EffectAction  extends Action {
 
         if(!finished)
             batch.draw(currentFrame
-                    ,target.getX()+offsetX
-                ,target.getY()
+                    ,target.getX()+offsetX+target.getWidth()/2-currentFrame.getRegionWidth()/2
+                    ,target.getY()
             );
                     /*
                 ,target.getOriginX()

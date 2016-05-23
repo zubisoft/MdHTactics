@@ -33,6 +33,8 @@ public class EffectManager {
         System.out.println("[EffectManager] Applying: "+e.getEffectType()+" to "+e.getTarget()+" "+e.hashCode());
 
         if (e.getTarget() == null) return false;
+        notifyEffectApplyAttempt(e);
+
         //target = c.getCharacterActor(e.getTarget());
 
         e.init();
@@ -47,11 +49,11 @@ public class EffectManager {
 
         System.out.println("[EffectManager] Ready to apply effect!");
 
-        notifyEffect(e);
+
         e.apply();
 
-
-
+        if (e.getGameSegment()!= Effect.GameSegmentType.IMMEDIATE)
+            notifyEffect(e);
 
 
         return true;
@@ -113,6 +115,15 @@ public class EffectManager {
         /*TODO character should listen here to show messages when effects are being applied, will require improving the notification methods in Effect*/
         for (EffectManagerListener l: effectListeners)
             l.onEffectProcessed(e);
+    }
+
+
+    public void notifyEffectApplyAttempt (Effect e) {
+
+        if (effectListeners.size()==0) return;
+        /*TODO character should listen here to show messages when effects are being applied, will require improving the notification methods in Effect*/
+        for (EffectManagerListener l: effectListeners)
+            l.onEffectApply(e);
     }
 
     public void addEffectListener (EffectManagerListener l) {

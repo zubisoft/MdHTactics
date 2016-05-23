@@ -479,8 +479,20 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     }
 
+    public void onEffectApply (Effect e) {
+        if (e.getTarget()==this.getCharacter()) {
+            e.addEffectListener(this);
+        }
+
+    }
+
+
+
+
     public void onEffectTriggered (Effect e) {
         LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.hashCode());
+
+
 
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);
@@ -490,6 +502,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         //this.queueAction(new GameWaitAction(2));
 
     }
+
+
+
 
 
 
