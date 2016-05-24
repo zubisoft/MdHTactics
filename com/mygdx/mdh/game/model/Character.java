@@ -134,8 +134,11 @@ public class Character  {
         if (health<=0) {
             dead=true;
             active=false;
+            cell.setOccupied(null);
         }
     }
+
+
 
     public int getAvailableActions() {return availableActions;}
     public void setAvailableActions(int a) {
@@ -263,17 +266,23 @@ public class Character  {
         return effects;
     }
 
+    /**
+     Simply adds an effect to the effect list, as is.
+     This method is called once all the relevant modifiers are applied to the effect.
+     **/
     public void addEffect (Effect e) {
-
-        LOG.print(3, "[Character] Adding Effect "+e.hashCode()+" "+e.getEffectType()+" to "+getName()+" duration: "+e.getDuration(),LOG.ANSI_GREEN);
         effects.add(e);
-
-        for (Effect ee: this.getEffects()) {
-            LOG.print(4,"* "+ee.toString()+"\n");
-        }
-
     }
 
+    /**
+     * This method adds a list of effects to a character after processing all the relevant modifiers.
+     * The target is set to this character, and then sent to the effect manager for processing, where
+     * source and target modifiers are applied before ultimately adding the effect.
+     *
+     * Immediate effects will be triggered.
+     *
+     * @param e
+     */
     public void addEffect (List<Effect> e) {
         LOG.print("[Character] Adding effect list");
 
@@ -285,7 +294,7 @@ public class Character  {
             tmp.setTarget(this);
             //Resolve immediate effects
             LOG.print("[Character] Calling effect manager");
-            //TODO it might be necessary to create new effect objects every time an ability is applied?
+
             EffectManager.instance.apply(tmp);
 
         }

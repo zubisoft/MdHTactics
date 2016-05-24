@@ -10,11 +10,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.model.Character;
 
 /**
  * Created by zubisoft on 05/03/2016.
  */
-public class CharacterLifeBar extends Actor {
+public class CharacterLifeBar extends Actor implements CharacterChangeListener {
 
     static final float BARWIDTH = 60f;
     static final float BARHEIGHT = 10f;
@@ -25,6 +27,10 @@ public class CharacterLifeBar extends Actor {
 
     CharacterActor actor;
 
+
+    public void onCharacterHit (int damage) { };
+    public void onCharacterActive (Character c) {};
+    public void onCharacterInactive (Character c) {};
 
 
     public CharacterLifeBar (CharacterActor actor) {
@@ -50,12 +56,14 @@ public class CharacterLifeBar extends Actor {
         barFill.setRegionWidth(Math.round(BARWIDTH*actor.getCharacter().getHealth()/actor.getCharacter().getMaxHealth()));
         this.act(delta);
 
+
     }
 
-    public void draw(SpriteBatch batch) {
+    public void draw(SpriteBatch batch, float parentAlpha) {
+
         //Update graphics
         Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a);
+        batch.setColor(color.r, color.g, color.b, parentAlpha);
 
         //barBackground.draw(batch,1.0f);
 

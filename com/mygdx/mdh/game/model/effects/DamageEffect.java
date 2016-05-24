@@ -45,13 +45,16 @@ public class DamageEffect extends Effect {
         if ( Math.random() > chance) return;
 
         if (duration>=0) {
-            if (roll != null && target != null) {
-                LOG.print(2,"[DamageEffect] Inflicted: "+roll.getTotalRoll(), LOG.ANSI_RED);
-                target.hit(roll.getTotalRoll());
+            for (int i=0; i<hits;i++) {
+                if (roll != null && target != null) {
+                    LOG.print(2, "[DamageEffect] Inflicted: " + roll.getTotalRoll(), LOG.ANSI_RED);
+                    target.hit(roll.getTotalRoll());
+                }
+                effectTriggered ();
             }
         }
 
-        effectTriggered ();
+
     }
 
     public String notification() {
@@ -83,6 +86,7 @@ public class DamageEffect extends Effect {
         e.stacking = stacking;
         e.effectListeners = new ArrayList<>();
         e.modifier = modifier;
+        e.hits = hits;
 
         return e;
     }

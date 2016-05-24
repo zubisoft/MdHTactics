@@ -221,6 +221,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         //Update actions attached to this Actor
 
         this.act(deltaTime);
+        lifebar.update(deltaTime);
 
         //Draw effects
         /*
@@ -315,7 +316,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         //}
 
         //Draw attached actors
-        lifebar.draw(batch);
+        lifebar.draw(batch,this.getColor().a);
         //for(Label l: messages) l.draw(batch,1);
         characterMessenger.draw(batch,1.0f);
 

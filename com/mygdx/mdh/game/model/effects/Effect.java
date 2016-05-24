@@ -66,6 +66,9 @@ public class Effect  /*implements Cloneable*/  {
     Roll roll;
     float chance;
 
+    int hits;
+
+
     Character source;
     Character target;
 
@@ -109,6 +112,7 @@ public class Effect  /*implements Cloneable*/  {
         e.stacking = stacking;
         e.effectListeners = new ArrayList<>();
         e.modifier = modifier;
+        e.hits = hits;
 
         return e;
     }
@@ -122,6 +126,7 @@ public class Effect  /*implements Cloneable*/  {
         modifier=0;
         duration =0;
         chance=1;
+        hits = 1;
         effectListeners = new ArrayList<>();
         effectSubType = EnumSet.noneOf(EffectSubType.class);
         icon="effect-icon-generic";
@@ -249,6 +254,16 @@ public class Effect  /*implements Cloneable*/  {
 
         return effectType;
     }
+
+
+    public int getHits() {
+        return hits;
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
+    }
+
 
     public void setEffecType(EffectType effecType) {
 
