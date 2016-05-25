@@ -53,6 +53,7 @@ public class EffectAction  extends Action {
         //Effects are applied first, when the animation starts
         if (this.begin ) {
             effect.setTarget(((CharacterActor) target).getCharacter());
+            ((CharacterActor) target).showMessage(effect.getIcon(),effect.notification(), effect.getColor());
             //effect.apply();
 
             //((CharacterActor) target).showMessage(effect.getOutcome());

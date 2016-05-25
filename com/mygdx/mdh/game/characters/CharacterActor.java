@@ -404,31 +404,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
 
-    public void showMessage (String message, Color c) {
-        /*
-        Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
-
-        la.setColor(c);
-
-        la.setPosition(getX()+offsetx,getY()+getHeight()-messages.size()*15);
-
-        messages.add(la);
-
-        la.addAction(Actions.sequence(
-                Actions.moveTo(getX()+offsetx, getY()+getHeight()+50-messages.size()*15,1000, Interpolation.exp5Out)
-                ,Actions.delay(200)
-                ,Actions.alpha(0,2000,Interpolation.fade)
-                , new Action () {
-                    public boolean act(float deltaTime) {
-
-                        return true;
-                    }
-
-                }
-             ));
-             */
-        characterMessenger.showMessage(message,c);
-    }
 
     public void showMessage (String message) {
         //showMessage (message, Color.WHITE);
@@ -465,9 +440,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
     public void addEffectAction (EffectAction ea) {
-
+        ea.setActor(this);
         this.effectActions.addLast(ea);
-        this.addAction(ea);
+        //this.addAction(ea);
     }
 
 
@@ -475,7 +450,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (e.getTarget()==this.getCharacter()) {
             LOG.print(3,"[CharacterActor] "+character.hashCode()+" has been targeted for an effect."+e.hashCode(), LOG.ANSI_RED);
             e.addEffectListener(this);
-            this.showMessage(e.getIcon(),e.notification(), e.getColor());
+            //this.showMessage(e.getIcon(),e.notification(), e.getColor());
         }
 
     }
@@ -493,12 +468,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public void onEffectTriggered (Effect e) {
         LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.hashCode());
 
-
-
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);
-
-            this.showMessage(e.getIcon(),e.notification(), e.getColor());
 
         //this.queueAction(new GameWaitAction(2));
 
