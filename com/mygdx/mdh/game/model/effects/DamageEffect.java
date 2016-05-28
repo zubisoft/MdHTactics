@@ -66,27 +66,7 @@ public class DamageEffect extends Effect {
 
     public DamageEffect copy () {
         DamageEffect e = new DamageEffect();
-        e.name = name;
-        e.effectType = effectType;
-        e.effectSubType = effectSubType;
-        e.gameSegment = gameSegment;
-        e.duration = duration;
-        e.roll = roll;
-        e.chance = chance;
-        e.source = source;
-        e.target = target;
-        e.pic = pic;
-        e.icon = icon;
-        e.outcome = outcome;
-        e.color = color;
-        e.diceNumber = diceNumber;
-        e.diceSides = diceSides;
-        e.percentModifier = percentModifier;
-        e.rolledResult = rolledResult;
-        e.stacking = stacking;
-        e.effectListeners = new ArrayList<>();
-        e.modifier = modifier;
-        e.hits = hits;
+        e.copy(this);
 
         return e;
     }

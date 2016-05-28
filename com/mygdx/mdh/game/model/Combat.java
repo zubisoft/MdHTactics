@@ -23,6 +23,7 @@ public class Combat {
     }
 
     GameStepType gameStep;
+    GameStepType prevGameStep;
 
 
 
@@ -63,7 +64,15 @@ public class Combat {
         return gameStep;
     }
 
+    public GameStepType getPrevGameStep() {
+        return prevGameStep;
+    }
+
+
     public void setGameStep(GameStepType gameStep) {
+
+
+        this.prevGameStep = this.gameStep;
         this.gameStep = gameStep;
     }
 

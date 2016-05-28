@@ -30,12 +30,15 @@ public class Ability {
      * Type of target for the ability
      */
     public enum AbilityTarget {
-        SELF, ONE_ALLY, ALL_ALLIES, ONE_ENEMY, ALL_ENEMIES, ONE_ANY, ANY
+        SELF, ONE_ALLY, ALL_ALLIES, ONE_ENEMY, ALL_ENEMIES, ONE_ANY, ANY, AREA
     }
 
     AbilityTarget targetType;
 
     int range;
+
+
+    int area;
 
     Character source;
     Character target;
@@ -71,6 +74,7 @@ public class Ability {
         //addEffect(new Effect("FIRE"));
         range = 1;
         hits = 1;
+        area = 0;
     }
 
 
@@ -232,6 +236,14 @@ public class Ability {
 
     public void setDiceNumber(int diceNumber) {
         this.diceNumber = diceNumber;
+    }
+
+    public int getArea() {
+        return area;
+    }
+
+    public void setArea(int area) {
+        this.area = area;
     }
 
 

@@ -89,31 +89,33 @@ public class Effect  /*implements Cloneable*/  {
 
     int stacking = 0;
 
+    public void copy (Effect e) {
+        name = e.name;
+        effectType = e.effectType;
+        effectSubType = e.effectSubType;
+        gameSegment = e.gameSegment;
+        duration = e.duration;
+        roll = e.roll;
+        chance = e.chance;
+        source = e.source;
+        target = e.target;
+        pic = e.pic;
+        icon = e.icon;
+        outcome = e.outcome;
+        color = e.color;
+        diceNumber = e.diceNumber;
+        diceSides = e.diceSides;
+        percentModifier = e.percentModifier;
+        rolledResult = e.rolledResult;
+        stacking = e.stacking;
+        effectListeners = new ArrayList<>();
+        modifier = e.modifier;
+        hits = e.hits;
+    }
 
     public Effect copy () {
         Effect e = new Effect();
-        e.name = name;
-        e.effectType = effectType;
-        e.effectSubType = effectSubType;
-        e.gameSegment = gameSegment;
-        e.duration = duration;
-        e.roll = roll;
-        e.chance = chance;
-        e.source = source;
-        e.target = target;
-        e.pic = pic;
-        e.icon = icon;
-        e.outcome = outcome;
-        e.color = color;
-        e.diceNumber = diceNumber;
-        e.diceSides = diceSides;
-        e.percentModifier = percentModifier;
-        e.rolledResult = rolledResult;
-        e.stacking = stacking;
-        e.effectListeners = new ArrayList<>();
-        e.modifier = modifier;
-        e.hits = hits;
-
+        e.copy(this);
         return e;
     }
 

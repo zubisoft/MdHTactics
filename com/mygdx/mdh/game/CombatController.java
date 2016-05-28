@@ -2,17 +2,11 @@ package com.mygdx.mdh.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.mygdx.mdh.game.IA.StrategyManager;
 import com.mygdx.mdh.game.characters.actions.GameWaitAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
@@ -29,7 +23,6 @@ import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.ScreenManager;
-import com.mygdx.mdh.game.model.Map;
 
 import java.util.*;
 
@@ -134,6 +127,7 @@ public class CombatController extends Stage {
 
         map=new IsoMapActor(combat.getMap());
         this.addActor(map);
+
 
         background = new Sprite(Assets.instance.maps.get("map01"));
         background.setPosition(0,-275);
@@ -399,6 +393,8 @@ public class CombatController extends Stage {
             a.update(deltaTime);
         }
 
+       // map.act(deltaTime);
+        this.act(deltaTime);
 
     }
 
@@ -449,6 +445,7 @@ public class CombatController extends Stage {
             selectedCharacter.setSelected(false);
             selectedCharacterPosition = null;
             selectedCharacter = null;
+            setCurrentSelectedAbility(null);
         }
     }
 
@@ -459,12 +456,10 @@ public class CombatController extends Stage {
     public void executeCurrentAbility(CharacterActor target) {
         LOG.print(3,"[CombatController] Targeted:  "+target.getCharacter().getName());
 
-
-
         Ability a = getCurrentSelectedAbility();
         //a.setTarget(target.getCharacter());
 
-        //TODO probably better doing this in the action instead
+        //TODO probably better doing this in the action instead -- Not sure
         switch (a.getTargetType()) {
             case SELF:
                 getCharacterActor(a.getSource()).useAbility(a, target);
@@ -484,16 +479,73 @@ public class CombatController extends Stage {
             case ALL_ENEMIES:
                 getCharacterActor(a.getSource()).useAbility(a, getBaddies());
                 break;
+            case AREA:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getMapCell(),a.getArea()));
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
 
-
+        //TODO Probably better from an event?
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 
 
         combat.setGameStep(Combat.GameStepType.SELECTION);
     }
+
+
+
+    /**
+     * Executes the current selected ability on a target.
+     * @param target
+     */
+    public void executeCurrentAbility(IsoMapCellActor target) {
+
+
+
+        Ability a = getCurrentSelectedAbility();
+        //a.setTarget(target.getCharacter());
+
+        //If not in range ignore
+        if (IsoMapActor.distance(a.getSource().getCell(),target.getCell()) > a.getRange()) return;
+
+
+        switch (a.getTargetType()) {
+            case SELF:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                break;
+            case ONE_ALLY:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                break;
+            case ONE_ENEMY:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                break;
+            case ONE_ANY:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                break;
+            case ALL_ALLIES:
+                getCharacterActor(a.getSource()).useAbility(a, getFriendlies());
+                break;
+            case ALL_ENEMIES:
+                getCharacterActor(a.getSource()).useAbility(a, getBaddies());
+                break;
+            case AREA:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),a.getArea()));
+        }
+
+        //getCharacterActor(a.getSource()).useAbility(a, target);
+
+        combat.setGameStep(Combat.GameStepType.SELECTION);
+    }
+
+    public void setGameStep(Combat.GameStepType step) {
+
+        map.removeHighlightCells();
+        map.removeBorders();
+
+
+        combat.setGameStep(step);
+    }
+
 
     /**
      * Highlights the cells on the map where this character can move.
@@ -501,7 +553,7 @@ public class CombatController extends Stage {
      */
     public void showMovementTiles(CharacterActor actor) {
 
-         map.highlightCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement(),-1);
+         map.highlightMovementCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement(),-1);
 
     }
 
@@ -515,13 +567,23 @@ public class CombatController extends Stage {
         if (selectedCharacter == null) return;
 
         if(selectedCharacter.isFriendly()) {
-            map.highlightCells(
+            map.outlineCells(
                     map.getCell(selectedCharacter.getCharacter().getCell().getMapCoordinates()),
                     selectedCharacter.getCharacter().getMovement(),
                     currentSelectedAbility.getRange());
         }
 
+    }
 
+    public void showOutline(IsoMapCellActor cell) {
+
+        if (cell != null && currentSelectedAbility != null && selectedCharacter!= null)
+            if (IsoMapActor.distance(cell.getCell(),selectedCharacter.getMapCell()) <= currentSelectedAbility.getRange()) {
+                map.highlightCells(
+                        map.getCell(cell.getMapCoordinates()),
+                        currentSelectedAbility.getArea(),
+                        IsoMapActor.redHighlight);
+            }
     }
 
 
@@ -535,6 +597,20 @@ public class CombatController extends Stage {
             if(c.getCharacter() == character) return c;
         }
         return null;
+    }
+
+    public List<CharacterActor> getCharacersInArea (MapCell center, int range) {
+        List<CharacterActor> list = new ArrayList<>();
+        System.out.println("[CombatController] Checking area radius "+range);
+        for(CharacterActor c: characterActors) {
+            if (IsoMapActor.distance(center,c.getMapCell()) <= range) {
+                System.out.println("[CombatController] Character in area"+c);
+                list.add(c);
+            }
+        }
+
+        return list;
+
     }
 
 }

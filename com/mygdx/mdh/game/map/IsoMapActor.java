@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.mygdx.mdh.game.controller.TiledMapClickListener;
@@ -28,9 +29,10 @@ public class IsoMapActor extends Group{
     final int CELLWIDTH = 128;
     final int CELLHEIGTH = 64;
 
-    Color blueHighlight = new Color(0.0f,0.5f,1f,0.2f);
-    Color greenHighlight = new Color(0.2f,1f,0.f,0.2f);
-    Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
+    public static Color blueHighlight = new Color(0.0f,0.5f,1f,0.2f);
+    public static Color greenHighlight = new Color(0.2f,1f,0.f,0.2f);
+    public static Color yellowHighlight = new Color(1f,0.6f,0.f,0.5f);
+    public static Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
 
 
 /*
@@ -103,11 +105,6 @@ public class IsoMapActor extends Group{
             }
         }
 
-
-
-
-
-
     }
 
 
@@ -152,36 +149,77 @@ public class IsoMapActor extends Group{
 
     }
 
-    public void highlightCells (IsoMapCellActor cell, int movementRadius, int abilityRadius) {
+
+
+    public void highlightCells(IsoMapCellActor cell, int radius, Color color) {
+
         removeHighlightCells();
+/*
+        if (radius==0) {
+            if (cell.getCell().getCellType() != MapCell.CellType.IMPASSABLE)
+                cell.highlight(color);
+            return;
+        }*/
+
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
-                if (!mapCells[y][x].getCell().isOccupied()) {
-                if ( distance(mapCells[y][x],cell) <= movementRadius ) {
-                    //System.out.println("Highlighted "+mapCells[y][x].getMapCell()+" "+cell.getMapCell()+" "+Math.ceil(distance(mapCells[y][x],cell)));
 
-                        if (mapCells[y][x].getCell().getCellType()!=MapCell.CellType.IMPASSABLE) mapCells[y][x].highlight(blueHighlight);
-                    }
-                } else { //occupied
-                        if (distance(mapCells[y][x], cell) <= abilityRadius
-                                //&&!mapCells[y][x].getCell().getCharacter().isFriendly()
-                                && distance(mapCells[y][x], cell) >0
-                                && !mapCells[y][x].getCell().getCharacter().isDead()
-                                ) {
-                            mapCells[y][x].highlight(redHighlight);
-
-                        }
+                if (distance(mapCells[y][x], cell) <= radius) {
+                    if (mapCells[y][x].getCell().getCellType() != MapCell.CellType.IMPASSABLE)
+                        mapCells[y][x].highlight(color);
                 }
-
-                //if (distance(mapCells[y][x], cell) <= abilityRadius) mapCells[y][x].highlight(redHighlight);
 
             }
         }
 
+    }
+
+
+    /**
+     * Special case of highlight cells, with default movement tile color and friendly/hostile colors *
+     * @param cell
+     * @param movementRadius
+     * @param abilityRadius
+     */
+    public void highlightMovementCells(IsoMapCellActor cell, int movementRadius, int abilityRadius) {
+
+        removeHighlightCells();
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+
+                if (distance(mapCells[y][x], cell) <= movementRadius) {
+                    if (!mapCells[y][x].getCell().isOccupied()) {
+                        if (mapCells[y][x].getCell().getCellType() != MapCell.CellType.IMPASSABLE)
+                            mapCells[y][x].highlight(blueHighlight);
+                    } else {
+                        if (mapCells[y][x].getCell().getCharacter().isFriendly())
+                            mapCells[y][x].highlight(greenHighlight);
+                        else mapCells[y][x].highlight(yellowHighlight);
+                    }
+
+
+                    //if (distance(mapCells[y][x], cell) <= abilityRadius) mapCells[y][x].highlight(redHighlight);
+
+                }
+            }
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public void outlineCells (IsoMapCellActor cell, int movementRadius, int abilityRadius) {
         int a,b;
         MapCell tmpCell;
 
-
+        //Outline for the outermost border
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
 
@@ -230,10 +268,6 @@ public class IsoMapActor extends Group{
 
             }
         }
-
-
-
-
     }
 
     public void removeHighlightCells () {
@@ -242,6 +276,17 @@ public class IsoMapActor extends Group{
             for (int x = 0; x < 10; x++) {
 
                     mapCells[y][x].removeHighlight();
+
+            }
+        }
+    }
+
+    public void removeBorders () {
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+
+                mapCells[y][x].removeBorders();
 
             }
         }
@@ -264,7 +309,7 @@ public class IsoMapActor extends Group{
 
         //Distance 1 to include all the surrounding cells of the actor.
 
-        if (c1.dst(c2) < 2.0f) {
+        if (c1.dst(c2)>1 && c1.dst(c2) < 2.0f) {
             //LOG.print("distancia "+c1.getMapCoordinates()+c2.getMapCoordinates()+" "+distance(c1.getCartesianCoordinates(),c2.getCartesianCoordinates()));
             return 1.0f;
         }

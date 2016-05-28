@@ -36,6 +36,7 @@ public class IsoMapCellActor extends Actor {
 
     //final Sprite highlightSprite = new Sprite(new Texture(Gdx.files.internal("core/assets/graphics/tile-green-256x128.png")));
     boolean showHighlight;
+    boolean showOutline;
 
     final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
     Label la;
@@ -83,12 +84,7 @@ public class IsoMapCellActor extends Actor {
         return null;
     }
 
-    public void setBorders(boolean borderBottomLeft, boolean borderBottomRight, boolean borderTopLeft, boolean borderTopRight) {
-        this.borderBottomLeft= borderBottomLeft;
-        this.borderBottomRight=borderBottomRight;
-        this.borderTopLeft= borderTopLeft;
-        this.borderTopRight=borderTopRight;
-    }
+
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
@@ -108,12 +104,15 @@ public class IsoMapCellActor extends Actor {
             //highlightSprite.draw(batch,0.2f);
             batch.draw(highlightTexture,getX(),getY(),getWidth(),getHeight());
 
+
+        }
+
+        if (showOutline) {
             batch.setColor(1, 0, 0, 1);
             if(borderBottomLeft) batch.draw(texture_bottomleft,getX(),getY(),128/2,64/2);
             if(borderBottomRight) batch.draw(texture_bottomright,getX()+128/2,getY(),128/2,64/2);
             if(borderTopLeft) batch.draw(texture_topleft,getX(),getY()+64/2,128/2,64/2);
             if(borderTopRight) batch.draw(texture_topright,getX()+128/2,getY()+64/2,128/2,64/2);
-
         }
 
 
@@ -141,6 +140,23 @@ public class IsoMapCellActor extends Actor {
     public void removeHighlight () {
 
         showHighlight = false;
+        setColor(new Color(1f, 1f, 1f, 1f));
+
+    }
+
+
+    public void setBorders(boolean borderBottomLeft, boolean borderBottomRight, boolean borderTopLeft, boolean borderTopRight) {
+        this.borderBottomLeft= borderBottomLeft;
+        this.borderBottomRight=borderBottomRight;
+        this.borderTopLeft= borderTopLeft;
+        this.borderTopRight=borderTopRight;
+
+        showOutline = true;
+    }
+
+    public void removeBorders () {
+
+        showOutline = false;
         setColor(new Color(1f, 1f, 1f, 1f));
 
     }
