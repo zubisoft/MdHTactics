@@ -45,7 +45,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     public CombatController controller;
 
     Table hudTableLayout;
-    Table effectsLayout;
+    final Table effectsLayout = new Table();
 
     public static String notificationText;
 
@@ -106,6 +106,11 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         for (Character c: controller.getCombat().getCharacters()) {
             c.addListener(this);
         }
+
+
+        effectsLayout.left().bottom();
+        effectsLayout.setPosition(150,8);
+        effectsLayout.setSize(200,10);
     }
 
 
@@ -198,11 +203,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         characterInfoDefense.draw(batch,1.0f);
         characterInfoMovement.draw(batch,1.0f);
 
-        effectsLayout = new Table();
-
-        effectsLayout.left().bottom();
-        effectsLayout.setPosition(150,8);
-        effectsLayout.setSize(200,10);
 
 
 
@@ -259,13 +259,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
             renderCharacterInfoBox (batch);
 
-            /*
-            for (AbilityButton a : this.getAbilityButtons()) {
-                a.draw(batch);
-            }
-            */
-
-
             if (    showAbilities &&
                     controller.getSelectedCharacter().isActive() &&
                     controller.getSelectedCharacter().isFriendly() &&
@@ -285,13 +278,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         if (showInfo)
             infoBox.draw(batch,1.0f);
 
-/*
-        if (controller.isEndOfTurn()) {
 
-            this.getEOTButton().draw(batch, 1.0f);
-
-        }
-        */
     }
 
 

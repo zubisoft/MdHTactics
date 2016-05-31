@@ -35,43 +35,6 @@ public class IsoMapActor extends Group{
     public static Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
 
 
-/*
-    public IsoMapActor() {
-
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
-
-                //Cartesian position (map cells)
-                Vector2 logicalCoordinates = new Vector2();
-                logicalCoordinates.x = x-(float)Math.floor(y/2.0f);
-                logicalCoordinates.y = x+(float)Math.ceil(y/2.0f);
-
-                MapCell c = new MapCell(logicalCoordinates);
-                mapCells[x][y] = new IsoMapCellActor(c);
-
-                //mapCells[x][y].setMapCoordinates((int)logicalCoordinates.x,(int)logicalCoordinates.y );
-                mapCells[x][y].setWidth(CELLWIDTH);
-                mapCells[x][y].setHeight(CELLHEIGTH);
-                mapCells[x][y].setPosition(x*CELLWIDTH+Math.floorMod(y,2)*CELLWIDTH/2, y*CELLHEIGTH/2+100);
-
-
-                EventListener eventListener = new TiledMapClickListener(mapCells[x][y]);
-                mapCells[x][y].addListener(eventListener);
-
-                this.addActor(mapCells[x][y]);
-
-            }
-        }
-
-
-
-
-
-
-    }
-
-*/
-
 
     public IsoMapActor(Map map) {
 

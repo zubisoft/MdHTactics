@@ -1,6 +1,7 @@
 package com.mygdx.mdh.game.controller;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.CombatController;
@@ -32,19 +33,48 @@ public class TiledMapClickListener extends ClickListener {
                 && !actor.getCell().isOccupied()) {
             System.out.println("[Tile Clicked] Moving character to "+actor.getMapCoordinates());
 
-            stage.map.removeHighlightCells();
+            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
             stage.getSelectedCharacter().moveToCell(actor);
-            stage.getCombat().setGameStep(Combat.GameStepType.ACTION_SELECTION);
+
 
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
+
+            if (stage.getCombat().getGameStep() == Combat.GameStepType.TARGETING)
+                stage.executeCurrentAbility(actor);
+
+            stage.setGameStep(Combat.GameStepType.SELECTION);
             stage.deselectCharacter();
             System.out.println("[Tile Clicked] "+actor.toString() );
-            stage.getCombat().setGameStep(Combat.GameStepType.SELECTION);
+
+        }
+
+        if ( event.getButton() == Input.Buttons.RIGHT ) {
+            stage.setGameStep(Combat.GameStepType.SELECTION);
+            stage.deselectCharacter();
+            System.out.println("[Tile Clicked] "+actor.toString() );
         }
 
 
+
+    }
+
+
+    @Override
+    public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+        CombatController stage = (CombatController)event.getStage();
+        stage.showOutline(actor);
+
+        super.enter(event, actor.getX()+x, actor.getY()+y, pointer, fromActor);
+
+
+    }
+
+    @Override
+    public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+        CombatController stage = (CombatController)event.getStage();
+        super.exit(event, x, y, pointer, toActor);
 
     }
 }

@@ -41,20 +41,19 @@ import java.util.List;
 
 public class CharacterActor extends Actor implements EffectManagerListener, EffectListener, CharacterChangeListener {
 
-    private static final int        FRAME_COLS = 6;         // #1
-    private static final int        FRAME_ROWS = 3;         // #2
+    private static final int        FRAME_COLS = 6;
+    private static final int        FRAME_ROWS = 3;
 
     //Graphic Elements
-    Animation                       idleAnimation;          // #3
-    Animation                       attackAnimation;          // #3
-    Animation                       walkAnimation;          // #3
-    Animation                       hitAnimation;          // #3
-    public TextureRegion                        portrait;              // #4
+    Animation                       idleAnimation;
+    Animation                       attackAnimation;
+    Animation                       walkAnimation;
+    Animation                       hitAnimation;
+    public TextureRegion            portrait;
 
     float offsetx=0;
     float offsety=0;
 
-    public TextureRegion debugBorder;              // #4
 
     ShapeRenderer s;
     Sprite selectionCircle;
@@ -92,9 +91,13 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     CHARACTER_STATE state;
 
 
-    public Actor hit (float x, float y, boolean touchable) {
 
-        float adjusted_x;
+    //Auxiliar variables for hit detection
+    private Pixmap pixmap;
+    private float adjusted_x;
+    private int pixel ;
+
+    public Actor hit (float x, float y, boolean touchable) {
 
         if (getScaleX()==-1) {
             adjusted_x = (getWidth()-(x+offsetx));
@@ -105,15 +108,16 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (super.hit(adjusted_x,y-offsety,touchable) != null) {
 
             currentFrame.getTexture().getTextureData().prepare();
-            Pixmap pixmap = currentFrame.getTexture().getTextureData().consumePixmap();
+            pixmap = currentFrame.getTexture().getTextureData().consumePixmap();
 
-            int pixel ;
+
             if (getScaleX()==-1) {
                 pixel = pixmap.getPixel((int) (currentFrame.getRegionX() + getWidth() - adjusted_x), (int) (currentFrame.getRegionY() + y - offsety));
             } else {
                 pixel = pixmap.getPixel((int) (currentFrame.getRegionX() + adjusted_x), (int) (currentFrame.getRegionY() + y - offsety));
             }
 
+            pixmap.dispose();
 
             //If not transparent, clicked
             if ((pixel & 0x000000ff) != 0) {
@@ -121,6 +125,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
             }
 
         }
+
+
 
         return null;
 
@@ -162,8 +168,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
         selectionCircle = new Sprite(texture);
-
-        debugBorder = new TextureRegion(new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_square.png")));
+        selectionCircle.setPosition(getX() + 20, getY() + 10);
+        selectionCircle.setSize(100, 50);
 
 
        // effectActions = new ArrayList<>();
@@ -239,7 +245,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (queueActions.size == 0 ) return;
 
         if (queueActions.first().act(deltaTime) == true) {
-            LOG.print(3,"[CharacterActor] Removed Action "+queueActions.first());
             queueActions.removeFirst();
         }
     }
@@ -259,6 +264,14 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     }
 
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
+        if(selectionCircle != null) {
+            selectionCircle.setPosition(getX() + 20, getY() + 10);
+            selectionCircle.setSize(100, 50);
+        }
+    }
 
     /**
      * Drawns the CharacterActor.
@@ -268,8 +281,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void draw (SpriteBatch batch) {
         //Get the current color before drawing (Useful to allow animating the color from actions)
-        Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a);
+        batch.setColor(getColor());
 
         //Grey out if inactive
         if (!character.isActive() && !character.isDead() && character.isFriendly() && !this.actionInProgress() )
@@ -277,13 +289,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         //Draw selection circle when selected
         if (isSelected() ) {
-            selectionCircle.setPosition(getX()+20,getY()+10);
-            selectionCircle.setSize(100,50);
             selectionCircle.draw(batch,0.7f);
         }
 
         //Draw current animation
-
         batch.draw(currentFrame,getX()+offsetx
                 ,getY()+offsety
                 ,getOriginX()
@@ -294,22 +303,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
                 ,getScaleY()
                 ,getRotation());
 
-        /*
-        batch.draw(debugBorder,getX()+offsetx
-                ,getY()+offsety
-                ,getOriginX()
-                ,getOriginY()
-                ,getWidth()
-                ,getHeight()
-                ,getScaleX()
-                ,getScaleY()
-                ,getRotation());
-                */
-
-
-
-
-        //Draw effects
+      //Draw effects
         //for (EffectAction effect: effectActions ) {
         if (effectActions.size>0)
             effectActions.first().draw(batch);
@@ -317,7 +311,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         //Draw attached actors
         lifebar.draw(batch,this.getColor().a);
-        //for(Label l: messages) l.draw(batch,1);
         characterMessenger.draw(batch,1.0f);
 
         //Return color to normal
@@ -359,20 +352,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void turnStart () {
         character.startTurn();
-        //Execute start of turn effects
-        /*
-        for (Effect e : this.getCharacter().getEffects()) {
-            LOG.print(3,"Turn start effect "+e.getDiceNumber()+e.getGameSegment());
-            if (e.getGameSegment()== Effect.GameSegmentType.TURN_START) {
-
-                EffectAction ea = new EffectAction(e, 0.15f);
-                this.addEffectAction(ea);
-            }
-        }
-        */
     }
-
-
 
 
     /**
@@ -466,7 +446,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onEffectTriggered (Effect e) {
-        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.hashCode());
+        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getTotalRoll());
 
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);
@@ -558,16 +538,5 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public MapCell getMapCell() {
         return character.getCell();
     }
-
-    public void takeDamage(int damage) {
-        character.hit(damage);
-        //TODO: animate when hit
-    }
-
-    public void substractAction () {
-        character.setAvailableActions(character.getAvailableActions() - 1);
-    }
-
-
 
 }

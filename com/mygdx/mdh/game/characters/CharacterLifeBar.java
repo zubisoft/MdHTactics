@@ -62,8 +62,8 @@ public class CharacterLifeBar extends Actor implements CharacterChangeListener {
     public void draw(SpriteBatch batch, float parentAlpha) {
 
         //Update graphics
-        Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, parentAlpha);
+        batch.setColor(getColor()); //Ignoring parent alpha here really
+
 
         //barBackground.draw(batch,1.0f);
 

@@ -39,6 +39,10 @@ public class Mission {
     MissionType missionType;
 
     List<StoryText> introText;
+
+
+
+    List<StoryText> outroText;
     List<StoryText> storyText;
 
     Map missionMap;
@@ -66,6 +70,13 @@ public class Mission {
         }
     }
 
+    public List<StoryText> getOutroText() {
+        return outroText;
+    }
+
+    public void setOutroText(List<StoryText> outroText) {
+        this.outroText = outroText;
+    }
 
     public static Mission loadFromJSON (String name) {
 

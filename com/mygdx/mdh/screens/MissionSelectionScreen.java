@@ -77,7 +77,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
             switch (buttonType) {
                 case CONTINUE:
-                    StoryScreen screen = new StoryScreen(gameScreen);
+                    StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.INTRO);
                     screen.setMessages(currentSelectedMission.getMission().getIntroText());
                     LOG.print(1,"texto"+currentSelectedMission.getMission().getIntroText(),LOG.ANSI_GREEN);
                     gameScreen.setScreen(screen, transition);

@@ -29,7 +29,10 @@ public class StoryScreen extends AbstractGameScreen {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
             if(messageBar.hasMoreMessages()==false)
-                gameScreen.setScreen(new CombatScreen(gameScreen), transition);
+                switch(storyType) {
+                    case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
+                    case OUTRO: gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition); break;
+                }
             else {
                 messageBar.hide();
                 messageBar.show();
@@ -47,18 +50,22 @@ public class StoryScreen extends AbstractGameScreen {
     private static final String TAG = StoryScreen.class.getName();
 
 
+    public enum STORY_TYPE {
+        INTRO, OUTRO
+    }
 
-
+    STORY_TYPE storyType;
     Image background;
 
     SpriteBatch batch = new SpriteBatch();
 
     private boolean paused;
 
-    public StoryScreen(ScreenManager game) {
+    public StoryScreen(ScreenManager game, STORY_TYPE storyType) {
         super(game);
 
         messageBar = new StoryMessageBar();
+        this.storyType = storyType;
 
         /*
         StoryText x = new StoryText("Que pasa hagen, pedazo de pardo, que habra que hacer el mensaje de navidad no?","zubi");

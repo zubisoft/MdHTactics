@@ -26,6 +26,7 @@ public class EffectAction  extends Action {
     boolean finished;
 
     Effect effect;
+    String message;
 
     int width;
     int height;
@@ -41,9 +42,11 @@ public class EffectAction  extends Action {
         this.begin=true;
         this.stateTime=0;
         this.effect = effect;
+        this.message = effect.notification(); //This is done at this moment,as the final effect of the effect might be different when it has multiple hits.
         this.loadAnimations();
         this.finished = false;
         currentFrame = effectAnimation.getKeyFrame(0, true);
+        LOG.print("[EffectACtion] "+effect.getRoll().getTotalRoll()+"/"+effect.notification());
     }
 
 
@@ -53,7 +56,8 @@ public class EffectAction  extends Action {
         //Effects are applied first, when the animation starts
         if (this.begin ) {
             effect.setTarget(((CharacterActor) target).getCharacter());
-            ((CharacterActor) target).showMessage(effect.getIcon(),effect.notification(), effect.getColor());
+            ((CharacterActor) target).showMessage(effect.getIcon(),message, effect.getColor());
+            LOG.print("[EffectACtion] *"+effect.getRoll().getTotalRoll()+"/"+effect.notification());
             //effect.apply();
 
             //((CharacterActor) target).showMessage(effect.getOutcome());
@@ -83,14 +87,6 @@ public class EffectAction  extends Action {
                     ,target.getX()+offsetX+target.getWidth()/2-currentFrame.getRegionWidth()/2
                     ,target.getY()
             );
-                    /*
-                ,target.getOriginX()
-                ,target.getOriginY()
-                ,width
-                ,height
-                ,target.getScaleX()
-                ,target.getScaleY()
-                ,target.getRotation());*/
 
     }
 

@@ -20,6 +20,8 @@ public class CombatRenderer {
     public static SpriteBatch batch;
 
 
+
+
     public CombatRenderer(CombatController controller) {
         batch = new SpriteBatch();
 
@@ -34,6 +36,8 @@ public class CombatRenderer {
 
         cameraGUI = new OrthographicCamera();
         cameraGUI.setToOrtho(false,w,h);
+
+
         cameraGUI.update();
 
         controller.getViewport().setCamera(camera);
@@ -46,6 +50,7 @@ public class CombatRenderer {
     private void renderObjects(SpriteBatch batch) {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
         for (CharacterActor c: controller.getCharacterActors()) {
             c.draw(batch);
         }
@@ -73,7 +78,12 @@ public class CombatRenderer {
         camera.update();
 
         controller.cameraManager.applyTo(camera);
-        controller.update(0);
+
+        /*
+            why?
+            controller.update(0);
+
+        */
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

@@ -8,6 +8,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
+import com.mygdx.mdh.game.util.LOG;
+import com.mygdx.mdh.screens.Transitions.ScreenTransition;
+import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 
 public class CombatScreen extends AbstractGameScreen {
@@ -31,6 +34,20 @@ public class CombatScreen extends AbstractGameScreen {
         if(!paused) {
             // Update gameScreen world by the time that has passed since last rendered frame.
             combatController.update(deltaTime);
+
+            if (combatController.isVictory() && combatController.isCombatFinished()) {
+                ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+                StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.OUTRO);
+                screen.setMessages(gameScreen.getGame().getCurrentMission().getOutroText());
+                gameScreen.setScreen(screen, transition);
+            }
+
+            if (combatController.isGameOver() && combatController.isCombatFinished()) {
+                ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+                MissionSelectionScreen screen = new MissionSelectionScreen(gameScreen);
+                gameScreen.setScreen(screen, transition);
+            }
+
         }
 
         // Set clear screen color to: CornFlower blue

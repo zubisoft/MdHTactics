@@ -318,6 +318,10 @@ public class CombatController extends Stage {
     }
 
 
+    public boolean isCombatFinished() {
+        return (gameEnd && !messageInProgress && !combatPaused);
+    }
+
     boolean messageInProgress = false;
 
     public void update(float deltaTime) {

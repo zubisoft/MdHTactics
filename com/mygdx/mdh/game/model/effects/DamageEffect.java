@@ -27,15 +27,6 @@ public class DamageEffect extends Effect {
         //For those effects that have a chance to happen
         //if ( Math.random() > chance) return ;
 
-        if(diceNumber>=0) {
-            //A damage roll can never be negative - Use heal for that
-            rolledResult = Math.max(Dice.roll(diceNumber, diceSides) + modifier,0);
-            roll.setBaseRoll(rolledResult);
-            roll.setModifier(modifier);
-            roll.setPercentModifier(percentModifier);
-            roll.setEffectType(Roll.RollType.DAMAGE);
-        }
-
     }
 
 
@@ -44,8 +35,20 @@ public class DamageEffect extends Effect {
         //For those effects that have a chance to happen
         if ( Math.random() > chance) return;
 
+
         if (duration>=0) {
             for (int i=0; i<hits;i++) {
+
+                if(diceNumber>=0) {
+                    //A damage roll can never be negative - Use heal for that
+                    rolledResult = Math.max(Dice.roll(diceNumber, diceSides) + modifier,0);
+                    roll.setBaseRoll(rolledResult);
+                    roll.setModifier(modifier);
+                    roll.setPercentModifier(percentModifier);
+                    roll.setEffectType(Roll.RollType.DAMAGE);
+                }
+
+
                 if (roll != null && target != null) {
                     LOG.print(2, "[DamageEffect] Inflicted: " + roll.getTotalRoll(), LOG.ANSI_RED);
                     target.hit(roll.getTotalRoll());
