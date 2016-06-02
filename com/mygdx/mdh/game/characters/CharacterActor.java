@@ -74,6 +74,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     List<Label> messages;
     float stateTime;
 
+    public CharacterMessenger getCharacterMessenger() {
+        return characterMessenger;
+    }
+
     CharacterMessenger characterMessenger;
 
     //Game Logic
@@ -311,7 +315,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         //Draw attached actors
         lifebar.draw(batch,this.getColor().a);
-        characterMessenger.draw(batch,1.0f);
+
 
         //Return color to normal
         if (!character.isActive()) batch.setColor(1f, 1f, 1f, 1f);

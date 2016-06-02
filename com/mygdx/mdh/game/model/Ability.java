@@ -145,7 +145,14 @@ public class Ability {
         */
 
 
-        //Apply secondary effects
+
+        //Use ability icon instead of just default
+        for (Effect e: effects) {
+            if (e.isDefaultIcon())
+                e.setIcon(this.getPic());
+        }
+
+        //Apply effects
         if (effects != null)
             target.addEffect(effects);
 

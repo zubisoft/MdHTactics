@@ -54,6 +54,12 @@ public class CombatRenderer {
         for (CharacterActor c: controller.getCharacterActors()) {
             c.draw(batch);
         }
+
+        for (CharacterActor c: controller.getCharacterActors()) {
+            //Draw messages on top - Avoids characters obstructing game messages.
+            c.getCharacterMessenger().draw(batch,1.0f);
+        }
+
         batch.end();
     }
 

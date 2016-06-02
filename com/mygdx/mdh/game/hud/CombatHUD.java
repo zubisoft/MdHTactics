@@ -172,8 +172,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         messageBar.show(duration);
         controller.setCombatPaused(true);
 
-
-
     }
 
 
@@ -205,9 +203,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
 
 
-
-
-        //effectIcons = new ArrayList<>();
+        //TODO: hacer esto en cada iteracion es una gitanada
+        effectsLayout.clear();
         for (Effect e : controller.getSelectedCharacter().getCharacter().getEffects()) {
             EffectButton eb = new EffectButton(e);
             effectsLayout.add(eb).size(20,20).pad(2);

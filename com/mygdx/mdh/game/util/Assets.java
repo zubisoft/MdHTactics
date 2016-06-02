@@ -37,6 +37,7 @@ public class Assets implements Disposable, AssetErrorListener {
     public Map<String, AtlasRegion> maps = new HashMap<String, AtlasRegion>();
     public Map<String, AtlasRegion> guiElements = new HashMap<String, AtlasRegion>();
     public Map<String, AtlasRegion> effects = new HashMap<String, AtlasRegion>();
+    public Map<String, AtlasRegion> abilities = new HashMap<String, AtlasRegion>();
 
     public class AssetFonts {
         public final BitmapFont defaultSmall;
@@ -75,6 +76,7 @@ public class Assets implements Disposable, AssetErrorListener {
         assetManager.load(Constants.TEXTURE_ATLAS_COMBAT_UI, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_MAPS, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_EFFECTS, TextureAtlas.class);
+        assetManager.load(Constants.TEXTURE_ATLAS_ABILITIES, TextureAtlas.class);
 
         // load sounds
         /*
@@ -119,8 +121,14 @@ public class Assets implements Disposable, AssetErrorListener {
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_EFFECTS);
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(2, "[Assets] Loading GUI: " + g.name);
+            LOG.print(2, "[Assets] Loading effects: " + g.name);
             effects.put(g.name, atlas.findRegion(g.name));
+        }
+
+        atlas = assetManager.get(Constants.TEXTURE_ATLAS_ABILITIES);
+        for (AtlasRegion g: atlas.getRegions()) {
+            LOG.print(2, "[Assets] Loading abilities: " + g.name);
+            abilities.put(g.name, atlas.findRegion(g.name));
         }
 
 

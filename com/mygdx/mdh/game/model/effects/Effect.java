@@ -89,6 +89,10 @@ public class Effect  /*implements Cloneable*/  {
 
     int stacking = 0;
 
+
+
+    boolean defaultIcon=true;
+
     public void copy (Effect e) {
         name = e.name;
         effectType = e.effectType;
@@ -224,7 +228,9 @@ public class Effect  /*implements Cloneable*/  {
     }
 
     public void setIcon(String icon) {
-        this.icon = icon;
+
+    defaultIcon = false;
+    this.icon = icon;
     }
 
     public Roll getRoll() {
@@ -249,6 +255,8 @@ public class Effect  /*implements Cloneable*/  {
     }
 
     public void setPic(String pic) {
+
+
         this.pic = pic;
     }
 
@@ -362,6 +370,10 @@ public class Effect  /*implements Cloneable*/  {
 
     public String notification() {
         return "*"+getEffectType()+" ("+getDuration()+" rounds)";
+    }
+
+    public boolean isDefaultIcon() {
+        return defaultIcon;
     }
 
     /*

@@ -93,8 +93,13 @@ public class CharacterMessenger extends Group {
         ));
         */
 
-        //TODO put label and image together in a minitable - also fix z indices
-        ImageButton icon = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.effects.get("icons/"+iconName))));
+        //TODO probably  we can place this logic in a better place
+        ImageButton icon;
+        if (Assets.instance.effects.get("icons/"+iconName) != null) {
+            icon = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.effects.get("icons/" + iconName))));
+        } else {
+            icon = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.abilities.get( iconName))));
+        }
         icon.setSize(20,20);
         icon.setZIndex(20);
         icon.setPosition(actor.getX()+actor.offsetx-22,actor.getY()+actor.getHeight()-messages.size()*15);
@@ -110,6 +115,7 @@ public class CharacterMessenger extends Group {
         ));*/
 
         Table layout = new Table();
+        layout.setZIndex(1000);
         layout.add(icon).size(20,20);
         layout.add(la).height(20).padLeft(5);
 

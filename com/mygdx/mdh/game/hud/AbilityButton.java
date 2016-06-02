@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.model.Ability;
 import com.badlogic.gdx.graphics.Texture;
+import com.mygdx.mdh.game.util.Assets;
 
 /**
  * Created by zubisoft on 28/01/2016.
@@ -22,7 +23,7 @@ public class AbilityButton extends ImageButton {
     Texture sprite;
 
     public AbilityButton(Ability ability) {
-        super((new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal(ability.getPic()))))));
+        super((new SpriteDrawable(new Sprite(Assets.instance.abilities.get(ability.getPic())))));
         this.ability = ability;
 
         this.setBounds(this.getX(),this.getY(), 50,50);
