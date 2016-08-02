@@ -65,7 +65,9 @@ public class AttributeModifierEffect extends Effect {
     }
 
     public int getAttributeModifier() {
+
         return roll.getRoll();
+
     }
 
 

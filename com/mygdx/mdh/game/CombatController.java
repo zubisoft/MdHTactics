@@ -483,23 +483,10 @@ public class CombatController extends Stage {
             case SELF:
                 getCharacterActor(a.getSource()).useAbility(a, target);
                 break;
-            case ONE_ALLY:
-                getCharacterActor(a.getSource()).useAbility(a, target);
+            default:
+                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getMapCell(),a.getArea(),a.getTargetType()));
                 break;
-            case ONE_ENEMY:
-                getCharacterActor(a.getSource()).useAbility(a, target);
-                break;
-            case ONE_ANY:
-                getCharacterActor(a.getSource()).useAbility(a, target);
-                break;
-            case ALL_ALLIES:
-                getCharacterActor(a.getSource()).useAbility(a, getFriendlies());
-                break;
-            case ALL_ENEMIES:
-                getCharacterActor(a.getSource()).useAbility(a, getBaddies());
-                break;
-            case AREA:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getMapCell(),a.getArea()));
+
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
@@ -529,33 +516,21 @@ public class CombatController extends Stage {
 
 
         CharacterActor source = getCharacterActor(a.getSource());
+        boolean executed = true;
 
         switch (a.getTargetType()) {
             case SELF:
-                source.useAbility(a, getCharacersInArea(target.getCell(),0));
+                source.useAbility(a, source);
                 break;
-            case ONE_ALLY:
-                source.useAbility(a, getCharacersInArea(target.getCell(),0));
+           default:
+                source.useAbility(a, getCharacersInArea(target.getCell(),a.getArea(),a.getTargetType()));
                 break;
-            case ONE_ENEMY:
-                source.useAbility(a, getCharacersInArea(target.getCell(),0));
-                break;
-            case ONE_ANY:
-                source.useAbility(a, getCharacersInArea(target.getCell(),0));
-                break;
-            case ALL_ALLIES:
-                source.useAbility(a, getFriendlies());
-                break;
-            case ALL_ENEMIES:
-                source.useAbility(a, getBaddies());
-                break;
-            case AREA:
-                source.useAbility(a, getCharacersInArea(target.getCell(),a.getArea()));
+
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
 
-        combat.setGameStep(Combat.GameStepType.SELECTION);
+        if(executed) combat.setGameStep(Combat.GameStepType.SELECTION);
     }
 
     public void setGameStep(Combat.GameStepType step) {
@@ -636,17 +611,27 @@ public class CombatController extends Stage {
     }
 
     public List<CharacterActor> getCharacersInArea (MapCell center, int area) {
+        return getCharacersInArea ( center,  area, Ability.AbilityTarget.ALL);
+    }
+
+    public List<CharacterActor> getCharacersInArea (MapCell center, int area, Ability.AbilityTarget targetType) {
         List<CharacterActor> list = new ArrayList<>();
-        System.out.println("[CombatController] Checking area radius "+area);
         for(CharacterActor c: characterActors) {
             if (IsoMapActor.distance(center,c.getMapCell()) <= area) {
-                System.out.println("[CombatController] Character in area"+c);
-                list.add(c);
+                switch (targetType) {
+                    case ALLIES:  if(c.isFriendly())list.add(c);  break;
+                    case ENEMIES: if(!c.isFriendly())list.add(c); break;
+                    case ALL:     list.add(c); break;
+                    //case SELF:    break;
+                }
+
             }
         }
 
         return list;
 
     }
+
+
 
 }

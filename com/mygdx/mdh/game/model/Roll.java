@@ -63,7 +63,7 @@ public class Roll {
 
     public int getRoll () {
         if (!rolled) roll();
-        return Math.round((1+percentModifier)*(baseRoll+modifier));
+        return Math.round((1+percentModifier)*(baseRoll));
     }
 
     public int getBaseRoll() {

@@ -31,7 +31,10 @@ public class Ability {
      * Type of target for the ability
      */
     public enum AbilityTarget {
-        SELF, ONE_ALLY, ALL_ALLIES, ONE_ENEMY, ALL_ENEMIES, ONE_ANY, ANY, AREA
+        SELF,          //Target and source must be the same
+        ALLIES,        //Target must be friendly
+        ENEMIES,       //Target must be non friendly
+        ALL            //Affects any target
     }
 
     AbilityTarget targetType;
@@ -73,7 +76,9 @@ public class Ability {
     public Ability() {
         effects = new ArrayList<Effect>();
         //addEffect(new Effect("FIRE"));
+
         range = 1;
+
         hits = 1;
         area = 0;
 
@@ -228,6 +233,7 @@ public class Ability {
     }
 
     public void setTargetType(AbilityTarget targetType) {
+        if (targetType == AbilityTarget.SELF) range=0;
         this.targetType = targetType;
     }
 
