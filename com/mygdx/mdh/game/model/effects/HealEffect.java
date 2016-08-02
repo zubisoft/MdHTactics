@@ -2,7 +2,6 @@ package com.mygdx.mdh.game.model.effects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
@@ -16,7 +15,8 @@ public class HealEffect  extends Effect{
         public HealEffect () {
             super();
 
-            effectType=EffectType.HEAL;
+            effectClass = EffectClass.HEAL;
+            effectType = EffectType.BUFF;
             color= Color.GREEN;
         }
 
@@ -27,13 +27,8 @@ public class HealEffect  extends Effect{
             //For those effects that have a chance to happen
             //if ( Math.random() > chance) return ;
 
-            if(diceNumber>=0) {
-                rolledResult = Dice.roll(diceNumber, diceSides) + modifier;
-                roll.setBaseRoll(rolledResult);
-                roll.setModifier(modifier);
-                roll.setPercentModifier(percentModifier);
-                roll.setEffectType(Roll.RollType.DAMAGE);
-            }
+            roll = new Roll(Roll.RollType.GENERIC,diceNumber,diceSides,modifier);
+            roll.roll();
 
         }
 
@@ -45,8 +40,8 @@ public class HealEffect  extends Effect{
 
             if (duration>=0) {
                 if (roll != null && target != null) {
-                    LOG.print(2,"[HealEffect] Healed: "+roll.getTotalRoll(), LOG.ANSI_GREEN);
-                    target.hit(-roll.getTotalRoll());
+                    LOG.print(2,"[HealEffect] Healed: "+roll.getRoll(), LOG.ANSI_GREEN);
+                    target.hit(-roll.getRoll());
                 }
             }
 
@@ -54,13 +49,13 @@ public class HealEffect  extends Effect{
         }
 
         public String notification() {
-            return "+"+roll.getTotalRoll()+" HP";
+            return "+"+roll.getRoll()+" HP";
         }
 
     public HealEffect copy () {
         HealEffect e = new HealEffect();
         e.name = name;
-        e.effectType = effectType;
+        e.effectClass = effectClass;
         e.effectSubType = effectSubType;
         e.gameSegment = gameSegment;
         e.duration = duration;
@@ -74,8 +69,7 @@ public class HealEffect  extends Effect{
         e.color = color;
         e.diceNumber = diceNumber;
         e.diceSides = diceSides;
-        e.percentModifier = percentModifier;
-        e.rolledResult = rolledResult;
+        e.chanceModifier = chanceModifier;
         e.stacking = stacking;
         e.effectListeners  = new ArrayList<>();
         e.modifier = modifier;

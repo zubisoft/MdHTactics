@@ -5,14 +5,12 @@ package com.mygdx.mdh.screens;
  */
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
@@ -24,10 +22,10 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 
-public class MainMenuScreen extends AbstractGameScreen {
+public class CombatDebriefScreen extends AbstractGameScreen {
 
     private enum ButtonType {
-        NEW_GAME, LOAD_GAME, QUIT
+        CONTINUE
     }
 
     private class MenuClickListener extends ClickListener {
@@ -43,20 +41,18 @@ public class MainMenuScreen extends AbstractGameScreen {
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-
-            switch (buttonType) {
-                case NEW_GAME:
-                    gameScreen.setGame(Game.loadNewGame());
-                    gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
-                    break;
-                case LOAD_GAME:
-                    gameScreen.setScreen(new LoadGameScreen(gameScreen), transition);
-                    break;
-                case QUIT: break;
+            if (combatController.isVictory() && combatController.isCombatFinished()) {
+                ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+                StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.OUTRO);
+                screen.setMessages(gameScreen.getGame().getCurrentMission().getOutroText());
+                gameScreen.setScreen(screen, transition);
             }
 
-            //new StoryScreen(gameScreen)
+            if (combatController.isGameOver() && combatController.isCombatFinished()) {
+                ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+                MissionSelectionScreen screen = new MissionSelectionScreen(gameScreen);
+                gameScreen.setScreen(screen, transition);
+            }
 
         }
     }
@@ -65,7 +61,7 @@ public class MainMenuScreen extends AbstractGameScreen {
 
     MenuClickListener listener;
 
-    private static final String TAG = MainMenuScreen.class.getName();
+    private static final String TAG = CombatDebriefScreen.class.getName();
 
     CombatController combatController;
     CombatRenderer combatRenderer;
@@ -79,9 +75,19 @@ public class MainMenuScreen extends AbstractGameScreen {
 
     SpriteBatch batch = new SpriteBatch();
 
+    public CombatController getCombatController() {
+        return combatController;
+    }
+
+    public void setCombatController(CombatController combatController) {
+        this.combatController = combatController;
+    }
+
+
+
     private boolean paused;
 
-    public MainMenuScreen(ScreenManager game) {
+    public CombatDebriefScreen(ScreenManager game) {
         super(game);
 
 
@@ -94,27 +100,21 @@ public class MainMenuScreen extends AbstractGameScreen {
 
         backgroundLayout.add(background);
 
+        final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+        Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
+
         btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_top_button"))));
-        listener = new MenuClickListener(ButtonType.NEW_GAME);
+        listener = new MenuClickListener(ButtonType.CONTINUE);
         btnNew.addListener(listener);
 
-        btnLoad = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_loadbutton"))));
-        listener = new MenuClickListener(ButtonType.LOAD_GAME);
-        btnLoad.addListener(listener);
-
-        btnQuit = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_quitbutton"))));
-        listener = new MenuClickListener(ButtonType.QUIT);
-        btnQuit.addListener(listener);
 
 
         buttonList = new Table();
         buttonList.pad(10);
         buttonList.setPosition(600,500);
+        buttonList.add(la);
+        buttonList.row();
         buttonList.add(btnNew);
-        buttonList.row();
-        buttonList.add(btnLoad);
-        buttonList.row();
-        buttonList.add(btnQuit);
 
         Stack stack = new Stack();
         stage.addActor(stack);

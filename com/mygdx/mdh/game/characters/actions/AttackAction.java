@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import java.util.List;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.Ability;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 

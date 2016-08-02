@@ -45,7 +45,10 @@ public class MissionSelectionScreen extends AbstractGameScreen {
             if (currentSelectedMission != null) currentSelectedMission.setSelected(false);
             currentSelectedMission = portrait;
             portrait.setSelected(true);
+            gameScreen.game.setCurrentMission(currentSelectedMission.getMission());
 
+
+            gameScreen.getGame().saveGame();
 
             System.out.println(gameScreen.game.getCurrentParty());
             System.out.println(gameScreen.game.getCurrentMission().getMissionMap());

@@ -71,6 +71,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
 
+
             switch (buttonType) {
                 case CONTINUE:
                     gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition);
@@ -155,7 +156,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
 
-                System.out.println("portrait "+portraits[i]);
+
 
             } else {
                 portraits[i] = new Portrait(null);

@@ -119,10 +119,10 @@ public class CharacterMessenger extends Group {
         layout.add(icon).size(20,20);
         layout.add(la).height(20).padLeft(5);
 
-        layout.setPosition(actor.getX()+actor.offsetx-22,actor.getY()+actor.getHeight()-messages.size()*15);
+        layout.setPosition(actor.getX()+actor.offsetx,actor.getY()+actor.getHeight()-messages.size()*15);
         this.addActor(layout);
         layout.addAction(Actions.sequence(
-                Actions.moveTo(actor.getX()+actor.offsetx-22, actor.getY()+actor.getHeight()+50-messages.size()*15,1, Interpolation.exp5Out)
+                Actions.moveTo(actor.getX()+actor.offsetx, actor.getY()+actor.getHeight()+50-messages.size()*15,1, Interpolation.exp5Out)
                 ,Actions.delay(1)
                 ,Actions.alpha(0,2,Interpolation.fade)
                 ,new RemoveFromListAction(icons )

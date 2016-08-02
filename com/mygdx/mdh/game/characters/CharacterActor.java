@@ -58,6 +58,10 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     ShapeRenderer s;
     Sprite selectionCircle;
 
+
+
+    boolean highlighted;
+
     TextureRegion currentFrame;
 
     //Effects applied on the character
@@ -201,6 +205,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      * @param deltaTime
      */
 
+
     public void update(float deltaTime) {
 
         stateTime +=deltaTime;
@@ -262,6 +267,21 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
 
+    public boolean isHighlighted() {
+        return highlighted;
+    }
+
+    public void setHighlight(Color c) {
+        this.setColor(c);
+        this.highlighted = true;
+    }
+
+    public void removeHighlight() {
+        this.setColor(Color.WHITE);
+        this.highlighted = false;
+    }
+
+
     public void setOffset(float x, float y) {
         offsetx=x;
         offsety=y;
@@ -271,6 +291,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     @Override
     protected void positionChanged() {
         super.positionChanged();
+        //this.setZIndex((int)this.getMapCell().getMapCoordinates().y);
+
         if(selectionCircle != null) {
             selectionCircle.setPosition(getX() + 20, getY() + 10);
             selectionCircle.setSize(100, 50);
@@ -401,8 +423,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public void receiveAbility (Ability a) {
         if (a != null) {
 
-            if(IsoMapActor.distance(a.getSource().getCell(),this.getCharacter().getCell()) <= a.getRange())
+            //if(IsoMapActor.distance(a.getSource().getCell(),this.getCharacter().getCell()) <= a.getRange())
                 a.apply(this.getCharacter());
+
 
             this.showMessage(a.getMessage());
         }
@@ -442,6 +465,11 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public void onEffectApply (Effect e) {
         if (e.getTarget()==this.getCharacter()) {
             e.addEffectListener(this);
+
+            /*
+            //TODO this is pretty much a workaround, we should be probably triggering this as an event from the effect
+            if (e.getDuration()>0) showMessage(e.getIcon(),e.notification(), e.getColor());
+            */
         }
 
     }
@@ -450,7 +478,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onEffectTriggered (Effect e) {
-        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getTotalRoll());
+        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getRoll());
 
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);

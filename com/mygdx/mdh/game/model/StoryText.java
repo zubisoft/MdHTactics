@@ -6,6 +6,17 @@ package com.mygdx.mdh.game.model;
 public class StoryText {
     public String text;
     public Character character;
+    public String characterName;
+
+    public String getCharacterName() {
+        return characterName;
+    }
+
+    public void setCharacterName(String characterName) {
+        this.characterName = characterName;
+    }
+
+
 
 
     public String getText() {

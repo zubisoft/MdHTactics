@@ -7,23 +7,34 @@ import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
 
+import java.util.EnumSet;
+
 /**
  * Created by zubisoft on 29/03/2016.
  */
-public class ShieldEffect extends Effect implements CharacterChangeListener {
+public class ProtectionEffect extends Effect implements CharacterChangeListener {
 
     boolean initialized=false;
-    int initialRoll;
-    int blockedDamage = 0;
     String notification;
 
-    public ShieldEffect () {
+    float perecentProtection;
+    int   fixedProtection;
+
+    EnumSet<EffectType> immunityType;
+    EnumSet<EffectSubType> immunitySubType;
+
+
+    public ProtectionEffect() {
         super();
 
         initialized = false;
         effectClass = EffectClass.SHIELD;
         effectType = EffectType.BUFF;
         color= Color.BLUE;
+
+        immunityType = EnumSet.noneOf(EffectType.class);
+        immunitySubType = EnumSet.noneOf(EffectSubType.class);
+
     }
 
     /**
@@ -34,10 +45,7 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         super.init();
         if (!initialized) {
             roll = new Roll(Roll.RollType.GENERIC,diceNumber,diceSides,modifier);
-            initialRoll= roll.roll();
-
             initialized=true;
-            notification = "Shielded "+initialRoll+"/"+initialRoll;
 
             effectTriggered();
         }
@@ -51,26 +59,30 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
      */
     public void process(Effect d) {
         super.process(d);
-        if ( roll.getRoll() <= 0 ) return;
+
+        if ( Math.random() > chance) return;
+
+        if (immunityType.contains(d.getEffectType()) || immunitySubType.contains(d.getEffectSubType())) {
+            d.setDuration(-1); // Completely cancelled
+            notification = "Immune!";
+            effectTriggered ();
+        }
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
             DamageEffect de = (DamageEffect)d;
 
-            int blocked=0;
+            int originalDamage=0;
+            int newDamage=0;
             for (int i=0; i<de.getHits();i++) {
                 if (de.getDamageRolls().get(i).getRoll() != null) {
-                    blocked = Math.min(initialRoll - blockedDamage, de.getDamageRolls().get(i).getRoll().getRoll());
-                    LOG.print("[Shield] blocking "+blocked+" original damage: "+de.getDamageRolls().get(i).getRoll().getRoll());
-                    de.getDamageRolls().get(i).getRoll().addModifier(-blocked);
-                    blockedDamage += blocked;
-                    LOG.print("new damage: "+de.getDamageRolls().get(i).getRoll().getRoll());
+                    originalDamage += de.getDamageRolls().get(i).getRoll().getRoll();
+                    de.getDamageRolls().get(i).getRoll().addPercentModifier(perecentProtection);
+                    de.getDamageRolls().get(i).getRoll().addModifier(fixedProtection);
+                    newDamage += de.getDamageRolls().get(i).getRoll().getRoll();
                 }
             }
 
-
-            notification = "Shielded "+(initialRoll-blockedDamage)+"/"+initialRoll;
-
-
+            notification = "Protected "+(originalDamage-newDamage)+"/"+originalDamage;
             effectTriggered ();
         }
     }
@@ -84,10 +96,13 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         return notification;
     }
 
-    public ShieldEffect copy () {
+    public ProtectionEffect copy () {
 
-        ShieldEffect e = new ShieldEffect();
+        ProtectionEffect e = new ProtectionEffect();
         e.copy(this);
+
+        e.perecentProtection = perecentProtection;
+        e.fixedProtection = fixedProtection;
 
         return e;
 

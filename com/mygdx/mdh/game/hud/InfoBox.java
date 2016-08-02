@@ -1,13 +1,12 @@
 package com.mygdx.mdh.game.hud;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.util.Assets;
@@ -17,7 +16,7 @@ import com.mygdx.mdh.game.util.Assets;
  */
 public class InfoBox extends Actor {
     private Table t,t1;
-    Label text = new Label("",Assets.uiSkin, "default-font", Color.WHITE);
+    TextArea textArea = new TextArea("",Assets.uiSkin, "default");
 
     public InfoBox () {
 
@@ -26,28 +25,43 @@ public class InfoBox extends Actor {
 
         t = new Table();
         t.setBackground(tableBackground);
-        t.setBounds(100,100,300,100);
+        t.setSize(300+20,100);
 
-        t1 = new Table();
-        t1.setBounds(100,100,100,100);
-        t1.align(Align.left);
-        t1.pad(10);
-        t1.add(text);
+
+
+        textArea.setSize(300,100);
 
     }
 
     @Override
     public void setPosition(float x, float y) {
-        t.setPosition(x,y);
-        t1.setPosition(x,y);
+        t.setPosition(x-10,y-10);
+        textArea.setPosition(x,y);
 
         super.setPosition(x, y);
 
 
     }
 
-    public void setText(String text) {
-        this.text.setText(text);
+    public void setTextArea(String text) {
+
+        if (text == null) return;
+
+            int counter = 0;
+            for (int i = 0; i < text.length(); i++) {
+                if (text.charAt(i) == '\n') {
+                    counter++;
+                }
+            }
+
+        this.textArea.setText(text);
+
+
+        textArea.setPrefRows(counter);
+        textArea.setHeight(counter*textArea.getStyle().font.getLineHeight());
+        t.setHeight(textArea.getHeight()+20);
+
+
 
     }
 
@@ -59,6 +73,6 @@ public class InfoBox extends Actor {
         t.draw(batch,0.8f);
         batch.setColor(1f, 1f, 1f,  1.0f);
 
-        t1.draw(batch,1.0f);
+        textArea.draw(batch,1.0f);
     }
 }

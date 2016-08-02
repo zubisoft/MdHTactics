@@ -3,6 +3,7 @@ package com.mygdx.mdh.game.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
 /**
  * Created by zubisoft on 13/05/2016.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Mission {
 
 
@@ -27,6 +30,7 @@ public class Mission {
     }
 
     public enum MissionType { NORMAL, BOSS }
+
 
     String missionId;
     String name;
@@ -57,9 +61,20 @@ public class Mission {
 
     }
 
+
+    public String getMissionId() {
+        return missionId;
+    }
+
+    public void setMissionId(String missionId) {
+        this.missionId = missionId;
+    }
+
     @JsonProperty("mapId")
     public void setMapId(String mapId) {
+        //LOG.print("Load mapId "+mapId);
         this.missionMap = Map.loadFromJSON(mapId);
+
     }
 
     @JsonProperty("baddiesId")

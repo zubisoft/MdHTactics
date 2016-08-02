@@ -1,13 +1,7 @@
 package com.mygdx.mdh.game;
 
-import com.badlogic.gdx.Gdx;
-import com.mygdx.mdh.game.characters.CharacterActor;
-import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.model.effects.Effect;
-import com.mygdx.mdh.game.model.effects.EffectListener;
 import com.mygdx.mdh.game.model.effects.EffectManagerListener;
-import com.mygdx.mdh.game.util.Dice;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +24,7 @@ public class EffectManager {
     public boolean apply( Effect effectTemplate ) {
 
         Effect e = effectTemplate.copy();
-        System.out.println("[EffectManager] Applying: "+e.getEffectType()+" to "+e.getTarget()+" "+e.hashCode());
+        System.out.println("[EffectManager] Applying: "+e.getEffectClass()+" to "+e.getTarget()+" "+e.hashCode());
 
         if (e.getTarget() == null) return false;
         notifyEffectApplyAttempt(e);
@@ -46,8 +40,6 @@ public class EffectManager {
             applyTargetEffects(e);
             e.execute();
         }
-
-        System.out.println("[EffectManager] Ready to apply effect!");
 
 
         e.apply();

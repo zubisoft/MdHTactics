@@ -2,57 +2,76 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.badlogic.gdx.math.Vector2;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import org.jgrapht.graph.*;
 
 /**
  * Created by zubisoft on 20/03/2016.
  */
 public class Map {
 
-    MapCell[][] mapCells = new MapCell[Constants.MAX_MAP_CELLWIDTH][Constants.MAX_MAP_CELLHEIGHT];
+    String mapId;
 
+    final int numCells = Constants.MAX_MAP_CELLWIDTH*Constants.MAX_MAP_CELLHEIGHT;
+
+    /** Actual map structure, organized by columns and rows  **/
+    private MapCell[][] mapCells = new MapCell[Constants.MAX_MAP_CELLWIDTH][Constants.MAX_MAP_CELLHEIGHT];
+
+    /** Auxiliar structure to access the map by cartesian coordinates **/
+    private final HashMap mapCellsCartesian = new HashMap<Vector2, MapCell>();
+
+    /** Auxiliar structure to establish cell connections, cost to move, inaccesibility **/
+    private ListenableUndirectedWeightedGraph<MapCell,DefaultWeightedEdge> mapGraph;
+
+    /** Proportion of cells that will be initialized as obstacles by default **/
+    float obstacleRate = 0.1f;
 
 
     public Map() {
+        mapGraph = new ListenableUndirectedWeightedGraph(DefaultWeightedEdge.class);
 
     }
 
-    /*
-    @JsonCreator
-    public  Map(@JsonProperty("mapId") String mapId) {
 
-        FileHandle file = Gdx.files.internal("core/assets/data/maps/"+"map_C01M01"+".txt");
-        String jsonData = file.readString();
+    public String getMapId() {
+        return mapId;
+    }
+
+    public void setMapId(String mapId) {
+        this.mapId = mapId;
+    }
 
 
-        //create ObjectMapper instance
-        ObjectMapper objectMapper = new ObjectMapper();
+    public void initObstacles () {
 
-        Map emp = new Map();
+        int randomRow,randomCol;
+        MapCell auxCell;
 
-        try {
+        for (int i = 0; i<= obstacleRate*numCells && i<1000; i++ ) {
+            randomRow = Dice.roll(Constants.MAX_MAP_CELLHEIGHT)-1;
+            randomCol = Dice.roll(Constants.MAX_MAP_CELLWIDTH)-1;
 
-            //System.out.println("Employee Object\n"+jsonData);
-            emp = objectMapper.readValue(jsonData, Map.class);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            auxCell = getCell(randomRow, randomCol);
+            if (auxCell.getCellType() != MapCell.CellType.IMPASSABLE) {
+                auxCell.setCellType(MapCell.CellType.IMPASSABLE);
+                auxCell.setSubCellType(MapCell.SubCellType.ROCK);
+                this.blockMapCell(auxCell);
+
+            }
+
         }
 
-
     }
-    */
-
 
 
 
@@ -64,6 +83,7 @@ public class Map {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Map emp = new Map();
+        emp.mapId = mapId;
 
         try {
 
@@ -77,8 +97,66 @@ public class Map {
         for (int row = 0; row < emp.getCellWidth(); row++) {
             for (int column = 0; column < emp.getCellHeight(); column++) {
                 emp.mapCells[row][column].setMapCoordinates(column,row);
+                emp.mapCells[row][column].setMap(emp);
+                emp.mapCellsCartesian.put(emp.mapCells[row][column].getCartesianCoordinates(), emp.mapCells[row][column]);
+                emp.mapGraph.addVertex(emp.mapCells[row][column]);
              }
         }
+
+        LOG.print(""+emp.mapCellsCartesian);
+
+        Vector2 auxVector ;
+        MapCell source, target;
+
+        for (int row = 0; row < emp.getCellWidth(); row++) {
+            for (int column = 0; column < emp.getCellHeight(); column++) {
+
+                for (float x=-1; x<=1;x++) {
+                    for (float y=-1; y<=1;y++) {
+
+                            source = emp.mapCells[row][column];
+
+
+                            auxVector = new Vector2(source.getCartesianCoordinates());
+                            auxVector.set(auxVector.x+x,auxVector.y+y);
+                            //LOG.print(""+auxVector);
+
+                            target = (MapCell)emp.mapCellsCartesian.get(auxVector);
+
+                            ///LOG.print(source+" "+target+" "+source.getCartesianCoordinates()+" "+auxVector);
+
+                                if (target != null && target != source) {
+                                    emp.mapGraph.addEdge(source,target);
+
+                                    if (y==0 || x==0) {
+                                        DefaultWeightedEdge e= emp.mapGraph.getEdge(source,target);
+                                        emp.mapGraph.setEdgeWeight(e,1.0);
+                                    } else {
+                                        DefaultWeightedEdge e= emp.mapGraph.getEdge(source,target);
+                                        emp.mapGraph.setEdgeWeight(e,1.5);
+                                    }
+
+                                }
+
+
+
+
+
+                    }
+                }
+
+
+
+
+            }
+        }
+
+       // List<DefaultWeightedEdge> list = DijkstraShortestPath.findPathBetween(emp.mapGraph,emp.mapCells[1][1],emp.mapCells[2][4]);
+
+        //LOG.print(""+list);
+
+        emp.initObstacles ();
+
 
 
         return emp;
@@ -143,6 +221,49 @@ public class Map {
 
         return cells;
     }
+
+    public Set<MapCell> getCellsRecursive (MapCell cell, double radius) {
+
+        Set l = new HashSet<MapCell>();
+
+
+        MapCell auxCell;
+        for(DefaultWeightedEdge ed: mapGraph.edgesOf(cell)) {
+
+            if (mapGraph.getEdgeWeight(ed) <= radius) {
+
+                auxCell =  mapGraph.getEdgeTarget(ed);
+                if (auxCell== cell)  auxCell = mapGraph.getEdgeSource(ed); //Although graph is non directional, the source/target remain fixed and need to be fixed this way
+
+                //LOG.print("Expanding "+auxCell+" radius "+(radius-mapGraph.getEdgeWeight(ed)));
+
+                l.addAll(getCellsRecursive(auxCell,radius-mapGraph.getEdgeWeight(ed)));
+            }
+
+        }
+
+        //LOG.print("Added "+cell);
+        l.add(cell);
+
+        return l;
+    }
+
+
+    public void blockMapCell(MapCell c) {
+
+            for(DefaultWeightedEdge e: mapGraph.edgesOf(c)) {
+                if (mapGraph.getEdgeWeight(e)<999999) //Avoid reblocking
+                    mapGraph.setEdgeWeight(e,mapGraph.getEdgeWeight(e)*999999);
+            }
+    }
+    public void unblockMapCell(MapCell c) {
+
+        for(DefaultWeightedEdge e: mapGraph.edgesOf(c)) {
+            if (mapGraph.getEdgeWeight(e)>=999999) //Avoid reunblocking
+                mapGraph.setEdgeWeight(e,mapGraph.getEdgeWeight(e)/999999);
+        }
+    }
+
 
 }
 

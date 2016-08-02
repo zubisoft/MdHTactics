@@ -41,6 +41,7 @@ public class AbilityButtonClickListener extends ClickListener {
         CombatHUD.showInfo(description,500,125);
 
 
+
         super.enter(event, abilityButton.getX()+x, abilityButton.getY()+y, pointer, fromActor);
 
     }

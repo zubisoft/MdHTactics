@@ -5,11 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.effects.Effect;
-import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 09/03/2016.
@@ -46,7 +44,6 @@ public class EffectAction  extends Action {
         this.loadAnimations();
         this.finished = false;
         currentFrame = effectAnimation.getKeyFrame(0, true);
-        LOG.print("[EffectACtion] "+effect.getRoll().getTotalRoll()+"/"+effect.notification());
     }
 
 
@@ -57,7 +54,6 @@ public class EffectAction  extends Action {
         if (this.begin ) {
             effect.setTarget(((CharacterActor) target).getCharacter());
             ((CharacterActor) target).showMessage(effect.getIcon(),message, effect.getColor());
-            LOG.print("[EffectACtion] *"+effect.getRoll().getTotalRoll()+"/"+effect.notification());
             //effect.apply();
 
             //((CharacterActor) target).showMessage(effect.getOutcome());
@@ -66,7 +62,6 @@ public class EffectAction  extends Action {
         }
 
         if (effectAnimation.isAnimationFinished(stateTime)) {
-            LOG.print(3,"[EffectAction] Action Removed");
             //actor.removeAction(this);
             finished=true;
             return true;
@@ -84,8 +79,8 @@ public class EffectAction  extends Action {
 
         if(!finished)
             batch.draw(currentFrame
-                    ,target.getX()+offsetX+target.getWidth()/2-currentFrame.getRegionWidth()/2
-                    ,target.getY()
+                    ,target.getX()+offsetX+target.getWidth()/2
+                    ,target.getY()+offsetY+target.getHeight()/2
             );
 
     }
@@ -115,7 +110,7 @@ public class EffectAction  extends Action {
 
         offsetX=0;
         //TODO configurar efectos como dios manda
-        if(effect.getEffectType()== Effect.EffectType.SHIELD) {
+        if(effect.getEffectClass()== Effect.EffectClass.SHIELD) {
             //83 is the width of a charaacteractor
             offsetX=0;
         }

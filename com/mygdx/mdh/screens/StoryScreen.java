@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.hud.StoryMessageBar;
+import com.mygdx.mdh.game.model.Combat;
 import com.mygdx.mdh.game.model.StoryText;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
@@ -32,6 +33,7 @@ public class StoryScreen extends AbstractGameScreen {
                 switch(storyType) {
                     case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
                     case OUTRO: gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition); break;
+
                 }
             else {
                 messageBar.hide();
@@ -40,6 +42,7 @@ public class StoryScreen extends AbstractGameScreen {
 
         }
     }
+
 
     private Stage stage;
 

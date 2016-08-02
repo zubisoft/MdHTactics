@@ -1,12 +1,14 @@
 package com.mygdx.mdh.game.controller;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Combat;
+import com.mygdx.mdh.game.util.LOG;
 
 
 /**
@@ -48,6 +50,10 @@ public class TiledMapClickListener extends ClickListener {
             stage.deselectCharacter();
             System.out.println("[Tile Clicked] "+actor.toString() );
 
+
+            //debug
+            //stage.getMap().highlightCells(actor,2, Color.BROWN);
+
         }
 
         if ( event.getButton() == Input.Buttons.RIGHT ) {
@@ -64,9 +70,13 @@ public class TiledMapClickListener extends ClickListener {
     @Override
     public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
         CombatController stage = (CombatController)event.getStage();
-        stage.showOutline(actor);
+        stage.showAreaOfEffect(actor.getCell());
 
         super.enter(event, actor.getX()+x, actor.getY()+y, pointer, fromActor);
+
+
+
+
 
 
     }
@@ -74,6 +84,7 @@ public class TiledMapClickListener extends ClickListener {
     @Override
     public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
         CombatController stage = (CombatController)event.getStage();
+        stage.hideAreaOfEffect(actor.getCell());
         super.exit(event, x, y, pointer, toActor);
 
     }

@@ -2,10 +2,8 @@ package com.mygdx.mdh.game.model.effects;
 
 
 import com.badlogic.gdx.graphics.Color;
-import com.mygdx.mdh.game.util.Dice;
+import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
-
-import java.util.ArrayList;
 
 /**
  * Created by zubisoft on 29/03/2016.
@@ -13,25 +11,47 @@ import java.util.ArrayList;
 public class DamageModifierEffect extends Effect {
 
     boolean initialized=false;
-    int initialRoll;
 
-    boolean negative;
+
+    /**
+     * Normally true to apply the modifier to outbound damage (damage emitted from the same source)
+     * However can be set to false to use it as a damage protection kind of effect
+     */
+    boolean outbound;
 
     public DamageModifierEffect() {
         super();
 
         initialized = false;
-        effectType=EffectType.DAMAGE_MODIFIER;
+        effectClass = EffectClass.DAMAGE_MODIFIER;
+        effectType = EffectType.BUFF;
         color= Color.BLUE;
+        outbound = true;
+
     }
 
+
+    public DamageModifierEffect copy () {
+        DamageModifierEffect e = new DamageModifierEffect();
+        e.copy(this);
+        e.outbound = outbound;
+
+        return e;
+    }
+
+
     /**
-     * Set the initial shield strength
+     * Sets the modifier to be applied. This happens only once when the effect is first initialized.
      * @return
      */
     public void init() {
+        super.init();
+
         if (!initialized) {
-            rolledResult = (negative?-1:1)*Dice.roll(diceNumber, diceSides) + modifier;
+            roll = new Roll(Roll.RollType.GENERIC,diceNumber,diceSides,modifier);
+            roll.roll();
+
+            effectTriggered();
         }
     }
 
@@ -41,14 +61,27 @@ public class DamageModifierEffect extends Effect {
      * @return
      */
     public void process(Effect d) {
+        super.process(d);
 
-        if ( rolledResult == 0 ) return;
+        LOG.print(2,"[DamageModifierEffect] Applied: "+roll.getRoll()+" damage modifier", LOG.ANSI_BLUE);
 
-        if (d.getEffectType()==EffectType.DAMAGE) {
+        if ( roll.getRoll() == 0 ) return;
 
-            d.getRoll().addModifier(rolledResult);
+        if (outbound && d.source != this.target) return;
+        if (!outbound && d.source == this.target) return; //This would exclude damage going to oneself
 
-            LOG.print(2,"[DamageModifierEffect] Applied: "+rolledResult+" damage modifier", LOG.ANSI_BLUE);
+        if (d.getEffectClass()== EffectClass.DAMAGE) {
+
+            DamageEffect de = (DamageEffect)d;
+
+            for (int i=0; i<de.getHits();i++) {
+                if (de.getDamageRolls().get(i).getRoll() != null)
+                    de.getDamageRolls().get(i).getRoll().addModifier(roll.getRoll());
+            }
+
+            d.setChanceModifier(this.getChanceModifier());
+
+            LOG.print(2,"[DamageModifierEffect] Applied: "+roll.getRoll()+" damage modifier", LOG.ANSI_BLUE);
 
             effectTriggered ();
         }
@@ -56,49 +89,16 @@ public class DamageModifierEffect extends Effect {
 
 
     public String toString() {
-        return "*"+getEffectType()+" ("+rolledResult+" HP)";
+        return "*"+ getEffectClass()+" ("+roll.getRoll()+" HP)";
     }
 
     public String notification() {
-        return " Applied "+(negative?"-":"+")+" damage modifier ";
+        return "Damage Modifier";
     }
 
-    public DamageModifierEffect copy () {
 
-        DamageModifierEffect e = new DamageModifierEffect();
-            e.name = name;
-            e.effectType = effectType;
-            e.effectSubType = effectSubType;
-            e.gameSegment = gameSegment;
-            e.duration = duration;
-            e.roll = roll;
-            e.chance = chance;
-            e.source = source;
-            e.target = target;
-            e.pic = pic;
-            e.icon = icon;
-            e.outcome = outcome;
-            e.color = color;
-            e.diceNumber = diceNumber;
-            e.diceSides = diceSides;
-            e.percentModifier = percentModifier;
-            e.rolledResult = rolledResult;
-            e.stacking = stacking;
-            e.effectListeners  = new ArrayList<>();
-            e.modifier = modifier;
 
-            e.negative = negative;
 
-            return e;
 
-    }
 
-    public boolean isNegative() {
-        return negative;
-    }
-
-    public void setNegative(boolean negative) {
-        LOG.print("[DME] negative set "+negative);
-        this.negative = negative;
-    }
 }

@@ -1,5 +1,6 @@
 package com.mygdx.mdh.game.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
@@ -40,8 +41,8 @@ public class Ability {
 
     int area;
 
-    Character source;
-    Character target;
+    @JsonIgnore    Character source;
+    @JsonIgnore    Character target;
 
     String pic;
     String name;
@@ -75,6 +76,8 @@ public class Ability {
         range = 1;
         hits = 1;
         area = 0;
+
+        pic="btn-flame";
     }
 
 

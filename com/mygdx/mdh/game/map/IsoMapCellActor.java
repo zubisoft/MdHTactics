@@ -26,6 +26,8 @@ public class IsoMapCellActor extends Actor {
     final TextureRegion highlightTexture = Assets.instance.maps.get("tiles/tile-white-256x128");
     final TextureRegion outline = Assets.instance.maps.get("tiles/tile-outline-256x128");
 
+    final TextureRegion rock = Assets.instance.maps.get("objects/desert_rocks_small");
+
     final TextureRegion texture_bottomleft = new TextureRegion(outline);
     final TextureRegion texture_topleft = new TextureRegion(outline);
     final TextureRegion texture_bottomright = new TextureRegion(outline);
@@ -41,7 +43,7 @@ public class IsoMapCellActor extends Actor {
     final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
     Label la;
 
-    boolean debug = false;
+    boolean debug = true;
 
 
     public IsoMapCellActor (MapCell cell) {
@@ -92,13 +94,21 @@ public class IsoMapCellActor extends Actor {
         //Get the current color before drawing (Useful to allow animating the color from actions)
         batch.setColor(getColor());
 
-        sprite.draw(batch);
+
 
         if (debug) {
             la.setPosition(getX() + 60, getY() + 30);
             la.draw(batch, 1);
         }
 
+        if (cell.getSubCellType() == MapCell.SubCellType.ROCK) {
+            batch.draw(rock,getX()+20,getY()+20,100,60);
+        }
+
+
+        if (!isVisible()) return;
+
+        sprite.draw(batch);
 
         if (showHighlight ) {
             //highlightSprite.draw(batch,0.2f);

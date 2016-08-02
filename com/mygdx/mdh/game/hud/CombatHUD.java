@@ -4,18 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.controller.AbilityButtonClickListener;
@@ -26,7 +20,6 @@ import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
-import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
@@ -39,7 +32,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     List<AbilityButton> abilityButtons;
     List<EffectButton> effectIcons;
-    ImageButton EOTButton;
+
     MessageBar messageBar;
 
     public CombatController controller;
@@ -49,9 +42,10 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     public static String notificationText;
 
+    Stack abilitiesBar;
 
-    Texture sprite = new Texture(Gdx.files.internal("core/assets/HUD-background.png"));
-    Texture abilityBarSprite = new Texture(Gdx.files.internal("core/assets/HUD-bar.png"));
+    Texture sprite = new Texture(Gdx.files.internal("core/assets/graphics/HUD-background.png"));
+    Texture abilityBarSprite = new Texture(Gdx.files.internal("core/assets/graphics/HUD-bar.png"));
     Texture characterHUDSprite = new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_hud.png"));
 
 
@@ -70,12 +64,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         this.controller = controller;
 
         abilityButtons = new ArrayList<>();
-
-        EOTButton = new ImageButton(new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal("core/assets/btn-end_turn.png")))));
-        EOTButton.setWidth(50);
-        EOTButton.setHeight(50);
-        EOTButton.setX(1000);
-        EOTButton.setY(50);
 
         notificationText="Hello World";
 
@@ -111,22 +99,30 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         effectsLayout.left().bottom();
         effectsLayout.setPosition(150,8);
         effectsLayout.setSize(200,10);
+
+        hudTableLayout = new Table();
+        hudTableLayout.padTop(25);
+        hudTableLayout.align(Align.center);
+        hudTableLayout.top();
+
+        abilitiesBar = new Stack();
+        abilitiesBar.setPosition(480,0);
+        abilitiesBar.setSize(318,113);
+        abilitiesBar.add(new Image(abilityBarSprite));
+        abilitiesBar.add(hudTableLayout);
+
+
     }
 
 
     public void showAbilityButtons(Character selectedCharacter) {
 
-        hudTableLayout = new Table();
-        hudTableLayout.center().bottom();
-        hudTableLayout.pad(10);
-        hudTableLayout.setPosition(480,40);
-        hudTableLayout.setSize(200,50);
-
-
+        hudTableLayout.clear();
         for (Ability ability : selectedCharacter.getAbilities()) {
+            System.out.println("abi"+ability.getPic());
             AbilityButton actor = new AbilityButton(ability);
 
-            hudTableLayout.add(actor).size(40,40).pad(2);
+            hudTableLayout.add(actor).size(35,35).pad(2);
 
             EventListener eventListener = new AbilityButtonClickListener(actor);
             actor.addListener(eventListener);
@@ -134,7 +130,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
             abilityButtons.add(actor);
         }
 
-        this.addActor(hudTableLayout);
+        this.addActor(abilitiesBar);
 
         showAbilities = true;
 
@@ -178,9 +174,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     public java.util.List<AbilityButton> getAbilityButtons() {
         return abilityButtons;
     }
-    public ImageButton getEOTButton() {
-        return EOTButton;
-    }
 
 
 
@@ -206,6 +199,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         //TODO: hacer esto en cada iteracion es una gitanada
         effectsLayout.clear();
         for (Effect e : controller.getSelectedCharacter().getCharacter().getEffects()) {
+            //System.out.print("Active effects: "+e.getName());
+
             EffectButton eb = new EffectButton(e);
             effectsLayout.add(eb).size(20,20).pad(2);
 
@@ -223,7 +218,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         if(text != null) showInfo = true;
         else showInfo = false;
 
-        infoBox.setText(text);
+        infoBox.setTextArea(text);
         infoBox.setPosition(x,y);
     }
 
@@ -246,6 +241,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         batch.draw(sprite,950,0);
         batch.setColor(1f, 1f, 1f, 1f);
 
+
         BitmapFont font = new BitmapFont();
         font.setColor(Color.BLACK);
         font.draw(batch, notificationText, 1000, 100);
@@ -262,8 +258,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
                     !controller.getSelectedCharacter().actionInProgress()
                     ) {
 
-                batch.draw(abilityBarSprite, 500, 0);
-                hudTableLayout.draw(batch, 1.0f);
+                abilitiesBar.draw(batch, 1.0f);
+
 
             }
 

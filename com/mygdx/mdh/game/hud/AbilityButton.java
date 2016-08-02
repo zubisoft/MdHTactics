@@ -23,6 +23,7 @@ public class AbilityButton extends ImageButton {
     Texture sprite;
 
     public AbilityButton(Ability ability) {
+
         super((new SpriteDrawable(new Sprite(Assets.instance.abilities.get(ability.getPic())))));
         this.ability = ability;
 

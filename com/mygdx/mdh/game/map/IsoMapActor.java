@@ -23,6 +23,9 @@ import com.mygdx.mdh.game.util.LOG;
  * Created by zubisoft on 22/02/2016.
  */
 public class IsoMapActor extends Group{
+
+    Map map;
+
     Sprite s;
     IsoMapCellActor[][] mapCells = new IsoMapCellActor[10][10];
 
@@ -34,11 +37,11 @@ public class IsoMapActor extends Group{
     public static Color yellowHighlight = new Color(1f,0.6f,0.f,0.5f);
     public static Color redHighlight   = new Color(1f,0.1f,0.1f,0.5f);
 
-
-
     public IsoMapActor(Map map) {
 
         //map = Map.loadFromJSON("core/assets/maps/map01.txt");
+
+        this.map=map;
 
 
         for (int row = 0; row < map.getCellWidth(); row++) {
@@ -56,6 +59,7 @@ public class IsoMapActor extends Group{
                 mapCells[column][row].setWidth(CELLWIDTH);
                 mapCells[column][row].setHeight(CELLHEIGTH);
                 mapCells[column][row].setPosition(column*CELLWIDTH+Math.floorMod(row,2)*CELLWIDTH/2, (CELLHEIGTH*5)-(row*CELLHEIGTH/2)+75);
+                mapCells[column][row].setZIndex(row);
 
 
                 EventListener eventListener = new TiledMapClickListener(mapCells[column][row]);
@@ -75,7 +79,7 @@ public class IsoMapActor extends Group{
 
         for(int z = 0; z < 10; z++) {
             for(int x = 0; x < 10; x++) {
-                if(mapCells[x][z].isVisible()) mapCells[x][z].draw(batch,1.0f);
+                mapCells[x][z].draw(batch,1.0f);
             }
         }
 
@@ -113,6 +117,13 @@ public class IsoMapActor extends Group{
     }
 
 
+    public IsoMapCellActor getCell (MapCell cell) {
+
+        return getCell(cell.getMapCoordinates());
+
+    }
+
+
 
     public void highlightCells(IsoMapCellActor cell, int radius, Color color) {
 
@@ -124,6 +135,7 @@ public class IsoMapActor extends Group{
             return;
         }*/
 
+
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
 
@@ -134,6 +146,9 @@ public class IsoMapActor extends Group{
 
             }
         }
+
+
+
 
     }
 
@@ -147,27 +162,37 @@ public class IsoMapActor extends Group{
     public void highlightMovementCells(IsoMapCellActor cell, int movementRadius, int abilityRadius) {
 
         removeHighlightCells();
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
-
-                if (distance(mapCells[y][x], cell) <= movementRadius) {
-                    if (!mapCells[y][x].getCell().isOccupied()) {
-                        if (mapCells[y][x].getCell().getCellType() != MapCell.CellType.IMPASSABLE)
-                            mapCells[y][x].highlight(blueHighlight);
-                    } else {
-                        if (mapCells[y][x].getCell().getCharacter().isFriendly())
-                            mapCells[y][x].highlight(greenHighlight);
-                        else mapCells[y][x].highlight(yellowHighlight);
-                    }
 
 
-                    //if (distance(mapCells[y][x], cell) <= abilityRadius) mapCells[y][x].highlight(redHighlight);
 
+        map.unblockMapCell(cell.getCell());
+
+        IsoMapCellActor auxCell;
+
+        for (MapCell c: this.map.getCellsRecursive(cell.getCell(),movementRadius)) {
+
+
+                auxCell = getCell(c);
+
+                if (!auxCell.getCell().isOccupied()) {
+                    if (auxCell.getCell().getCellType() != MapCell.CellType.IMPASSABLE)
+                        auxCell.highlight(blueHighlight);
+                } else {
+                    if (auxCell.getCell().getCharacter().isFriendly())
+                        auxCell.highlight(greenHighlight);
+                    else auxCell.highlight(yellowHighlight);
                 }
-            }
+
+
+                //if (distance(mapCells[y][x], cell) <= abilityRadius) mapCells[y][x].highlight(redHighlight);
+
 
         }
-    }
+
+        map.blockMapCell(cell.getCell());
+
+        }
+
 
 
 

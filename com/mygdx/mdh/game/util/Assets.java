@@ -102,33 +102,34 @@ public class Assets implements Disposable, AssetErrorListener {
             t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(10, "[Assets] Loading Character: " + g.name);
+            //LOG.print(10, "[Assets] Loading Character: " + g.name);
             characters.put(g.name, new AssetCharacter(atlas,g.name));
         }
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_MAPS);
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(10, "[Assets] Loading Map: " + g.name);
+            //LOG.print(10, "[Assets] Loading Map: " + g.name);
             maps.put(g.name, atlas.findRegion(g.name));
         }
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_COMBAT_UI);
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(10, "[Assets] Loading GUI: " + g.name);
+            //LOG.print(10, "[Assets] Loading GUI: " + g.name);
             guiElements.put(g.name, atlas.findRegion(g.name));
         }
         // Create gameScreen resource objects
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_EFFECTS);
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(2, "[Assets] Loading effects: " + g.name);
+            //LOG.print(2, "[Assets] Loading effects: " + g.name);
             effects.put(g.name, atlas.findRegion(g.name));
         }
 
         atlas = assetManager.get(Constants.TEXTURE_ATLAS_ABILITIES);
         for (AtlasRegion g: atlas.getRegions()) {
-            LOG.print(2, "[Assets] Loading abilities: " + g.name);
+            //LOG.print(2, "[Assets] Loading abilities: " + g.name);
             abilities.put(g.name, atlas.findRegion(g.name));
+            effects.put("icons/"+g.name, atlas.findRegion(g.name));
         }
 
 
@@ -147,6 +148,7 @@ public class Assets implements Disposable, AssetErrorListener {
     public void error(AssetDescriptor asset, Throwable throwable) {
         Gdx.app.error(TAG, "could not load asset '" + asset.fileName + "'", (Exception) throwable);
     }
+
 
 
 

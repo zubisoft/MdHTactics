@@ -3,6 +3,9 @@ package com.mygdx.mdh.game.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.Dice;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,11 @@ public class Combat {
 
 
     boolean playerTurn;
+
+
+
+    /** Experience gained during the combat so far **/
+    int experience;
 
 
 
@@ -76,6 +84,13 @@ public class Combat {
         this.gameStep = gameStep;
     }
 
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
+    }
 
 
 
@@ -91,13 +106,13 @@ public class Combat {
     /**
      * Adds a character.
      * Used when loading from Json.
-     * @param character
      */
     public void setCharacterFiles(List<Character> chars) {
         for(Character character: chars) {
             Character c = Character.loadFromJSON(character.getName() );
             c.setRow(character.getRow());
             c.setColumn(character.getColumn());
+            c.setFriendly(character.isFriendly());
 
             characters.add(c);
         }
@@ -130,12 +145,49 @@ public class Combat {
         }
 
         //Important step, link characters with the map
+        /*
         for (Character c: emp.characters) {
             c.setCell(emp.map.getCell(c.getRow(),c.getColumn()));
         }
+        */
+
+        emp.initCharacterPositions();
 
         return emp;
 
+    }
+
+
+
+    public void initCharacterPositions () {
+        int row,col,i;
+        MapCell cell;
+        for (Character c: characters) {
+            i=0;
+            row = Dice.roll(Constants.MAX_MAP_CELLHEIGHT)-1;
+            col = Dice.roll(2); //Place in the first 2 rows (excl. the border one)
+
+            cell = map.getCell(row,(c.isFriendly()?col:Constants.MAX_MAP_CELLWIDTH-1-col));
+
+
+
+            while (cell.isOccupied() || cell.isImpassable() ) {
+
+                row = Dice.roll(Constants.MAX_MAP_CELLHEIGHT)-1;
+                col = Dice.roll(2);
+
+                cell = map.getCell(row,(c.isFriendly()?col:Constants.MAX_MAP_CELLWIDTH-1-col));
+                i++;
+
+                if (i>100) break;
+
+            }
+
+            //In some extreme case, it's possible that no cell is found if there are too many obstacles
+            //The character might then be placed on top of an obstacle (not ideal, but not traumatic either)
+            c.setCell(cell);
+
+        }
     }
 
 

@@ -2,6 +2,7 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mygdx.mdh.game.util.LOG;
 
 /**
@@ -15,7 +16,15 @@ public class MapCell {
         NORMAL, IMPASSABLE
     }
 
+    public enum SubCellType {
+        PLAIN, ROCK
+    }
+
     CellType cellType;
+
+
+
+    SubCellType subCellType;
 
     Character character;
 
@@ -23,6 +32,9 @@ public class MapCell {
 
     Vector2 mapCoordinates;
     Vector2 cartesianCoordinates;
+
+    @JsonIgnore
+    Map map;
 
 
 
@@ -42,6 +54,14 @@ public class MapCell {
     }
 
 
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
+
 
     public String toString () {
         return mapCoordinates.toString();
@@ -53,14 +73,23 @@ public class MapCell {
         return occupied;
     }
 
+    public boolean isImpassable() {
+        return cellType==CellType.IMPASSABLE;
+    }
+
     public Character getCharacter() {
         return character;
     }
 
     void setOccupied(Character c) {
 
-        if (c==null)  this.occupied = false;
-        else          this.occupied = true;
+        if (c==null) {
+            this.occupied = false;
+            map.unblockMapCell(this);
+        } else {
+            this.occupied = true;
+            map.blockMapCell(this);
+        }
 
         this.character=c;
 
@@ -73,11 +102,21 @@ public class MapCell {
      * @param cellType
      */
     public void setCellType(CellType cellType) {
+
         this.cellType = cellType;
+
     }
 
     public CellType getCellType() {
         return cellType;
+    }
+
+    public SubCellType getSubCellType() {
+        return subCellType;
+    }
+
+    public void setSubCellType(SubCellType subCellType) {
+        this.subCellType = subCellType;
     }
 
     /**

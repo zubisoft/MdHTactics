@@ -4,11 +4,11 @@ import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.model.effects.AttributeModifierEffect;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.LOG;
 
@@ -33,18 +33,18 @@ public class Character  {
     boolean dead;
 
     //Position
-    MapCell cell;
-    int column;
-    int row;
+    @JsonIgnore MapCell cell;
+    @JsonIgnore int column;
+    @JsonIgnore int row;
 
     //Abilities of the character
     List<Ability> abilities;
 
     //Effects currently applied on this character
-    private List<Effect> effects;
+    @JsonIgnore private List<Effect> effects;
 
     //event handling
-    private List<CharacterChangeListener> listeners;
+    @JsonIgnore private List<CharacterChangeListener> listeners;
 
 
 
@@ -53,7 +53,7 @@ public class Character  {
     String pic;
 
     //Auxiliary
-    private List<Effect> effectsAux;
+    @JsonIgnore private List<Effect> effectsAux;
 
 
     public Character() {
@@ -64,6 +64,8 @@ public class Character  {
         effectsAux = new ArrayList<Effect> ();
         listeners = new ArrayList<> ();
 
+        maxActions = 6;
+        availableActions=6;
     }
 
     /*
@@ -102,7 +104,7 @@ public class Character  {
                 for (Effect tmp : effects) {
                     //tmp.setTarget(this);
                     //Resolve immediate effects
-                    LOG.print(4, "[Character] Starting turn effects: "+tmp.getEffectType());
+                    LOG.print(4, "[Character] Starting turn effects: "+tmp.getEffectClass());
                     //if(tmp.getGameSegment()== Effect.GameSegmentType.TURN_START)
                     EffectManager.instance.execute(tmp);
                     tmp.startTurn();
@@ -117,6 +119,7 @@ public class Character  {
     }
 
     public void hit(int damage) {
+
         //Do not allow to surpass max hitpoints when healed
         if (damage<0 && (getHealth()-damage)>maxHealth)
             health=maxHealth;
@@ -153,8 +156,32 @@ public class Character  {
     }
 
 
-    public int getAttack() { return attack; }
-    public int getDefence() { return defence; }
+    public int getAttack() {
+        int modifier=0;
+
+        //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
+        for (Effect e:getEffects()) {
+            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.ATTACK))
+                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+            }
+
+        }
+        return defence+modifier;
+    }
+    public int getDefence() {
+        int modifier=0;
+
+        //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
+        for (Effect e:getEffects()) {
+            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.DEFENCE))
+                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+            }
+
+        }
+        return defence+modifier;
+    }
 
 
 
@@ -306,7 +333,7 @@ public class Character  {
 
     }
 
-    private void cleanEffects () {
+    public void cleanEffects () {
         if(effects.size()==0) return;
 
         Iterator<Effect> iterator = effects.iterator();
@@ -314,7 +341,7 @@ public class Character  {
         while (iterator.hasNext()) {
             Effect tmp = iterator.next();
             if (tmp.getDuration()<=0) {
-                LOG.print(4, "[Character] Remove Effect " + tmp.getEffectType() + " from " + getName());
+                LOG.print(4, "[Character] Remove Effect " + tmp.getEffectClass() + " from " + getName());
                 iterator.remove();
             }
         }
@@ -371,6 +398,8 @@ public class Character  {
         if(this.cell !=null)  this.cell.setOccupied(null);
         this.cell = cell;
         this.cell.setOccupied(this);
+        this.column = (int)cell.getMapCoordinates().x;
+        this.row = (int)cell.getMapCoordinates().y;
     }
 
     public int getRow() {

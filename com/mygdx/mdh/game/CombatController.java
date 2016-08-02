@@ -2,6 +2,7 @@ package com.mygdx.mdh.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -31,6 +32,19 @@ import java.util.*;
  * Created by zubisoft on 28/01/2016.
  */
 public class CombatController extends Stage {
+
+    public class ActorComparator implements Comparator < CharacterActor > {
+        @Override
+        public int compare(CharacterActor arg0, CharacterActor arg1) {
+            if (arg0.getY() > arg1.getY()) {
+                return -1;
+            } else if (arg0.getY() == arg1.getY()) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+    }
 
     public InputMultiplexer multiplexer;
 
@@ -157,6 +171,7 @@ public class CombatController extends Stage {
         gameTurn = GameTurn.PLAYER;
 
         strategyManager = new StrategyManager(this);
+
     }
 
 
@@ -392,7 +407,7 @@ public class CombatController extends Stage {
 
         }
 
-
+        Collections.sort(characterActors, new ActorComparator());
         for(CharacterActor a: characterActors) {
             a.update(deltaTime);
         }
@@ -513,27 +528,29 @@ public class CombatController extends Stage {
         if (IsoMapActor.distance(a.getSource().getCell(),target.getCell()) > a.getRange()) return;
 
 
+        CharacterActor source = getCharacterActor(a.getSource());
+
         switch (a.getTargetType()) {
             case SELF:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                source.useAbility(a, getCharacersInArea(target.getCell(),0));
                 break;
             case ONE_ALLY:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                source.useAbility(a, getCharacersInArea(target.getCell(),0));
                 break;
             case ONE_ENEMY:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                source.useAbility(a, getCharacersInArea(target.getCell(),0));
                 break;
             case ONE_ANY:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),0));
+                source.useAbility(a, getCharacersInArea(target.getCell(),0));
                 break;
             case ALL_ALLIES:
-                getCharacterActor(a.getSource()).useAbility(a, getFriendlies());
+                source.useAbility(a, getFriendlies());
                 break;
             case ALL_ENEMIES:
-                getCharacterActor(a.getSource()).useAbility(a, getBaddies());
+                source.useAbility(a, getBaddies());
                 break;
             case AREA:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getCell(),a.getArea()));
+                source.useAbility(a, getCharacersInArea(target.getCell(),a.getArea()));
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
@@ -579,17 +596,32 @@ public class CombatController extends Stage {
 
     }
 
-    public void showOutline(IsoMapCellActor cell) {
+    public void showAreaOfEffect(MapCell cell) {
 
         if (cell != null && currentSelectedAbility != null && selectedCharacter!= null)
-            if (IsoMapActor.distance(cell.getCell(),selectedCharacter.getMapCell()) <= currentSelectedAbility.getRange()) {
+            if (IsoMapActor.distance(cell,selectedCharacter.getMapCell()) <= currentSelectedAbility.getRange()) {
                 map.highlightCells(
                         map.getCell(cell.getMapCoordinates()),
                         currentSelectedAbility.getArea(),
                         IsoMapActor.redHighlight);
+
+                for (CharacterActor c: getCharacersInArea(cell,currentSelectedAbility.getArea())) {
+                    c.setHighlight(Color.CORAL);
+                }
             }
     }
 
+    public void hideAreaOfEffect(MapCell cell) {
+
+        if (cell != null && currentSelectedAbility != null && selectedCharacter!= null) {
+            map.removeHighlightCells();
+        }
+
+        for (CharacterActor c : characterActors) {
+            c.removeHighlight();
+        }
+
+    }
 
     /**
      * Returns the CharacterActor encapsulating a given character
@@ -603,11 +635,11 @@ public class CombatController extends Stage {
         return null;
     }
 
-    public List<CharacterActor> getCharacersInArea (MapCell center, int range) {
+    public List<CharacterActor> getCharacersInArea (MapCell center, int area) {
         List<CharacterActor> list = new ArrayList<>();
-        System.out.println("[CombatController] Checking area radius "+range);
+        System.out.println("[CombatController] Checking area radius "+area);
         for(CharacterActor c: characterActors) {
-            if (IsoMapActor.distance(center,c.getMapCell()) <= range) {
+            if (IsoMapActor.distance(center,c.getMapCell()) <= area) {
                 System.out.println("[CombatController] Character in area"+c);
                 list.add(c);
             }

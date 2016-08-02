@@ -35,18 +35,17 @@ public class CombatScreen extends AbstractGameScreen {
             // Update gameScreen world by the time that has passed since last rendered frame.
             combatController.update(deltaTime);
 
-            if (combatController.isVictory() && combatController.isCombatFinished()) {
+            if ( /*combatController.isVictory() &&*/ combatController.isCombatFinished()) {
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-                StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.OUTRO);
-                screen.setMessages(gameScreen.getGame().getCurrentMission().getOutroText());
+                CombatDebriefScreen screen = new CombatDebriefScreen(gameScreen);
                 gameScreen.setScreen(screen, transition);
             }
-
+/*
             if (combatController.isGameOver() && combatController.isCombatFinished()) {
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-                MissionSelectionScreen screen = new MissionSelectionScreen(gameScreen);
+                CombatDebriefScreen screen = new CombatDebriefScreen(gameScreen);
                 gameScreen.setScreen(screen, transition);
-            }
+            }*/
 
         }
 

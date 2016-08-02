@@ -2,8 +2,11 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +14,12 @@ import java.util.List;
 /**
  * Created by zubisoft on 14/05/2016.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Campaign {
 
+
+
+    String campaignId;
     String name;
     String description;
     boolean enabled;
@@ -30,15 +37,35 @@ public class Campaign {
         }
     }
 
-    public static Campaign loadFromJSON (String name) {
 
-        FileHandle file = Gdx.files.internal("core/assets/data/campaigns/"+name+".txt");
+    public String getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(String campaignId) {
+        this.campaignId = campaignId;
+
+        Campaign c = loadFromJSON(campaignId);
+        this.name=c.name;
+        this.description=c.description;
+        this.enabled=c.enabled;
+        this.introText=c.introText;
+        this.storyText=c.storyText;
+        this.campaignMissions=c.campaignMissions;
+
+
+    }
+
+    public static Campaign loadFromJSON (String campaignId) {
+
+        FileHandle file = Gdx.files.internal("core/assets/data/campaigns/"+campaignId+".txt");
         String jsonData = file.readString();
 
         //create ObjectMapper instance
         ObjectMapper objectMapper = new ObjectMapper();
 
         Campaign emp = new Campaign();
+
 
         try {
 
@@ -47,6 +74,11 @@ public class Campaign {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        emp.campaignId = campaignId;
+
+        //LOG.print(1,"campaign id "+emp.campaignId, LOG.ANSI_CYAN);
+
 
         return emp;
 

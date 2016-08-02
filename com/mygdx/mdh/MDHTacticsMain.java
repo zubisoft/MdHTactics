@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.IntNode;
+import com.mygdx.mdh.game.Test.EffectTest;
 import com.mygdx.mdh.game.Test.Orto;
 import com.mygdx.mdh.game.Test.User;
 import com.mygdx.mdh.game.model.*;
@@ -38,6 +39,10 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         LOG.setLevel(3);
 
+
+        //new EffectTest();
+        //if (1==1) return;
+
         //loadTest();
         //if (1==1) return;
 
@@ -48,34 +53,17 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
+
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
         ScreenTransition transition = ScreenTransitionFade.init(1.0f);
         //setScreen(new CharSelectionScreen(this), transition);
         setScreen(new CombatScreen(this), transition);
+
         //setScreen(new MainMenuScreen(this), transition);
     }
 
-    public void combatTest () {
-        Combat testCombat = Combat.loadFromJSON("combat01");
-        Character zubi = testCombat.getCharacters().get(0);
-        Character hagen = testCombat.getCharacters().get(1);
 
-        //Hit Hagen
-        zubi.getAbilities().get(0).apply(hagen);
-
-        //Activate shield
-        zubi.getAbilities().get(1).apply(zubi);
-
-        //Hit Zubi
-        hagen.getAbilities().get(0).apply(zubi);
-
-        //Hit Zubi
-        hagen.getAbilities().get(0).apply(zubi);
-
-        zubi.startTurn();
-
-    }
 
 
 

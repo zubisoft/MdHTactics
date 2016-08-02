@@ -2,30 +2,33 @@ package com.mygdx.mdh.game.model.effects;
 
 
 import com.badlogic.gdx.graphics.Color;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 /**
  * Created by zubisoft on 08/03/2016.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "effectType")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "effectClass")
 
 @JsonSubTypes({
           @JsonSubTypes.Type(value = ShieldEffect.class, name = "SHIELD")
         , @JsonSubTypes.Type(value = DamageEffect.class, name = "DAMAGE")
         , @JsonSubTypes.Type(value = HealEffect.class, name = "HEAL")
         , @JsonSubTypes.Type(value = StunEffect.class, name = "STUN")
+        , @JsonSubTypes.Type(value = RemoverEffect.class, name = "REMOVER")
         , @JsonSubTypes.Type(value = DamageModifierEffect.class, name = "DAMAGE_MODIFIER")
+        , @JsonSubTypes.Type(value = AttributeModifierEffect.class, name = "ATTRIBUTE_MODIFIER")
+        , @JsonSubTypes.Type(value = Effect.class, name = "GENERIC")
 })
 
 
@@ -34,23 +37,51 @@ public class Effect  /*implements Cloneable*/  {
 
     public String name;
 
+    /**
+     * Class of the effect - Defines which class to use when instantiating effects.
+     * This will determine what the effect does.
+     */
+    public enum EffectClass {
+        DAMAGE, HEAL, STUN, SHIELD, DAMAGE_MODIFIER, ATTRIBUTE_MODIFIER, REMOVER
+    }
 
+    EffectClass effectClass;
 
     /**
-     * Main type of the effect
+     * Defines the top level classification of the effect.
+     * Used to classify and handle effects.
      */
     public enum EffectType {
-        DAMAGE, HEAL, STUN, SHIELD, DAMAGE_MODIFIER
+        DAMAGE, BUFF, DEBUFF, MELEE, RANGED
+    }
+
+    public EffectType getEffectType() {
+        return effectType;
+    }
+
+    public void setEffectType(EffectType effectType) {
+        this.effectType = effectType;
     }
 
     EffectType effectType;
 
 
+    /**
+     * Defines the second level classification of the effect.
+     * Used to classify and handle effects in a more refined way.
+     */
     public enum EffectSubType {
-        FIRE, ICE, MELEE, RANGED, MAGIC
+        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON
     }
 
     EnumSet<EffectSubType> effectSubType;
+
+    public enum EffectTargetType {
+        SELF, ALLIES, BADDIES, ALL
+    }
+
+
+    EffectTargetType effectTargetType;
 
     /**
      * Moment when the effect is applied
@@ -61,16 +92,8 @@ public class Effect  /*implements Cloneable*/  {
 
     GameSegmentType gameSegment;
 
-    //Effect definition
-    int duration;
-    Roll roll;
-    float chance;
-
-    int hits;
-
-
-    Character source;
-    Character target;
+    @JsonIgnore    Character source;
+    @JsonIgnore    Character target;
 
     //File with the textures
     String pic;
@@ -78,25 +101,112 @@ public class Effect  /*implements Cloneable*/  {
     String outcome;
     Color color;
 
-    /**
-     * Number and type of dice to roll, plus roll modifier (e.g. 2d6+3)
-     */
+    //Effect definition
+    int duration;
+    float chance;
+    float chanceModifier;
+    int hits;
+    int stacking = 0;
+
+
+    //Number and type of dice to roll, plus roll modifier (e.g. 2d6+3)
+
+    @JsonIgnore Roll roll;
+    @JsonIgnore float chanceRoll;
+
     int diceNumber;
     int diceSides;
     int modifier;
-    float percentModifier;
-    int rolledResult;
 
-    int stacking = 0;
+    @JsonIgnore
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    boolean cancelled = false;
 
 
     boolean defaultIcon=true;
 
+
+
+    /**
+     *  Defines the list of effect names that will enable this effect to trigger.
+     *  The default behaviour is to apply the effect only if any effect of the specified name is present.
+     *  If empty, the effect is applied without checking the presence of any effects.
+    * */
+    Set<String> conditionalEffects;
+
+
+
+    @JsonIgnore
+    public boolean isValidTarget() {
+
+        //Check if required effects are present in the target
+        if (conditionalEffects.size()>0 ) {
+            boolean valid = false;
+            for (Effect e: target.getEffects()) {
+                if (conditionalEffects.contains(e.getName())) {
+                    valid = true;
+                }
+            }
+            if (!valid) return false;
+        }
+
+
+
+
+        //Check if the target is applicable
+        switch (effectTargetType) {
+            case ALL: return true;
+            case SELF: if (source == target) return true;
+            case ALLIES: if (target.isFriendly()) return true;
+            case BADDIES: if (!target.isFriendly()) return true;
+        }
+        return false;
+    }
+
+
+
+
+
+    List<EffectListener> effectListeners;
+
+    public Effect () {
+        roll = new Roll(Roll.RollType.GENERIC);
+        chanceModifier =0;
+        modifier=0;
+        duration =0;
+        chance=1;
+        hits = 1;
+        effectListeners = new ArrayList<>();
+        effectSubType = EnumSet.noneOf(EffectSubType.class);
+        icon="effect-icon-generic";
+        color=Color.WHITE;
+
+        effectTargetType = EffectTargetType.ALL;
+
+        conditionalEffects = new HashSet<>();
+
+        gameSegment = GameSegmentType.IMMEDIATE;
+        pic="core/assets/graphics/effects/effect_gunshot.png";
+    }
+
+
+    /**
+     * Copies an effect using another as template - Listeners are not carried to the copy.
+     * @param e
+     */
     public void copy (Effect e) {
         name = e.name;
+        effectClass = e.effectClass;
         effectType = e.effectType;
         effectSubType = e.effectSubType;
+        effectTargetType=e.effectTargetType;
         gameSegment = e.gameSegment;
         duration = e.duration;
         roll = e.roll;
@@ -109,12 +219,14 @@ public class Effect  /*implements Cloneable*/  {
         color = e.color;
         diceNumber = e.diceNumber;
         diceSides = e.diceSides;
-        percentModifier = e.percentModifier;
-        rolledResult = e.rolledResult;
+        chanceModifier = e.chanceModifier;
         stacking = e.stacking;
         effectListeners = new ArrayList<>();
         modifier = e.modifier;
         hits = e.hits;
+        cancelled=e.cancelled;
+        effectTargetType = e.effectTargetType;
+        conditionalEffects = e.conditionalEffects;
     }
 
     public Effect copy () {
@@ -123,36 +235,16 @@ public class Effect  /*implements Cloneable*/  {
         return e;
     }
 
-
-    List<EffectListener> effectListeners;
-
-    public Effect () {
-        roll = new Roll(Roll.RollType.GENERIC);
-        percentModifier=0;
-        modifier=0;
-        duration =0;
-        chance=1;
-        hits = 1;
-        effectListeners = new ArrayList<>();
-        effectSubType = EnumSet.noneOf(EffectSubType.class);
-        icon="effect-icon-generic";
-        color=Color.WHITE;
-    }
-
-
-
     /**
      * Initializes the effect.
      * Default implementation rolls the dice.
      */
     public void init() {
 
-        if(diceNumber>0) {
-            rolledResult = Dice.roll(diceNumber, diceSides) + modifier;
-            roll.setBaseRoll(rolledResult);
-            roll.setModifier(modifier);
-            roll.setPercentModifier(percentModifier);
-        }
+        if ( !isValidTarget() ) return ;
+        if ( duration < 0 ) return ;
+
+        chanceRoll = (float)Math.random();
 
     }
 
@@ -166,16 +258,39 @@ public class Effect  /*implements Cloneable*/  {
      * Default implementation does nothing.
      */
     public void process(Effect d) {
+        if ( !isValidTarget() ) return ;
+        if ( duration < 0 ) return ;
+        if (cancelled) return;
 
+        if(chanceRoll>chance) return;
     }
 
+
+    /**
+     * Executes the effect itself on the target.
+     *
+     * Default implementation does nothing.
+     */
+    public void execute () {
+        if ( !isValidTarget() ) return ;
+        if ( duration < 0 ) return ;
+        if (cancelled) return;
+
+        if(chanceRoll>chance) return;
+    }
 
     /**
      * Applies the effect to the target, according to the current status of the roll.
      * Default implementation simply attaches the effect to the target if the stacking is not maxed.
      */
     public void apply() {
-        System.out.println("[Effect] Applying Effect "+this.getEffectType()+" stacking: "+target.getEffectsByName(this.getName()).size());
+        if ( !isValidTarget() ) return ;
+        if ( duration < 0 ) return ;
+        if (cancelled) return;
+
+        if(chanceRoll>chance) return;
+
+        System.out.println("[Effect] Applying Effect "+this.getEffectClass()+" stacking: "+target.getEffectsByName(this.getName()).size());
         for (Effect e: target.getEffects()) {
             System.out.println( "* "+e.getName()+"\n");
         }
@@ -184,9 +299,6 @@ public class Effect  /*implements Cloneable*/  {
             target.addEffect(this);
     }
 
-    public void execute () {
-
-    }
 
     public void effectTriggered () {
 
@@ -204,14 +316,28 @@ public class Effect  /*implements Cloneable*/  {
 
     public String getDescription () {
         if (duration == 0)
-            return "Applies "+effectType;
+            return "Applies "+ name;
         else
-            return "Applies "+effectType+" "+effectSubType +" during "+duration+" turns";
+            return "Applies "+ name +" "+effectSubType +" during "+duration+" turns";
 
     }
 
     public void startTurn() {
         duration--;
+    }
+
+
+
+    public Set<String> getConditionalEffects() {
+        return conditionalEffects;
+    }
+
+    public void setConditionalEffects(Set<String> conditionalEffects) {
+        this.conditionalEffects = conditionalEffects;
+    }
+
+    public void addConditionalEffects(String effect) {
+        this.conditionalEffects.add(effect);
     }
 
 
@@ -260,9 +386,9 @@ public class Effect  /*implements Cloneable*/  {
         this.pic = pic;
     }
 
-    public EffectType getEffecType() {
+    public EffectClass getEffecType() {
 
-        return effectType;
+        return effectClass;
     }
 
 
@@ -275,11 +401,11 @@ public class Effect  /*implements Cloneable*/  {
     }
 
 
-    public void setEffecType(EffectType effecType) {
+    public void setEffecType(EffectClass effecType) {
 
         //TODO this is just temporary for testing
 
-        this.effectType = effecType;
+        this.effectClass = effecType;
     }
 
 
@@ -312,12 +438,12 @@ public class Effect  /*implements Cloneable*/  {
     }
 
 
-    public EffectType getEffectType() {
-        return effectType;
+    public EffectClass getEffectClass() {
+        return effectClass;
     }
 
-    public void setEffectType(EffectType effectType) {
-        this.effectType = effectType;
+    public void setEffectClass(EffectClass effectClass) {
+        this.effectClass = effectClass;
     }
 
     public String getOutcome() {
@@ -365,15 +491,45 @@ public class Effect  /*implements Cloneable*/  {
     }
 
     public String toString() {
-       return "*"+getEffectType()+" ("+getDuration()+" rounds)";
+       return "*"+ getEffectClass()+" ("+getDuration()+" rounds)";
     }
 
     public String notification() {
-        return "*"+getEffectType()+" ("+getDuration()+" rounds)";
+        return "*"+ getEffectClass()+" ("+getDuration()+" rounds)";
     }
 
     public boolean isDefaultIcon() {
         return defaultIcon;
+    }
+
+    public EffectTargetType getEffectTargetType() {
+        return effectTargetType;
+    }
+
+    public void setEffectTargetType(EffectTargetType effectTargetType) {
+        this.effectTargetType = effectTargetType;
+    }
+
+    public float getChanceModifier() {
+        return chanceModifier;
+    }
+
+    public void setChanceModifier(float chanceModifier) {
+        this.chanceModifier = chanceModifier;
+    }
+
+
+
+    public int getModifier() {
+        return modifier;
+    }
+
+    public void setModifier(int modifier) {
+        this.modifier = modifier;
+    }
+
+    public void addModifier(int modifier) {
+        this.modifier += modifier;
     }
 
     /*
