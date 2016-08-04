@@ -4,10 +4,8 @@ import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
+import com.mygdx.mdh.game.model.*;
 import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.Combat;
-import com.mygdx.mdh.game.model.Map;
-import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.util.LOG;
 
 /**
@@ -37,6 +35,8 @@ public class StrategyManager {
         float distance=9999999;
         int targetIndex = 0;
 
+        Ability chosenAbility;
+
         LOG.print(3,"[StrategyManager] Calculating next action for "+combat.getCharacters().get(index).getName(),LOG.ANSI_PURPLE);
 
         //Find closest target
@@ -55,15 +55,17 @@ public class StrategyManager {
         }
 
 
-
         if(target != null) {
 
             LOG.print(3,"[StrategyManager] Closes target: "+target.getName(),LOG.ANSI_PURPLE);
 
-            //TODO define range of abilities como dios manda
-            if (distance < 2 ) {
 
-                controller.setCurrentSelectedAbility(combat.getCharacters().get(index).getAbilities().get(0));
+            chosenAbility = chooseAbility(combat.getCharacters().get(index), distance, target);
+
+            //TODO define range of abilities como dios manda
+            if (distance < chosenAbility.getRange() ) {
+
+                controller.setCurrentSelectedAbility(chosenAbility);
                 controller.executeCurrentAbility(controller.getCharacterActor(target));
 
             } else {
@@ -117,6 +119,98 @@ public class StrategyManager {
         return resultCell;
 
 
+    }
+
+    public Ability chooseAbility(Character currentCharacter, float tentativeTargetDistance, Character tentativeTarget) {
+        Ability healAvailable = null;
+        Ability buffAvailable = null;
+        Ability debuffAvailable = null;
+        Ability damageAvailable = null;
+
+
+        for (Ability a: currentCharacter.getAbilities()) {
+
+            if (a.isEnabled()) {
+                switch (a.getType()) {
+                    case HEAL:
+                        if (healAvailable == null) {
+                            healAvailable = a;
+                        } else if (Math.random()<0.5) {
+                            //To randomize which attack the enemy chooses
+                            healAvailable = a;
+                        }
+                        break;
+                    case MELEE:
+                        if (damageAvailable == null) {
+                            damageAvailable = a;
+                        } else if (Math.random()<0.5) {
+                            //To randomize which attack the enemy chooses
+                            damageAvailable = a;
+                        }
+                        break;
+                    case RANGED:
+                        if (damageAvailable == null) {
+                            damageAvailable = a;
+                        } else if (Math.random()<0.5) {
+                            //To randomize which attack the enemy chooses
+                            damageAvailable = a;
+                        }
+                        break;
+                    case BUFF:
+                        if (buffAvailable == null) {
+                            buffAvailable = a;
+                        } else if (Math.random()<0.5) {
+                            //To randomize which attack the enemy chooses
+                            buffAvailable = a;
+                        }
+                        break;
+                    case DEBUFF:
+                        if (debuffAvailable == null) {
+                            debuffAvailable = a;
+                        } else if (Math.random()<0.5) {
+                            //To randomize which attack the enemy chooses
+                            debuffAvailable = a;
+                        }
+
+                        break;
+                }
+            }
+
+        }
+
+        //If target in range and weak, go for the kill
+        if (damageAvailable != null) {
+            if (tentativeTargetDistance <= currentCharacter.getMovement() + damageAvailable.getRange()
+                    && tentativeTarget.getHealth() < tentativeTarget.getMaxHealth() * 0.30
+                    ) {
+                return buffAvailable;
+            }
+        }
+
+        //If health < 25%, heal if possible
+        if ( healAvailable!= null && currentCharacter.getHealth() < currentCharacter.getMaxHealth()*0.25) {
+            return healAvailable;
+        }
+
+        //If too far to hit after movement, apply buff if not yet applied
+        if(buffAvailable!= null) {
+            if (tentativeTargetDistance > currentCharacter.getMovement() + damageAvailable.getRange()
+                    && currentCharacter.hasEffect(buffAvailable.getEffects().get(0))) {
+                return buffAvailable;
+            }
+        }
+
+        //If target character not debuffed and still healthy
+        if(debuffAvailable!= null) {
+            if (tentativeTargetDistance <= currentCharacter.getMovement() + debuffAvailable.getRange()
+                    && currentCharacter.getHealth() > currentCharacter.getMaxHealth() * 0.50
+                    && tentativeTarget.hasEffect(debuffAvailable.getEffects().get(0))) {
+                return debuffAvailable;
+            }
+        }
+
+        //Otherwise attack!
+        return damageAvailable;
     }
 
 }

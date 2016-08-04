@@ -481,10 +481,13 @@ public class CombatController extends Stage {
         //TODO probably better doing this in the action instead -- Not sure
         switch (a.getTargetType()) {
             case SELF:
-                getCharacterActor(a.getSource()).useAbility(a, target);
+                if(target.getCharacter() == a.getSource())
+                    getCharacterActor(a.getSource()).useAbility(a, target);
                 break;
             default:
-                getCharacterActor(a.getSource()).useAbility(a, getCharacersInArea(target.getMapCell(),a.getArea(),a.getTargetType()));
+                List<CharacterActor> characters = getCharacersInArea(target.getMapCell(),a.getArea(),a.getTargetType());
+                if (characters.size() > 0)
+                    getCharacterActor(a.getSource()).useAbility(a, characters);
                 break;
 
         }
@@ -523,8 +526,11 @@ public class CombatController extends Stage {
                 source.useAbility(a, source);
                 break;
            default:
-                source.useAbility(a, getCharacersInArea(target.getCell(),a.getArea(),a.getTargetType()));
+               List<CharacterActor> characters =  getCharacersInArea(target.getCell(),a.getArea(),a.getTargetType());
+               if (characters.size() > 0)
+                       source.useAbility(a,characters);
                 break;
+
 
         }
 

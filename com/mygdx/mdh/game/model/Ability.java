@@ -68,6 +68,16 @@ public class Ability {
 
     int hits;
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    boolean enabled = true;
+
     /**
      * Effects that are applied by using the ability
      */

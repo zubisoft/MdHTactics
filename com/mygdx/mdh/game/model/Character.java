@@ -417,5 +417,12 @@ public class Character  {
     public void setColumn(int column) {
         this.column = column;
     }
+
+    public boolean hasEffect(Effect effect) {
+        for (Effect e:getEffects()) {
+            if (e.getName().equals(effect.getName())) return true;
+         }
+        return false;
+    }
 } //Character
 

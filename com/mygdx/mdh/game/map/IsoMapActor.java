@@ -295,11 +295,11 @@ public class IsoMapActor extends Group{
 
     public static float distance (Vector2 c1, Vector2 c2) {
 
-        //Distance 1 to include all the surrounding cells of the actor.
+        //Distance 1.5 to include all the surrounding cells of the actor.
 
         if (c1.dst(c2)>1 && c1.dst(c2) < 2.0f) {
             //LOG.print("distancia "+c1.getMapCoordinates()+c2.getMapCoordinates()+" "+distance(c1.getCartesianCoordinates(),c2.getCartesianCoordinates()));
-            return 1.0f;
+            return 1.5f;
         }
 
         return (float)Math.ceil(c1.dst(c2));

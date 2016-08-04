@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.model.Character;
 
 /**
  * Created by zubisoft on 18/03/2016.
@@ -52,6 +53,18 @@ public class CombatInputListener extends InputAdapter {
         //gameScreen.getTiledMap().getLayers().get(0).setVisible(!gameScreen.getTiledMap().getLayers().get(0).isVisible());
         if(keycode == Input.Keys.NUM_2);
         //gameScreen.getTiledMap().getLayers().get(1).setVisible(!gameScreen.getTiledMap().getLayers().get(1).isVisible());
+        if(keycode==Input.Keys.F10) {
+            for (Character c : CombatController.combat.getCharacters()) {
+                c.setAttack(20);
+            }
+        }
+
+        if(keycode==Input.Keys.F11) {
+            for (Character c : CombatController.combat.getCharacters()) {
+                c.setAvailableActions(5);
+            }
+        }
+
         return false;
     }
 
