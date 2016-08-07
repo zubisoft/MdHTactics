@@ -96,6 +96,7 @@ public class Character  {
     }*/
 
     public void startTurn() {
+
         if (!isDead()) {
             setAvailableActions(maxActions);
             this.setActive(true);

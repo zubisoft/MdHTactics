@@ -250,6 +250,7 @@ public class CombatController extends Stage {
 
 
         for (CharacterActor c : getCharacterActors()) {
+
             if(!c.getCharacter().isFriendly()) {
                 c.queueAction(new GameWaitAction(3f));
                 c.turnStart();
@@ -313,7 +314,11 @@ public class CombatController extends Stage {
                 if (!c.getCharacter().isFriendly() && c.getCharacter().isActive() && !c.actionInProgress()) {
 
                     strategyManager.nextAction(c.getCharacter());
-                    c.queueAction(new GameWaitAction(10f));
+                    c.queueAction(new GameWaitAction(2f));
+                    for (CharacterActor x : getCharacterActors()) {
+                        System.out.println(x.getCharacter().getName()+" "+!x.isActive() +" "+ !x.isDead() +" "+ x.isFriendly() +" "+ !x.actionInProgress());
+
+                    }
 
                }
                 i++;

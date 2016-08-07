@@ -310,7 +310,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         batch.setColor(getColor());
 
         //Grey out if inactive
-        if (!character.isActive() && !character.isDead() && character.isFriendly() && !this.actionInProgress() )
+        if (!character.isActive() && !character.isDead() && character.isFriendly() && this.getState()==CHARACTER_STATE.IDLE )
             batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
 
         //Draw selection circle when selected

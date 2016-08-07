@@ -74,9 +74,10 @@ public class Map {
             if (auxCell.getCellType() != MapCell.CellType.IMPASSABLE) {
                 auxCell.setCellType(MapCell.CellType.IMPASSABLE);
                 auxCell.setSubCellType(MapCell.SubCellType.ROCK);
-                this.blockMapCell(auxCell);
-
+                this.totalblockMapCell(auxCell);
             }
+
+
 
         }
 
@@ -134,14 +135,20 @@ public class Map {
                         ///LOG.print(source+" "+target+" "+source.getCartesianCoordinates()+" "+auxVector);
 
                         if (target != null && target != source) {
+
                             emp.mapGraph.addEdge(source, target);
 
-                            if (y == 0 || x == 0) {
+                            if (target.isImpassable() || source.isImpassable()) {
                                 DefaultWeightedEdge e = emp.mapGraph.getEdge(source, target);
-                                emp.mapGraph.setEdgeWeight(e, 1.0);
+                                emp.mapGraph.setEdgeWeight(e, 999999);
                             } else {
-                                DefaultWeightedEdge e = emp.mapGraph.getEdge(source, target);
-                                emp.mapGraph.setEdgeWeight(e, 1.5);
+                                if (y == 0 || x == 0) {
+                                    DefaultWeightedEdge e = emp.mapGraph.getEdge(source, target);
+                                    emp.mapGraph.setEdgeWeight(e, 1.0);
+                                } else {
+                                    DefaultWeightedEdge e = emp.mapGraph.getEdge(source, target);
+                                    emp.mapGraph.setEdgeWeight(e, 1.5);
+                                }
                             }
 
                         }
@@ -253,20 +260,26 @@ public class Map {
         return l;
     }
 
+    public void totalblockMapCell(MapCell c) {
+
+        for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {
+                mapGraph.setEdgeWeight(e, 999999);
+        }
+    }
 
     public void blockMapCell(MapCell c) {
 
         for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {
-            if (mapGraph.getEdgeWeight(e) < 999999) //Avoid reblocking
-                mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) * 999999);
+            if (mapGraph.getEdgeWeight(e) < 2) //Avoid reblocking
+                mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) * 100);
         }
     }
 
     public void unblockMapCell(MapCell c) {
 
         for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {
-            if (mapGraph.getEdgeWeight(e) >= 999999) //Avoid reunblocking
-                mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) / 999999);
+            if (mapGraph.getEdgeWeight(e) >= 100 &&  mapGraph.getEdgeWeight(e)<999999) //Avoid reunblocking
+                mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) / 100);
         }
     }
 
