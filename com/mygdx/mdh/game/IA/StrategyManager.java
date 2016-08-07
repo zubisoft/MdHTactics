@@ -23,12 +23,14 @@ public class StrategyManager {
     public StrategyManager (CombatController c) {
         controller=c;
         combat=controller.getCombat();
+
+        //TODO this wont work with summons
         numCharacters = combat.getCharacters().size();
 
         characterDistances= new float[numCharacters][numCharacters];
     }
 
-    public boolean nextAction(int index) {
+    public boolean nextAction(Character c) {
         calculateDistances ();
 
         Character target=null;
@@ -37,18 +39,18 @@ public class StrategyManager {
 
         Ability chosenAbility;
 
-        LOG.print(3,"[StrategyManager] Calculating next action for "+combat.getCharacters().get(index).getName(),LOG.ANSI_PURPLE);
+        LOG.print(3,"[StrategyManager] Calculating next action for "+c,LOG.ANSI_PURPLE);
 
         //Find closest target
         for (int x=0; x<numCharacters;x++) {
 
-                if (    x!=index
+                if (    x!=combat.getCharacters().indexOf(c)
                         && combat.getCharacters().get(x).isFriendly()
                         && !combat.getCharacters().get(x).isDead()
-                        && characterDistances[index][x]<distance
+                        && characterDistances[combat.getCharacters().indexOf(c)][x]<distance
                         )
                 {
-                    distance = characterDistances[index][x];
+                    distance = characterDistances[combat.getCharacters().indexOf(c)][x];
                     target = combat.getCharacters().get(x);
                     targetIndex = x;
                 }
@@ -57,33 +59,34 @@ public class StrategyManager {
 
         if(target != null) {
 
-            LOG.print(3,"[StrategyManager] Closes target: "+target.getName(),LOG.ANSI_PURPLE);
 
 
-            chosenAbility = chooseAbility(combat.getCharacters().get(index), distance, target);
+
+            chosenAbility = chooseAbility(c, distance, target);
+
+            LOG.print(3,"[StrategyManager] Closest target: "+target+" Max Range:"+chosenAbility.getRange(),LOG.ANSI_PURPLE);
 
             //TODO define range of abilities como dios manda
-            if (distance < chosenAbility.getRange() ) {
+            if (distance <= chosenAbility.getRange() ) {
+
+                LOG.print(3,"[StrategyManager] Action: "+chosenAbility,LOG.ANSI_PURPLE);
 
                 controller.setCurrentSelectedAbility(chosenAbility);
                 controller.executeCurrentAbility(controller.getCharacterActor(target));
 
             } else {
+
+                LOG.print(3,"[StrategyManager] Action: Move towards Target",LOG.ANSI_PURPLE);
+
                 IsoMapActor map = controller.getMap();
-                MapCell sourceCell = combat.getCharacters().get(index).getCell();
+                MapCell sourceCell = c.getCell();
                 MapCell targetCell = combat.getCharacters().get(targetIndex).getCell();
 
-                //TODO define range of movement como dios manda
-                MapCell resultCell = closestCellToTarget(sourceCell,targetCell,2);
-
-                LOG.print(3,"[StrategyManger] Chosen cell "+resultCell+" "+resultCell.isOccupied()+" "+resultCell.hashCode());
+                MapCell resultCell = closestCellToTarget(sourceCell,targetCell,c.getMovement(), chosenAbility.getRange());
 
                 IsoMapCellActor resultCellActor = map.getCell(resultCell.getMapCoordinates());
 
-                LOG.print(3,"[StrategyManger] Chosen cellactor "+resultCellActor+" "+resultCellActor.getCell().isOccupied()+" "+resultCell.hashCode());
-
-
-                controller.getCharacterActor(combat.getCharacters().get(index)).moveToCell(resultCellActor);
+                controller.getCharacterActor(c).moveToCell(resultCellActor);
             }
         }
 
@@ -100,8 +103,9 @@ public class StrategyManager {
         }
     }
 
-    public MapCell closestCellToTarget (MapCell sourceCell, MapCell targetCell, int maxMovement) {
+    public MapCell closestCellToTarget (MapCell sourceCell, MapCell targetCell, int maxMovement, float range) {
 
+        /*
         float distance=9999999;
         MapCell resultCell = null;
 
@@ -109,6 +113,7 @@ public class StrategyManager {
         for (MapCell cell: combat.getMap().getCells(sourceCell, maxMovement)) {
             if (Map.distance(cell,targetCell) < distance
                     && Map.distance(cell,targetCell)>0
+                    && !cell.isImpassable()
                     && !cell.isOccupied()) {
                 distance = Map.distance(cell,targetCell);
                 resultCell = cell;
@@ -117,6 +122,11 @@ public class StrategyManager {
         }
 
         return resultCell;
+        */
+
+        System.out.println("Shortest Path "+combat.getMap().getShortestPath(sourceCell,targetCell));
+
+        return combat.getMap().getClosestCellWithRange(sourceCell,targetCell,maxMovement,range);
 
 
     }

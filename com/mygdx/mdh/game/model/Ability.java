@@ -272,5 +272,9 @@ public class Ability {
         this.area = area;
     }
 
+    public String toString() {
+        return this.getName()+" "+this.getType()+" "+this.getRange();
+    }
+
 
 } //Ability

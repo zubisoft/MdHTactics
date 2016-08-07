@@ -361,7 +361,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void moveToCell(IsoMapCellActor newCell) {
 
-        LOG.print("[CharacterActor] movetocell"+" "+newCell.getCell().hashCode());
         if( IsoMapActor.distance(character.getCell().getCartesianCoordinates(),newCell.getCell().getCartesianCoordinates()) <= character.getMovement() ) {
 
             MovementAction movementAction = new MovementAction(0.025f);
@@ -442,7 +441,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void queueAction (GameAction a) {
         a.setActor(this);
-        LOG.print(3,"[CharacterActor] Added Action "+a+" for "+this.getCharacter().getName());
+        //LOG.print(3,"[CharacterActor] Added Action "+a+" for "+this.getCharacter().getName());
         queueActions.addLast(a);
     }
 
@@ -455,7 +454,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     public void onEffectProcessed (Effect e) {
         if (e.getTarget()==this.getCharacter()) {
-            LOG.print(3,"[CharacterActor] "+character.hashCode()+" has been targeted for an effect."+e.hashCode(), LOG.ANSI_RED);
+            //LOG.print(3,"[CharacterActor] "+character.hashCode()+" has been targeted for an effect."+e.hashCode(), LOG.ANSI_RED);
             e.addEffectListener(this);
             //this.showMessage(e.getIcon(),e.notification(), e.getColor());
         }
@@ -478,7 +477,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onEffectTriggered (Effect e) {
-        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getRoll());
+        //LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getRoll());
 
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);
@@ -493,7 +492,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onCharacterHit (int damage)  {
-        LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);
+        //LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);
 
         this.addAction(new TakeDamageAction(1));
         if (character.isDead()) {

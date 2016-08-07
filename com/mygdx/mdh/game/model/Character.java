@@ -64,8 +64,8 @@ public class Character  {
         effectsAux = new ArrayList<Effect> ();
         listeners = new ArrayList<> ();
 
-        maxActions = 6;
-        availableActions=6;
+        maxActions = 2;
+        availableActions=2;
     }
 
     /*

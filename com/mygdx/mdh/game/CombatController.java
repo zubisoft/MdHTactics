@@ -310,9 +310,9 @@ public class CombatController extends Stage {
             /* Execute orders */
             int i = 0;
             for (CharacterActor c : getCharacterActors()) {
-                if (!c.getCharacter().isFriendly() & c.getCharacter().isActive() & !c.actionInProgress()) {
+                if (!c.getCharacter().isFriendly() && c.getCharacter().isActive() && !c.actionInProgress()) {
 
-                    strategyManager.nextAction(i);
+                    strategyManager.nextAction(c.getCharacter());
                     c.queueAction(new GameWaitAction(10f));
 
                }
@@ -624,11 +624,34 @@ public class CombatController extends Stage {
         List<CharacterActor> list = new ArrayList<>();
         for(CharacterActor c: characterActors) {
             if (IsoMapActor.distance(center,c.getMapCell()) <= area) {
-                switch (targetType) {
-                    case ALLIES:  if(c.isFriendly())list.add(c);  break;
-                    case ENEMIES: if(!c.isFriendly())list.add(c); break;
-                    case ALL:     list.add(c); break;
-                    //case SELF:    break;
+                if(gameTurn == GameTurn.PLAYER) {
+                    switch (targetType) {
+                        case ALLIES:
+                            if (c.isFriendly()) list.add(c);
+                            break;
+                        case ENEMIES:
+                            if (!c.isFriendly()) list.add(c);
+                            break;
+                        case ALL:
+                            list.add(c);
+                            break;
+                        //case SELF:    break;
+                    }
+                }
+
+                if(gameTurn == GameTurn.BADDIES) {
+                    switch (targetType) {
+                        case ALLIES:
+                            if (!c.isFriendly()) list.add(c);
+                            break;
+                        case ENEMIES:
+                            if (c.isFriendly()) list.add(c);
+                            break;
+                        case ALL:
+                            list.add(c);
+                            break;
+                        //case SELF:    break;
+                    }
                 }
 
             }
