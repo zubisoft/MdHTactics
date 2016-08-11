@@ -98,72 +98,6 @@ public class Ability {
 
     public void apply (Character target) {
 
-        /*
-        int rolledTotal=0;
-        if (diceNumber>0)  rolledTotal = Dice.roll(diceNumber, diceSides);
-
-        //TODO Handle any modifiers
-        target.getEffects();
-
-        switch (type) {
-            case HEAL:
-                //Apply the main ability
-                target.hit(- rolledTotal);
-
-                //Apply secondary effects
-                if (effects != null)
-                    target.addEffect(effects);
-
-                System.out.println("[Ability] "+ source + " ha curado "+ target);
-                message = "Healed";
-                break;
-
-            case RANGED:
-                //Apply the main ability
-                target.hit(rolledTotal );
-
-                //Apply secondary effects
-                if (effects != null)
-                    target.addEffect(effects);
-
-                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
-                message = "Hit";
-                break;
-
-            case MELEE:
-                //Apply the main ability
-                target.hit(rolledTotal );
-
-                //Apply secondary effects
-                if (effects != null)
-                    target.addEffect(effects);
-
-                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
-                message = "Hit";
-                break;
-
-            case BUFF:
-                //Apply secondary effects
-                if (effects != null)
-                    target.addEffect(effects);
-
-                System.out.println("[Ability] Applied BUFF to "+target+" "+effects.size());
-                message = "Applied Buff";
-                break;
-
-            case DEBUFF:
-                //Apply secondary effects
-                if (effects != null)
-                    target.addEffect(effects);
-
-                System.out.println("[Ability] "+ source+ " ha zumbado "+ target);
-                message = "Applied DeBuff";
-                break;
-        }
-        */
-
-
-
         //Use ability icon instead of just default
         for (Effect e: effects) {
             if (e.isDefaultIcon())
@@ -174,7 +108,7 @@ public class Ability {
         if (effects != null)
             target.addEffect(effects);
 
-        source.setAvailableActions(source.getAvailableActions() - 1);
+        //source.setAvailableActions(source.getAvailableActions() - 1);
 
         System.out.println("[Ability] Actions left: "+ source.getAvailableActions());
     }

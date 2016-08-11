@@ -58,6 +58,7 @@ public class IsoMapCellActor extends Actor {
         texture_topright.setRegion(texture_topleft.getRegionX()+128, texture_topleft.getRegionY(), 128,64);
         texture_bottomright.setRegion(texture_topleft.getRegionX()+128, texture_topleft.getRegionY()+64,  128,64);
 
+
     }
 
     @Override

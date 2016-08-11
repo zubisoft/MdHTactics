@@ -13,6 +13,7 @@ import com.mygdx.mdh.game.util.LOG;
 import java.util.*;
 
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.KShortestPaths;
 import org.jgrapht.graph.*;
 
 /**
@@ -270,20 +271,22 @@ public class Map {
     public void blockMapCell(MapCell c) {
 
         for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {
-            if (mapGraph.getEdgeWeight(e) < 2) //Avoid reblocking
+            if (mapGraph.getEdgeWeight(e) < 999999) { //Avoid reblocking impassable objects
                 mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) * 100);
+            }
         }
     }
 
     public void unblockMapCell(MapCell c) {
 
         for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {
-            if (mapGraph.getEdgeWeight(e) >= 100 &&  mapGraph.getEdgeWeight(e)<999999) //Avoid reunblocking
+            if (mapGraph.getEdgeWeight(e) >= 100 &&  mapGraph.getEdgeWeight(e)<999999) { //Avoid reunblocking
                 mapGraph.setEdgeWeight(e, mapGraph.getEdgeWeight(e) / 100);
+            }
         }
     }
 
-    public WalkingPath getShortestPath(MapCell sourceCell, MapCell targetCell) {
+    public WalkingPath getShortestWalkPath(MapCell sourceCell, MapCell targetCell) {
 
         WalkingPath path = new WalkingPath(sourceCell);
 
@@ -302,9 +305,18 @@ public class Map {
         path.end();
         blockMapCell(sourceCell);
 
+
+
         return path;
 
     }
+
+    public List<MapCell>  getShortestPath(MapCell sourceCell, MapCell targetCell) {
+
+        return getShortestWalkPath( sourceCell,  targetCell).cellPath ;
+
+    }
+
 
 
     class WalkingPathElement {
@@ -320,7 +332,7 @@ public class Map {
 
     class WalkingPath {
         List<WalkingPathElement> path;
-        List<MapCell> cellPath;
+        public List<MapCell> cellPath;
         float totalDistance;
 
         WalkingPath (MapCell sourceCell) {
@@ -369,7 +381,7 @@ public class Map {
     public MapCell getClosestCell(MapCell sourceCell, MapCell targetCell, float maxWalkingDistance) {
 
         MapCell closestCell = sourceCell;
-        for (WalkingPathElement wpe:  getShortestPath(sourceCell,targetCell).path) {
+        for (WalkingPathElement wpe:  getShortestWalkPath(sourceCell,targetCell).path) {
              if (wpe.distanceWalked<=maxWalkingDistance) closestCell = wpe.cell;
         }
         return closestCell;
@@ -390,7 +402,7 @@ public class Map {
 
         boolean finished = false;
 
-        for (WalkingPathElement wpe:  getShortestPath(sourceCell,targetCell).path) {
+        for (WalkingPathElement wpe:  getShortestWalkPath(sourceCell,targetCell).path) {
             if (!finished) {
                 if (wpe.distanceWalked <= maxWalkingDistance) closestCell = wpe.cell;
                 if (wpe.distancePending <= range) finished = true;

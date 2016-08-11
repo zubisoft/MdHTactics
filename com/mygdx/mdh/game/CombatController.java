@@ -232,6 +232,8 @@ public class CombatController extends Stage {
 
         LOG.print(1,"[CombatController] Player Turn Start", LOG.ANSI_YELLOW);
 
+        setGameStep(Combat.GameStepType.SELECTION);
+
         for (CharacterActor c : getCharacterActors()) {
             if(c.getCharacter().isFriendly()) {
                 c.turnStart();
@@ -404,11 +406,12 @@ public class CombatController extends Stage {
 
 
             //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
-            if (selectedCharacter != null)
-                if(selectedCharacter.getCharacter().getCell()!=selectedCharacterPosition)
+            if (selectedCharacter != null) {
+                if (selectedCharacter.getCharacter().getCell() != selectedCharacterPosition)
                     if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
                         setSelectedCharacter(selectedCharacter);
                     }
+            }
 
         }
 
@@ -444,6 +447,7 @@ public class CombatController extends Stage {
 
         if (selectedCharacter != null) {
             selectedCharacter.setSelected(true);
+            setCurrentSelectedAbility(null);
             if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
                 selectedCharacterPosition = selectedCharacter.getCharacter().getCell();
                 combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
@@ -559,7 +563,6 @@ public class CombatController extends Stage {
      * @param actor
      */
     public void showMovementTiles(CharacterActor actor) {
-
          map.highlightMovementCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement(),-1);
 
     }
@@ -571,7 +574,7 @@ public class CombatController extends Stage {
     public void setCurrentSelectedAbility(Ability currentSelectedAbility) {
         this.currentSelectedAbility = currentSelectedAbility;
 
-        if (selectedCharacter == null) return;
+        if (selectedCharacter == null || currentSelectedAbility==null) return;
 
         if(selectedCharacter.isFriendly()) {
             map.outlineCells(

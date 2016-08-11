@@ -59,12 +59,14 @@ public class StrategyManager {
 
         if(target != null) {
 
-
-
-
             chosenAbility = chooseAbility(c, distance, target);
 
             LOG.print(3,"[StrategyManager] Closest target: "+target+" Max Range:"+chosenAbility.getRange(),LOG.ANSI_PURPLE);
+
+            if (chosenAbility.getType() == Ability.AbilityType.BUFF || chosenAbility.getType() == Ability.AbilityType.HEAL ) {
+                distance = 0;
+                target = c;
+            }
 
             //TODO define range of abilities como dios manda
             if (distance <= chosenAbility.getRange() ) {
@@ -86,7 +88,7 @@ public class StrategyManager {
 
                 IsoMapCellActor resultCellActor = map.getCell(resultCell.getMapCoordinates());
 
-                controller.getCharacterActor(c).moveToCell(resultCellActor);
+                controller.getCharacterActor(c).moveToCell(resultCellActor, map);
             }
         }
 
@@ -124,7 +126,7 @@ public class StrategyManager {
         return resultCell;
         */
 
-        System.out.println("Shortest Path "+combat.getMap().getShortestPath(sourceCell,targetCell));
+        //System.out.println("Shortest Path "+combat.getMap().getShortestPath(sourceCell,targetCell));
 
         return combat.getMap().getClosestCellWithRange(sourceCell,targetCell,maxMovement,range);
 
@@ -193,19 +195,26 @@ public class StrategyManager {
             if (tentativeTargetDistance <= currentCharacter.getMovement() + damageAvailable.getRange()
                     && tentativeTarget.getHealth() < tentativeTarget.getMaxHealth() * 0.30
                     ) {
-                return buffAvailable;
+                LOG.print(3,"[StrategyManager] Action: Attack weak target",LOG.ANSI_PURPLE);
+                return damageAvailable;
             }
         }
 
         //If health < 25%, heal if possible
         if ( healAvailable!= null && currentCharacter.getHealth() < currentCharacter.getMaxHealth()*0.25) {
+            LOG.print(3,"[StrategyManager] Action: Heal",LOG.ANSI_PURPLE);
             return healAvailable;
         }
 
         //If too far to hit after movement, apply buff if not yet applied
         if(buffAvailable!= null) {
+
+            System.out.println("dist "+(tentativeTargetDistance > currentCharacter.getMovement() + damageAvailable.getRange()));
+            System.out.println("eff"+(!currentCharacter.hasEffect(buffAvailable.getEffects().get(0))));
+
             if (tentativeTargetDistance > currentCharacter.getMovement() + damageAvailable.getRange()
-                    && currentCharacter.hasEffect(buffAvailable.getEffects().get(0))) {
+                    && !currentCharacter.hasEffect(buffAvailable.getEffects().get(0))) {
+                LOG.print(3,"[StrategyManager] Action: Buffing",LOG.ANSI_PURPLE);
                 return buffAvailable;
             }
         }
@@ -214,10 +223,13 @@ public class StrategyManager {
         if(debuffAvailable!= null) {
             if (tentativeTargetDistance <= currentCharacter.getMovement() + debuffAvailable.getRange()
                     && currentCharacter.getHealth() > currentCharacter.getMaxHealth() * 0.50
-                    && tentativeTarget.hasEffect(debuffAvailable.getEffects().get(0))) {
+                    && !tentativeTarget.hasEffect(debuffAvailable.getEffects().get(0))) {
+                LOG.print(3,"[StrategyManager] Action: DeBuffing",LOG.ANSI_PURPLE);
                 return debuffAvailable;
             }
         }
+
+        LOG.print(3,"[StrategyManager] Action: Generic attack",LOG.ANSI_PURPLE);
 
         //Otherwise attack!
         return damageAvailable;

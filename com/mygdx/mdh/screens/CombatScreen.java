@@ -19,6 +19,8 @@ public class CombatScreen extends AbstractGameScreen {
     CombatController combatController;
     CombatRenderer combatRenderer;
 
+    float prevDelta=0;
+
     private boolean paused;
 
     public CombatScreen(ScreenManager game) {
@@ -30,6 +32,9 @@ public class CombatScreen extends AbstractGameScreen {
 
     @Override
     public void render(float deltaTime) {
+
+        //System.out.println(1/deltaTime);
+
         // Do not update gameScreen world when paused.
         if(!paused) {
             // Update gameScreen world by the time that has passed since last rendered frame.
@@ -53,8 +58,10 @@ public class CombatScreen extends AbstractGameScreen {
         Gdx.gl.glClearColor(0x64/255.f, 0x95/255.f, 0xed/255.f, 0xff/255.f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+
         // Render gameScreen world to screen
         combatRenderer.render();
+
     }
 
     @Override

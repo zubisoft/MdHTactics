@@ -291,7 +291,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     @Override
     protected void positionChanged() {
         super.positionChanged();
-        //this.setZIndex((int)this.getMapCell().getMapCoordinates().y);
+        this.setZIndex((int)this.getMapCell().getMapCoordinates().y);
 
         if(selectionCircle != null) {
             selectionCircle.setPosition(getX() + 20, getY() + 10);
@@ -359,12 +359,12 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     /**
      * Adds a MovementAction that will move the actor to the specified point using the appropiate animation.
      */
-    public void moveToCell(IsoMapCellActor newCell) {
+    public void moveToCell(IsoMapCellActor newCell, IsoMapActor map) {
 
         if( IsoMapActor.distance(character.getCell().getCartesianCoordinates(),newCell.getCell().getCartesianCoordinates()) <= character.getMovement() ) {
 
             MovementAction movementAction = new MovementAction(0.025f);
-            movementAction.setTargetCell(newCell);
+            movementAction.setTargetCell(newCell, map);
 
             queueAction(movementAction);
 
@@ -443,6 +443,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         a.setActor(this);
         //LOG.print(3,"[CharacterActor] Added Action "+a+" for "+this.getCharacter().getName());
         queueActions.addLast(a);
+
+        if (! (a instanceof GameWaitAction) )
+            this.getCharacter().setAvailableActions(this.getCharacter().getAvailableActions() - 1);
     }
 
     public void addEffectAction (EffectAction ea) {

@@ -117,6 +117,9 @@ public class IsoMapActor extends Group{
     }
 
 
+
+
+
     public IsoMapCellActor getCell (MapCell cell) {
 
         return getCell(cell.getMapCoordinates());
