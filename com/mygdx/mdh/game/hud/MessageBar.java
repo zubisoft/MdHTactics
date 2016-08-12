@@ -31,7 +31,7 @@ public class MessageBar extends Actor {
 
 
     public MessageBar () {
-        messageBarBG = Assets.instance.guiElements.get("message_bar_bg");
+        messageBarBG = Assets.instance.guiElements.get("menus/message_bar_bg");
 
         this.setBounds(0,Constants.VIEWPORT_GUI_HEIGHT/2-100,Constants.VIEWPORT_GUI_WIDTH,200);
         this.setColor(new Color(0xd4be9000));
@@ -47,7 +47,7 @@ public class MessageBar extends Actor {
     }
 
     public MessageBar (CombatHUD combatHUD) {
-        messageBarBG = Assets.instance.guiElements.get("message_bar_bg");
+        messageBarBG = Assets.instance.guiElements.get("menus/message_bar_bg");
 
         this.setBounds(0,Constants.VIEWPORT_GUI_HEIGHT/2-100,Constants.VIEWPORT_GUI_WIDTH,200);
         this.setColor(new Color(0xd4be9000));

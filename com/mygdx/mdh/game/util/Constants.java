@@ -16,8 +16,8 @@ public class Constants {
     public static final String TEXTURE_ATLAS_CHARACTERS =
             "core/assets/graphics/mdhtactics-characters.pack.atlas";
 
-    public static final String TEXTURE_ATLAS_COMBAT_UI =
-            "core/assets/graphics/mdhtactics-combatui.pack.atlas";
+    public static final String TEXTURE_ATLAS_GUI =
+            "core/assets/graphics/mdhtactics-gui.pack.atlas";
 
     public static final String TEXTURE_ATLAS_MAPS =
             "core/assets/graphics/mdhtactics-maps.pack.atlas";

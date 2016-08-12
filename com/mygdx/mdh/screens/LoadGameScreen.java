@@ -81,7 +81,7 @@ public class LoadGameScreen extends AbstractGameScreen {
     public  void buildStage () {
 
         Table backgroundLayout = new Table();
-        background = new Image(Assets.instance.guiElements.get("mainmenu_bg"));
+        background = new Image(Assets.instance.guiElements.get("menus/mainmenu_bg"));
         backgroundLayout.add(background);
 
 

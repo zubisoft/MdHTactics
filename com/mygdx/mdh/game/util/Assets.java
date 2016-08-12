@@ -5,8 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -15,12 +13,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -73,7 +68,7 @@ public class Assets implements Disposable, AssetErrorListener {
         assetManager.setErrorListener(this);
         // load texture atlas
         assetManager.load(Constants.TEXTURE_ATLAS_CHARACTERS, TextureAtlas.class);
-        assetManager.load(Constants.TEXTURE_ATLAS_COMBAT_UI, TextureAtlas.class);
+        assetManager.load(Constants.TEXTURE_ATLAS_GUI, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_MAPS, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_EFFECTS, TextureAtlas.class);
         assetManager.load(Constants.TEXTURE_ATLAS_ABILITIES, TextureAtlas.class);
@@ -112,7 +107,7 @@ public class Assets implements Disposable, AssetErrorListener {
             maps.put(g.name, atlas.findRegion(g.name));
         }
 
-        atlas = assetManager.get(Constants.TEXTURE_ATLAS_COMBAT_UI);
+        atlas = assetManager.get(Constants.TEXTURE_ATLAS_GUI);
         for (AtlasRegion g: atlas.getRegions()) {
             //LOG.print(10, "[Assets] Loading GUI: " + g.name);
             guiElements.put(g.name, atlas.findRegion(g.name));

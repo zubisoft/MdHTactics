@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.util.Assets;
 
 /**
  * Created by zubisoft on 05/03/2016.
@@ -37,15 +38,9 @@ public class CharacterLifeBar extends Actor implements CharacterChangeListener {
 
         this.actor = actor;
 
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/healthbar_bg_small.png"));
-        barBackground = new TextureRegion(texture);
-        /*barBackground = new Sprite(texture);
-        barBackground.setSize(BARWIDTH, BARHEIGHT);*/
+        barBackground = Assets.instance.guiElements.get("character/CHAR-healthbar-bg");
 
-        texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/healthbar_fill_small.png"));
-
-        barFill = new TextureRegion(texture);
-                //, 0, 0, BARWIDTH, BARHEIGHT);
+        barFill = Assets.instance.guiElements.get("character/CHAR-healthbar-fill");
 
     }
 

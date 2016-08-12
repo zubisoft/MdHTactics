@@ -26,6 +26,7 @@ public class IsoMapCellActor extends Actor {
     final TextureRegion highlightTexture = Assets.instance.maps.get("tiles/tile-white-256x128");
     final TextureRegion outline = Assets.instance.maps.get("tiles/tile-outline-256x128");
 
+
     final TextureRegion rock = Assets.instance.maps.get("objects/desert_rocks_small");
 
     final TextureRegion texture_bottomleft = new TextureRegion(outline);

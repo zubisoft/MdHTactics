@@ -137,9 +137,9 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
         charInfoBoxLayout.add(new Image(Assets.instance.characters.get("zubi").portrait));
         charInfoBoxLayout.row();
-        charInfoBoxLayout.add(new Image(Assets.instance.guiElements.get("charselection_infobox")));
+        charInfoBoxLayout.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
         charInfoBoxLayout.row();
-        btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_top_button"))));
+        btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));
         charInfoBoxLayout.add(btnContinue);
 

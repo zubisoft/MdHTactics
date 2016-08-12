@@ -20,12 +20,13 @@ public class InfoBox extends Actor {
 
     public InfoBox () {
 
-        TextureRegion tex = Assets.instance.guiElements.get("info_box");
-        NinePatchDrawable tableBackground = new NinePatchDrawable(new NinePatch(tex,20,20,10,10));
+        TextureRegion tex = Assets.instance.guiElements.get("menus/info_box");
+        NinePatchDrawable tableBackground = new NinePatchDrawable(new NinePatch(tex,20,20,20,20));
 
         t = new Table();
         t.setBackground(tableBackground);
         t.setSize(300+20,100);
+        t.pad(20);
 
 
 
@@ -70,7 +71,7 @@ public class InfoBox extends Actor {
         super.draw(batch, parentAlpha);
 
         batch.setColor(1f, 1f, 0.8f,  1.0f);
-        t.draw(batch,0.8f);
+        t.draw(batch,1f);
         batch.setColor(1f, 1f, 1f,  1.0f);
 
         textArea.draw(batch,1.0f);

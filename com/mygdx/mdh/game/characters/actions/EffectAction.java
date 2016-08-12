@@ -90,7 +90,7 @@ public class EffectAction  extends Action {
     public void loadAnimations () {
 
 
-        //
+        //TODO: fix the reference to the files for gods sake
         Texture texture = new Texture(Gdx.files.internal(effect.getPic())); // #9
         TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/FRAME_COLS, texture.getHeight());              // #10
         TextureRegion[] frames = new TextureRegion[FRAME_COLS];

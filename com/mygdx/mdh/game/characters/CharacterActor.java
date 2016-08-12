@@ -174,7 +174,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         s = new ShapeRenderer();
 
-        Texture texture = new Texture(Gdx.files.internal("core/assets/graphics/combatui/selected_character_stroke.png"));
+        TextureRegion texture = Assets.instance.guiElements.get("character/CHAR-selection-circle");
         selectionCircle = new Sprite(texture);
         selectionCircle.setPosition(getX() + 20, getY() + 10);
         selectionCircle.setSize(100, 50);

@@ -29,16 +29,17 @@ public class TiledMapClickListener extends ClickListener {
 
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
-        if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
-                && stage.getSelectedCharacter().isActive()
-                && event.getButton() == Input.Buttons.RIGHT
-                && !actor.getCell().isOccupied()) {
-            System.out.println("[Tile Clicked] Moving character to "+actor.getMapCoordinates());
+        if (stage.getSelectedCharacter() != null) {
+            if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
+                    && stage.getSelectedCharacter().isActive()
+                    && event.getButton() == Input.Buttons.RIGHT
+                    && !actor.getCell().isOccupied()) {
+                System.out.println("[Tile Clicked] Moving character to " + actor.getMapCoordinates());
 
-            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
-            stage.getSelectedCharacter().moveToCell(actor);
+                stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
+                stage.getSelectedCharacter().moveToCell(actor, stage.getMap());
 
-
+            }
         }
 
         if ( event.getButton() == Input.Buttons.LEFT ) {
@@ -56,10 +57,25 @@ public class TiledMapClickListener extends ClickListener {
 
         }
 
+        /*
         if ( event.getButton() == Input.Buttons.RIGHT ) {
-            stage.setGameStep(Combat.GameStepType.SELECTION);
-            stage.deselectCharacter();
+            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
+            //stage.deselectCharacter();
             System.out.println("[Tile Clicked] "+actor.toString() );
+        }
+        */
+
+            if (stage.getSelectedCharacter() != null &&
+                    stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
+                    && !stage.getSelectedCharacter().isActive() ) {
+                stage.setGameStep(Combat.GameStepType.SELECTION);
+                stage.deselectCharacter();
+            }
+
+        if (stage.getSelectedCharacter() != null
+                && stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
+                && event.getButton() == Input.Buttons.RIGHT ) {
+            stage.setGameStep(Combat.GameStepType.SELECTION);
         }
 
 

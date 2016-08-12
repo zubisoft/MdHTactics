@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,11 +45,10 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     Stack abilitiesBar;
 
-    Texture sprite = new Texture(Gdx.files.internal("core/assets/graphics/HUD-background.png"));
-    Texture abilityBarSprite = new Texture(Gdx.files.internal("core/assets/graphics/HUD-bar.png"));
-    Texture characterHUDSprite = new Texture(Gdx.files.internal("core/assets/graphics/combatui/character_hud.png"));
-    Texture characterNameSprite = new Texture(Gdx.files.internal("core/assets/graphics/combatui/HUD-charname-bg.png"));
-
+    TextureRegion sprite = Assets.instance.guiElements.get("combatui/HUD-messagebox");
+    TextureRegion abilityBarSprite = Assets.instance.guiElements.get("combatui/HUD-bar");
+    TextureRegion characterHUDSprite = Assets.instance.guiElements.get("combatui/HUD-characterpanel");
+    TextureRegion characterNameSprite = Assets.instance.guiElements.get("combatui/HUD-charname-bg");
 
     Label characterInfoAttack;
     Label characterInfoDefense;

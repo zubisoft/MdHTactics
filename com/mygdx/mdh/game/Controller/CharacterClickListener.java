@@ -1,5 +1,6 @@
 package com.mygdx.mdh.game.controller;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -32,6 +33,7 @@ public class CharacterClickListener extends ClickListener {
 
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.SELECTION)
             || stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)) {
+
             stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
             stage.setSelectedCharacter(actor);
 
@@ -53,6 +55,13 @@ public class CharacterClickListener extends ClickListener {
                 stage.deselectCharacter();
             }
 
+        }
+
+
+        if (stage.getSelectedCharacter() != null
+                && stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
+                && evt.getButton() == Input.Buttons.RIGHT ) {
+            stage.setGameStep(Combat.GameStepType.SELECTION);
         }
 
     }

@@ -90,19 +90,19 @@ public class MainMenuScreen extends AbstractGameScreen {
     public  void buildStage () {
 
         Table backgroundLayout = new Table();
-        background = new Image(Assets.instance.guiElements.get("mainmenu_bg"));
+        background = new Image(Assets.instance.guiElements.get("menus/mainmenu_bg"));
 
         backgroundLayout.add(background);
 
-        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_top_button"))));
+        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         listener = new MenuClickListener(ButtonType.NEW_GAME);
         btnNew.addListener(listener);
 
-        btnLoad = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_loadbutton"))));
+        btnLoad = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_loadbutton"))));
         listener = new MenuClickListener(ButtonType.LOAD_GAME);
         btnLoad.addListener(listener);
 
-        btnQuit = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_quitbutton"))));
+        btnQuit = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_quitbutton"))));
         listener = new MenuClickListener(ButtonType.QUIT);
         btnQuit.addListener(listener);
 
