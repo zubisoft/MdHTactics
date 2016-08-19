@@ -1,8 +1,12 @@
 package com.mygdx.mdh.game.characters;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -60,6 +64,9 @@ public class CharacterMessenger extends Group {
 
         icons = new ArrayList<>();
         iconsAux= new ArrayList<>();
+
+
+
     }
 
 
@@ -76,7 +83,8 @@ public class CharacterMessenger extends Group {
     public void showMessage (String iconName, String message, Color c) {
 
         LOG.print("[CharMessenger] message "+message);
-        Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
+        Label la=(new Label(message, Assets.uiSkin, "font15", Color.WHITE));
+
         la.setColor(c);
         la.setPosition(actor.getX()+actor.offsetx,actor.getY()+actor.getHeight()-messages.size()*15);
 
@@ -138,7 +146,7 @@ public class CharacterMessenger extends Group {
      * @param message
      */
     public void showMessage (String message, Color c) {
-        Label la=(new Label(message, Assets.uiSkin, "text-font", Color.WHITE));
+        Label la=(new Label(message, Assets.uiSkin, "font15", Color.WHITE));
 
         la.setColor(c);
 

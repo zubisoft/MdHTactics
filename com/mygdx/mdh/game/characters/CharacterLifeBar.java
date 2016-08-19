@@ -38,9 +38,9 @@ public class CharacterLifeBar extends Actor implements CharacterChangeListener {
 
         this.actor = actor;
 
-        barBackground = Assets.instance.guiElements.get("character/CHAR-healthbar-bg");
+        barBackground = new TextureRegion(Assets.instance.guiElements.get("character/CHAR-healthbar-bg"));
 
-        barFill = Assets.instance.guiElements.get("character/CHAR-healthbar-fill");
+        barFill = new TextureRegion(Assets.instance.guiElements.get("character/CHAR-healthbar-fill"));
 
     }
 

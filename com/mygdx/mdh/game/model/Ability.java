@@ -110,7 +110,7 @@ public class Ability {
 
         //source.setAvailableActions(source.getAvailableActions() - 1);
 
-        System.out.println("[Ability] Actions left: "+ source.getAvailableActions());
+        //System.out.println("[Ability] Actions left: "+ source.getAvailableActions());
     }
 
     public Character getSource() {
@@ -130,6 +130,18 @@ public class Ability {
     }
 
     public void setType(AbilityType type) {
+
+
+        if (pic.equals("btn-flame")) {
+            switch (type) {
+                case RANGED: pic = "btn-attack"; break;
+                case MELEE: pic = "btn-gladius"; break;
+                case BUFF: pic = "btn-shield"; break;
+                case DEBUFF: pic = "btn-demoralize"; break;
+                case HEAL:  pic = "btn-transfusion"; break;
+            }
+        }
+
         this.type = type;
     }
 
@@ -178,6 +190,7 @@ public class Ability {
 
     public void setTargetType(AbilityTarget targetType) {
         if (targetType == AbilityTarget.SELF) range=0;
+
         this.targetType = targetType;
     }
 

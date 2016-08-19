@@ -48,6 +48,9 @@ public class EffectManager {
             notifyEffect(e);
 
 
+        //TODO Chapucero intento de no aplicar effecto si ataque fracasa
+        if(e.isFailed()) return false;
+
         return true;
     }
 

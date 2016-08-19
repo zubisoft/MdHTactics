@@ -55,6 +55,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     Label characterInfoMovement;
     Label characterInfoHealth;
     Label characterInfoAP;
+    Table characterInfoNameBox;
     Label characterInfoName;
 
     static InfoBox infoBox;
@@ -78,14 +79,14 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         characterInfoMovement = new  Label("",Assets.uiSkin, "default-font", Color.YELLOW);
         characterInfoHealth = new Label("",Assets.uiSkin, "default-font", Color.YELLOW);
         characterInfoAP = new Label("",Assets.uiSkin, "default-font", Color.YELLOW);
-        characterInfoName = new Label("",Assets.uiSkin, "default-font", Color.BLACK);
+        characterInfoName = new Label("",Assets.uiSkin, "font15", Color.BLACK);
 
         characterInfoHealth.setPosition(180+50,75);
         characterInfoAP.setPosition(255+50,75);
         characterInfoAttack.setPosition(180+50,45);
         characterInfoDefense.setPosition(235+50,45);
         characterInfoMovement.setPosition(290+50,45);
-        characterInfoName.setPosition(20,10);
+        //characterInfoName.setPosition(20,10);
 
         infoBox = new InfoBox();
 
@@ -100,7 +101,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
 
         effectsLayout.left().bottom();
-        effectsLayout.setPosition(150+50,8);
+        effectsLayout.setPosition(150+50+50,8);
         effectsLayout.setSize(200,10);
 
         hudTableLayout = new Table();
@@ -114,6 +115,11 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         abilitiesBar.add(new Image(abilityBarSprite));
         abilitiesBar.add(hudTableLayout);
 
+        characterInfoNameBox = new Table();
+        characterInfoNameBox.setPosition(50,12);
+        characterInfoNameBox.setWidth(150);
+        characterInfoNameBox.add(characterInfoName) ;
+
 
     }
 
@@ -122,8 +128,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
         hudTableLayout.clear();
         for (Ability ability : selectedCharacter.getAbilities()) {
-            System.out.println("abi"+ability.getPic());
-            AbilityButton actor = new AbilityButton(ability);
+
+             AbilityButton actor = new AbilityButton(ability);
 
             hudTableLayout.add(actor).size(35,35).pad(2);
 
@@ -184,7 +190,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     public void renderCharacterInfoBox (SpriteBatch batch) {
         batch.draw(characterHUDSprite,0+50,0);
         batch.draw(controller.getSelectedCharacter().portrait,15+50,15);
-        batch.draw(characterNameSprite,0,0,200,25);
+        batch.draw(characterNameSprite,25,0,200,25);
 
         characterInfoAttack.setText(""+controller.getSelectedCharacter().getCharacter().getAttack());
         characterInfoDefense.setText(""+controller.getSelectedCharacter().getCharacter().getDefence());
@@ -198,7 +204,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         characterInfoAttack.draw(batch,1.0f);
         characterInfoDefense.draw(batch,1.0f);
         characterInfoMovement.draw(batch,1.0f);
-        characterInfoName.draw(batch,1.0f);
+        characterInfoNameBox.draw(batch,1.0f);
 
 
 

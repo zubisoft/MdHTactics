@@ -24,7 +24,7 @@ public class AttributeModifierEffect extends Effect {
     EnumSet<EffectTargetType> attributeType;
 
     public enum EffectTargetType {
-        DEFENCE, ATTACK
+        DEFENCE, ATTACK, MOVEMENT, ACTIONS
     }
 
 
@@ -83,6 +83,10 @@ public class AttributeModifierEffect extends Effect {
             roll = new Roll(Roll.RollType.GENERIC,diceNumber,diceSides,modifier);
             roll.roll();
 
+            if (attributeType.contains(EffectTargetType.ACTIONS)) {
+                getTarget().setAvailableActions(getTarget().getAvailableActions()+roll.getRoll());
+            }
+
             effectTriggered();
         }
     }
@@ -101,16 +105,12 @@ public class AttributeModifierEffect extends Effect {
         return "*"+ getEffectClass()+" ("+roll.getRoll()+" HP)";
     }
 
-    public String notification() {
-        return "Damage Modifier";
-    }
-
 
     public String getDescription () {
-        String description = "Adds "+(diceNumber*diceSides+modifier>0?"+":"-");
+        String description = "Adds ";
 
-        if (diceNumber!=0 )      description += " "+diceNumber+"d"+diceSides+(modifier>0?"+":"");
-        if (modifier!=0 )        description += " "+modifier+" to";
+        if (diceNumber!=0 )      description += ""+diceNumber+"d"+diceSides+(modifier>0?"+":"");
+        if (modifier!=0 )        description += ""+modifier+" to";
         for (EffectTargetType ett: attributeType)
             description += " " + ett.name().toLowerCase();
         if (duration>0)         description += " ("+duration+" rounds)";

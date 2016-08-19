@@ -39,7 +39,6 @@ public class Combat {
 
 
 
-
     public Combat () {
         characters = new ArrayList<Character>();
         gameStep=GameStepType.SELECTION;

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -25,6 +27,9 @@ public class Assets implements Disposable, AssetErrorListener {
     private AssetManager assetManager;
 
     public static Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+
+    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/skin/Alyssa_Kayla.ttf"));
+    public BitmapFont font15 ;
 
     public AssetFonts fonts;
 
@@ -54,6 +59,17 @@ public class Assets implements Disposable, AssetErrorListener {
             defaultSmall.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
             defaultNormal.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
             defaultBig.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 25;
+            parameter.borderColor= Color.BLACK;
+            parameter.borderWidth=0.2f;
+            parameter.color = Color.WHITE;
+            parameter.magFilter = Texture.TextureFilter.Linear;
+            parameter.minFilter = Texture.TextureFilter.Linear;
+            font15 = generator.generateFont(parameter);
+            uiSkin.add("font15",font15);
+
         }
     }
 
@@ -94,7 +110,7 @@ public class Assets implements Disposable, AssetErrorListener {
 
         // Enable texture filtering for pixel smoothing
         for (Texture t : atlas.getTextures())
-            t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+            t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
         for (AtlasRegion g: atlas.getRegions()) {
             //LOG.print(10, "[Assets] Loading Character: " + g.name);

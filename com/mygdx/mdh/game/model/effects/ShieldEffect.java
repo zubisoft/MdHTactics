@@ -32,15 +32,28 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
      */
     public void init() {
         super.init();
+
+        notification = this.getName();
+
+        if (hits>0) {
+            initialRoll = 0;
+            initialized=true;
+            //notification = "Shielded vs "+hits+" hits";
+
+            effectTriggered();
+        }
+
         if (!initialized) {
             roll = new Roll(Roll.RollType.GENERIC,diceNumber,diceSides,modifier);
             initialRoll= roll.roll();
 
             initialized=true;
-            notification = "Shielded "+initialRoll+"/"+initialRoll;
+            //notification = "Shielded "+initialRoll+"/"+initialRoll;
 
             effectTriggered();
         }
+
+
 
     }
 
@@ -54,30 +67,36 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         if ( roll.getRoll() <= 0 ) return;
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
+
             DamageEffect de = (DamageEffect)d;
 
             int blocked=0;
             for (int i=0; i<de.getHits();i++) {
                 if (de.getDamageRolls().get(i).getRoll() != null) {
-                    blocked = Math.min(initialRoll - blockedDamage, de.getDamageRolls().get(i).getRoll().getRoll());
-                    LOG.print("[Shield] blocking "+blocked+" original damage: "+de.getDamageRolls().get(i).getRoll().getRoll());
+                    if (hits > 0) {
+                        blocked = de.getDamageRolls().get(i).getRoll().getRoll();
+                        hits--;
+                    } else {
+                        blocked = Math.min(initialRoll - blockedDamage, de.getDamageRolls().get(i).getRoll().getRoll());
+                    }
+
                     de.getDamageRolls().get(i).getRoll().addModifier(-blocked);
                     blockedDamage += blocked;
-                    LOG.print("new damage: "+de.getDamageRolls().get(i).getRoll().getRoll());
+
                 }
             }
 
+            if (blockedDamage>0) {
+                notification = "Shielded " + (initialRoll - blockedDamage) + "/" + initialRoll;
+                effectTriggered ();
+            }
 
-            notification = "Shielded "+(initialRoll-blockedDamage)+"/"+initialRoll;
-
-
-            effectTriggered ();
         }
     }
 
 
     public String toString() {
-        return "*"+ getEffectClass()+" ("+roll.getRoll()+" HP)";
+        return ""+ getEffectClass()+" ("+roll.getRoll()+" HP)";
     }
 
     public String notification() {

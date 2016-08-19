@@ -29,7 +29,6 @@ public class Character  {
     int maxActions;
     int availableActions;
     boolean friendly;
-    boolean active;
     boolean dead;
 
     //Position
@@ -57,7 +56,7 @@ public class Character  {
 
 
     public Character() {
-        active=true;
+
         abilities = new ArrayList<Ability>();
 
         effects = new ArrayList<Effect> ();
@@ -99,7 +98,7 @@ public class Character  {
 
         if (!isDead()) {
             setAvailableActions(maxActions);
-            this.setActive(true);
+            //this.setActive(true);
 
             if (effects.size() > 0) {
                 for (Effect tmp : effects) {
@@ -137,14 +136,33 @@ public class Character  {
         health=h;
         if (health<=0) {
             dead=true;
-            active=false;
-            cell.setOccupied(null);
+            availableActions=-1;
+            if(cell!= null) cell.setOccupied(null);
         }
     }
 
 
 
-    public int getAvailableActions() {return availableActions;}
+    public int getAvailableActions() {
+        /*
+        int modifier=0;
+
+        //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
+        for (Effect e:getEffects()) {
+            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.ACTIONS)) {
+                    modifier += ((AttributeModifierEffect) e).getAttributeModifier();
+                }
+            }
+        }
+
+        if (modifier>0) cleanEffects();
+        */
+
+        return availableActions /*+modifier*/ ;
+    }
+
+
     public void setAvailableActions(int a) {
         if (this.availableActions<=0 && a>0) {
             for(CharacterChangeListener cl: listeners) {
@@ -153,7 +171,13 @@ public class Character  {
         }
 
         this.availableActions=a;
-        if (this.availableActions<=0) this.setActive(false);
+
+        if(availableActions<=0) {
+            for (CharacterChangeListener cl : listeners) {
+                cl.onCharacterInactive(this);
+            }
+        }
+
     }
 
 
@@ -269,11 +293,11 @@ public class Character  {
     }
 
 
-    public List<Effect> getEffectsByName(String name) {
+    public List<Effect> getEffectsByNameAndClass(String name, Effect.EffectClass type) {
         List<Effect> list = new ArrayList<>();
 
         for (Effect e: effects) {
-            if (e.getName().equals(name))
+            if ((e.getName()+e.getEffectClass()).equals(name+type))
                 list.add(e);
         }
 
@@ -317,13 +341,21 @@ public class Character  {
        // if (e != null) effects.addAll(e);
         if (e==null ) return;
 
-
+        int i=0;
         for (Effect tmp: e) {
             tmp.setTarget(this);
             //Resolve immediate effects
-            LOG.print("[Character] Calling effect manager");
+            //LOG.print("[Character] Calling effect manager");
 
-            EffectManager.instance.apply(tmp);
+
+
+            //TODO If first attack fails, further effects are not applied - MUY CHAPUCERO
+            if (!EffectManager.instance.apply(tmp) && i==0) {
+                //System.out.println("breaking");
+                break;
+            }
+
+            i++;
 
         }
 
@@ -349,17 +381,8 @@ public class Character  {
     }
 
 
-    public boolean isActive() { return active; }
+    public boolean isActive() { return getAvailableActions()>0; }
 
-    public void setActive(boolean a) {
-        this.active=a;
-
-        if(!active)
-        for(CharacterChangeListener cl: listeners) {
-            cl.onCharacterInactive(this);
-        }
-
-    }
 
 
     public String getName() {
@@ -383,7 +406,18 @@ public class Character  {
     }
 
     public int getMovement() {
-        return movement;
+        int modifier=0;
+
+        //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
+        for (Effect e:getEffects()) {
+            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.MOVEMENT))
+                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+            }
+
+        }
+
+        return movement+modifier;
     }
 
     public void setMovement(int movement) {

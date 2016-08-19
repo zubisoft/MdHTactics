@@ -1,5 +1,7 @@
 package com.mygdx.mdh.game.IA;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.map.IsoMapActor;
@@ -61,6 +63,7 @@ public class StrategyManager {
 
             chosenAbility = chooseAbility(c, distance, target);
 
+
             LOG.print(3,"[StrategyManager] Closest target: "+target+" Max Range:"+chosenAbility.getRange(),LOG.ANSI_PURPLE);
 
             if (chosenAbility.getType() == Ability.AbilityType.BUFF || chosenAbility.getType() == Ability.AbilityType.HEAL ) {
@@ -73,8 +76,17 @@ public class StrategyManager {
 
                 LOG.print(3,"[StrategyManager] Action: "+chosenAbility,LOG.ANSI_PURPLE);
 
-                controller.setCurrentSelectedAbility(chosenAbility);
-                controller.executeCurrentAbility(controller.getCharacterActor(target));
+                if (chosenAbility.getArea()>0) {
+                    MapCell targetCell = findBestAreaTarget(c.getCell(),chosenAbility.getRange(),chosenAbility.getArea());
+                    controller.getMap().highlightCells(controller.getMap().getCell(targetCell),chosenAbility.getArea(), IsoMapActor.redHighlight);
+                    controller.setCurrentSelectedAbility(chosenAbility);
+                    controller.executeCurrentAbility( controller.getMap().getCell(targetCell));
+                } else {
+
+                    controller.setCurrentSelectedAbility(chosenAbility);
+                    controller.executeCurrentAbility(controller.getCharacterActor(target));
+                }
+
 
             } else {
 
@@ -234,5 +246,33 @@ public class StrategyManager {
         //Otherwise attack!
         return damageAvailable;
     }
+
+
+    public MapCell findBestAreaTarget(MapCell sourceCell, int range, int area) {
+
+        System.out.println("Exploring Range"+range+" area "+area+" inrange"+controller.getMap().getCellsInRange(sourceCell,range));
+
+        MapCell bestTarget=null;
+        int maxScore = 0;
+        for (MapCell tentativeTarget: controller.getMap().getCellsInRange(sourceCell,range)) {
+            int score = 0;
+            for (MapCell auxAreaCell: controller.getMap().getCellsInRange(tentativeTarget,area)) {
+                if (auxAreaCell.getCharacter() != null) {
+                    if (auxAreaCell.getCharacter().isFriendly()) score++;
+                    else score--;
+                }
+            }
+            if (score>=maxScore) {
+                bestTarget = tentativeTarget;
+                maxScore = score;
+            }
+        }
+
+        System.out.println("Strategy: best cell "+bestTarget+" score: "+maxScore);
+
+        return bestTarget;
+
+    }
+
 
 }

@@ -272,11 +272,13 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     }
 
     public void setHighlight(Color c) {
+        if (character.isDead()) return; //To avoid redrawing the character once it is dead
         this.setColor(c);
         this.highlighted = true;
     }
 
     public void removeHighlight() {
+        if (character.isDead()) return;
         this.setColor(Color.WHITE);
         this.highlighted = false;
     }
@@ -309,6 +311,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         //Get the current color before drawing (Useful to allow animating the color from actions)
         batch.setColor(getColor());
 
+
         //Grey out if inactive
         if (!character.isActive() && !character.isDead() && character.isFriendly() && this.getState()==CHARACTER_STATE.IDLE )
             batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
@@ -317,6 +320,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         if (isSelected() ) {
             selectionCircle.draw(batch,0.7f);
         }
+
 
         //Draw current animation
         batch.draw(currentFrame,getX()+offsetx

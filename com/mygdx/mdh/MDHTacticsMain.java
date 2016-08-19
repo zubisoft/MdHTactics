@@ -53,6 +53,7 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
+        loadTest ();
 
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
@@ -100,7 +101,26 @@ public class MDHTacticsMain extends ScreenManager {
         //Mission teschar= new Mission();
        // teschar.setMissionId("mission_C01M01");
 
-        System.out.println(Game.loadFromJSON("DefaultGame").getGameCampaign().get(0).getCampaignMissions().get(1).getName());
+        //System.out.println(Game.loadFromJSON("DefaultGame").getGameCampaign().get(0).getCampaignMissions().get(1).getName());
+
+        /*
+        Character c1 = Character.loadFromJSON("zubi_filmmaker");
+        Character c2 = Character.loadFromJSON("cultist");
+
+        LOG.print(3, "Ability:" +c1.getAbilities().get(0), LOG.ANSI_GREEN);
+        LOG.print(3, "Before:"+ c2.toString(), LOG.ANSI_GREEN);
+        c1.getAbilities().get(0).apply(c2);
+        LOG.print(3, "After:" +c2.toString(), LOG.ANSI_BLUE);
+
+
+        LOG.print(3, "Ability:" +c1.getAbilities().get(0), LOG.ANSI_GREEN);
+        LOG.print(3, "Before:"+ c2.toString(), LOG.ANSI_GREEN);
+        c2.startTurn();
+        LOG.print(3, "After:" +c2.toString(), LOG.ANSI_BLUE);
+
+
+
+*/
 
     }
 }

@@ -18,6 +18,9 @@ import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.LOG;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * Created by zubisoft on 22/02/2016.
@@ -156,6 +159,26 @@ public class IsoMapActor extends Group{
     }
 
 
+
+    public Set<MapCell> getCellsInRange(MapCell cell, float radius) {
+        IsoMapCellActor source = getCell(cell);
+        Vector2 coords = cell.getMapCoordinates();
+        Set<MapCell> result = new HashSet<>();
+        IsoMapCellActor auxCell;
+
+        for (int i=(int)-radius; i<= radius; i++) {
+            for (int j=(int)-radius; j<= radius; j++) {
+                auxCell = getCell(new Vector2(coords.x + i, coords.y + j));
+                if (auxCell!= null && source.isInRange(auxCell,radius)) {
+                    result.add(auxCell.getCell());
+                }
+
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Special case of highlight cells, with default movement tile color and friendly/hostile colors *
      * @param cell
@@ -207,6 +230,8 @@ public class IsoMapActor extends Group{
 
 
     public void outlineCells (IsoMapCellActor cell, int movementRadius, int abilityRadius) {
+
+
         int a,b;
         MapCell tmpCell;
 

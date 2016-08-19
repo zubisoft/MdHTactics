@@ -73,6 +73,7 @@ public class DamageEffect extends Effect {
         for (int i=0; i< hits; i++) {
             AttackRoll r = new AttackRoll(Roll.RollType.DAMAGE,diceNumber,diceSides,modifier,chance);
             r.setHitChanceModifier(chanceModifier);
+            r.setDirectDamage(directDamage);
             r.roll();
             damageRolls.add(r);
         }
@@ -88,27 +89,33 @@ public class DamageEffect extends Effect {
     public void execute () {
         super.execute();
 
+        setFailed(true);
+
             for (int i=0; i<hits;i++) {
                 //double attackRoll = Math.random();
                 //LOG.print(2, "[DamageEffect] Rolled: " + attackRoll+" Needed: "+(chance-chanceModifier), LOG.ANSI_RED);
 
-                if ( damageRolls.get(i).isHit()) {
+                if ( damageRolls.get(i).isHit()  ) {
 
                     int rolledResult;
+
                     //A damage roll can never be negative - Use heal for that
                     rolledResult = Math.max(damageRolls.get(i).getRoll().getRoll(), 0);
 
                     if (rolledResult>0) {
                         LOG.print(2, "[DamageEffect] Inflicted: " + rolledResult + "(" + rolledResult + "+" + modifier + ")", LOG.ANSI_RED);
-                        notification="-"+rolledResult+" HP";
+                        notification=" -"+rolledResult+" HP";
                         target.hit(rolledResult);
                     } else {
                         notification="No Damage!";
                     }
 
+                    setFailed(false);
+
 
                 } else {
-                    notification="Miss!";
+                    notification= "Miss!";
+
                 }
 
                 effectTriggered();
@@ -132,8 +139,8 @@ public class DamageEffect extends Effect {
              description = "Attack ";
 
             if (hits>1)             description += hits+" times ";
-                                    description += "for";
-            if (diceNumber!=0 )      description += " "+diceNumber+"d"+diceSides+(modifier>0?"+":"");
+                                    description += "for ";
+            if (diceNumber!=0 )      description += ""+diceNumber+"d"+diceSides+(modifier>0?"+":"");
             if (modifier!=0 )        description += modifier;
             if (isDirectDamage())   description += " direct";
             /*for (EffectSubType est: getEffectSubType())

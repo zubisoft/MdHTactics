@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class StunEffect  extends Effect  {
 
         String notification  = null;
+    boolean initialized = false;
 
         public StunEffect () {
             super();
@@ -24,19 +25,26 @@ public class StunEffect  extends Effect  {
 
         @Override
         public void init() {
-            super.init();
-            notification = "Stun applied!";
-            LOG.print(2,"[StunEffect] Initialized. ", LOG.ANSI_RED);
+            if (!initialized) {
+                super.init();
+                notification = "Stun applied!";
+                effectTriggered();
+                LOG.print(2,"[StunEffect] Initialized. ", LOG.ANSI_RED);
+                initialized = true;
+            }
+
+
         }
 
 
         public void execute () {
             super.execute();
 
-            LOG.print(2,"[StunEffect] Attempting stun. ", LOG.ANSI_RED);
+
             //For those effects that have a chance to happen
             if ( Math.random() > chance) {
-                notification = "Failed!";
+                LOG.print(2,"[StunEffect] Stun failed. ", LOG.ANSI_RED);
+                notification = "Stun failed.";
             } else {
                 LOG.print(2, "[StunEffect] Stunned!: ", LOG.ANSI_RED);
                 notification = "Stunned!";

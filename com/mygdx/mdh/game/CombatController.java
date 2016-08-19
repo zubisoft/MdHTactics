@@ -315,6 +315,8 @@ public class CombatController extends Stage {
             for (CharacterActor c : getCharacterActors()) {
                 if (!c.getCharacter().isFriendly() && c.getCharacter().isActive() && !c.actionInProgress()) {
 
+                    getMap().removeHighlightCells();
+
                     strategyManager.nextAction(c.getCharacter());
                     c.queueAction(new GameWaitAction(2f));
                     for (CharacterActor x : getCharacterActors()) {
@@ -326,6 +328,8 @@ public class CombatController extends Stage {
                 i++;
             }
         }
+
+
     }
 
     public boolean  characterActionsInProgress() {
@@ -549,10 +553,15 @@ public class CombatController extends Stage {
     }
 
     public void setGameStep(Combat.GameStepType step) {
+        switch (step) {
+            case SELECTION:
+                deselectCharacter();
 
+                break;
+
+        }
         map.removeHighlightCells();
         map.removeBorders();
-
 
         combat.setGameStep(step);
     }
@@ -574,7 +583,10 @@ public class CombatController extends Stage {
     public void setCurrentSelectedAbility(Ability currentSelectedAbility) {
         this.currentSelectedAbility = currentSelectedAbility;
 
-        if (selectedCharacter == null || currentSelectedAbility==null) return;
+        if (selectedCharacter == null || currentSelectedAbility==null) {
+            map.removeBorders();
+            return;
+        }
 
         if(selectedCharacter.isFriendly()) {
             map.outlineCells(

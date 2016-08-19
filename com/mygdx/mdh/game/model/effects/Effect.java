@@ -23,6 +23,7 @@ import java.util.*;
 @JsonSubTypes({
           @JsonSubTypes.Type(value = ShieldEffect.class, name = "SHIELD")
         , @JsonSubTypes.Type(value = DamageEffect.class, name = "DAMAGE")
+        , @JsonSubTypes.Type(value = ProtectionEffect.class, name = "PROTECTION")
         , @JsonSubTypes.Type(value = HealEffect.class, name = "HEAL")
         , @JsonSubTypes.Type(value = StunEffect.class, name = "STUN")
         , @JsonSubTypes.Type(value = RemoverEffect.class, name = "REMOVER")
@@ -71,7 +72,7 @@ public class Effect  /*implements Cloneable*/  {
      * Used to classify and handle effects in a more refined way.
      */
     public enum EffectSubType {
-        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON
+        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING
     }
 
     EnumSet<EffectSubType> effectSubType;
@@ -132,6 +133,16 @@ public class Effect  /*implements Cloneable*/  {
 
     boolean defaultIcon=true;
 
+
+    boolean failed = false;
+
+    public boolean isFailed() {
+        return failed;
+    }
+
+    public void setFailed(boolean failed) {
+        this.failed = failed;
+    }
 
 
     /**
@@ -288,14 +299,14 @@ public class Effect  /*implements Cloneable*/  {
         if ( duration < 0 ) return ;
         if (cancelled) return;
 
-        if(chanceRoll>chance) return;
+       // if(chanceRoll>chance) return;
 
-        System.out.println("[Effect] Applying Effect "+this.getEffectClass()+" stacking: "+target.getEffectsByName(this.getName()).size());
+        //System.out.println("[Effect] Applying Effect "+this.getEffectClass()+" stacking: "+target.getEffectsByName(this.getName()).size());
         for (Effect e: target.getEffects()) {
             System.out.println( "* "+e.getName()+"\n");
         }
 
-        if (target.getEffectsByName(this.getName()).size() <= stacking)
+        if (target.getEffectsByNameAndClass(this.name, this.effectClass).size() <= stacking)
             target.addEffect(this);
     }
 
@@ -318,7 +329,7 @@ public class Effect  /*implements Cloneable*/  {
         if (duration == 0)
             return "Applies "+ name;
         else
-            return "Applies "+ name +" "+effectSubType +" during "+duration+" turns";
+            return "Applies "+ name +" ("+duration+" rounds)";
 
     }
 
@@ -347,6 +358,8 @@ public class Effect  /*implements Cloneable*/  {
         /*
         effectSubType=EnumSet.noneOf(EffectSubType.class);
         effectSubType.addAll(list);*/
+
+
     }
 
     public String getIcon() {
@@ -403,7 +416,6 @@ public class Effect  /*implements Cloneable*/  {
 
     public void setEffecType(EffectClass effecType) {
 
-        //TODO this is just temporary for testing
 
         this.effectClass = effecType;
     }
@@ -491,18 +503,25 @@ public class Effect  /*implements Cloneable*/  {
     }
 
     public String toString() {
-       return "*"+ getEffectClass()+" ("+getDuration()+" rounds)";
+       return ""+ getEffectClass()+" ("+getDuration()+" rounds)";
     }
 
     public String notification() {
-        return "*"+ getEffectClass()+" ("+getDuration()+" rounds)";
+        return ""+ getName()+" ("+getDuration()+" rounds)";
     }
 
     public boolean isDefaultIcon() {
         return defaultIcon;
     }
 
+    /**
+     * Sets the target of the effect
+     * If this is set to self, it will override whatever target is provided and will retarget to the source.
+     * This approach allows abilities with effects that execute on both target and source.
+     * @return
+     */
     public EffectTargetType getEffectTargetType() {
+        if (effectTargetType == EffectTargetType.SELF) target = source;
         return effectTargetType;
     }
 

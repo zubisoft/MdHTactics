@@ -75,7 +75,8 @@ public class TiledMapClickListener extends ClickListener {
         if (stage.getSelectedCharacter() != null
                 && stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
                 && event.getButton() == Input.Buttons.RIGHT ) {
-            stage.setGameStep(Combat.GameStepType.SELECTION);
+            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
+            stage.setSelectedCharacter(stage.getSelectedCharacter());
         }
 
 
