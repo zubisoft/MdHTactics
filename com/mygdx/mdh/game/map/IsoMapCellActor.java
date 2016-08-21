@@ -96,8 +96,6 @@ public class IsoMapCellActor extends Actor {
         //Get the current color before drawing (Useful to allow animating the color from actions)
         batch.setColor(getColor());
 
-
-
         if (debug) {
             la.setPosition(getX() + 60, getY() + 30);
             la.draw(batch, 1);
@@ -147,14 +145,16 @@ public class IsoMapCellActor extends Actor {
         showHighlight = true;
         setColor(c);
 
+
     }
 
     public void removeHighlight () {
-
         showHighlight = false;
-        setColor(new Color(1f, 1f, 1f, 1f));
+        setColor(Color.WHITE);
+
 
     }
+
 
 
     public void setBorders(boolean borderBottomLeft, boolean borderBottomRight, boolean borderTopLeft, boolean borderTopRight) {
@@ -169,7 +169,7 @@ public class IsoMapCellActor extends Actor {
     public void removeBorders () {
 
         showOutline = false;
-        setColor(new Color(1f, 1f, 1f, 1f));
+        //setColor(Color.WHITE);
 
     }
 
@@ -193,6 +193,5 @@ public class IsoMapCellActor extends Actor {
 
     public boolean isInRange(IsoMapCellActor cell, float range) {
         return (IsoMapActor.distance(this , cell ) <= range);
-
     }
 }

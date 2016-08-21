@@ -79,8 +79,11 @@ public class StrategyManager {
                 if (chosenAbility.getArea()>0) {
                     MapCell targetCell = findBestAreaTarget(c.getCell(),chosenAbility.getRange(),chosenAbility.getArea());
                     controller.getMap().highlightCells(controller.getMap().getCell(targetCell),chosenAbility.getArea(), IsoMapActor.redHighlight);
+
                     controller.setCurrentSelectedAbility(chosenAbility);
+                    //controller.showAreaOfEffect(targetCell);
                     controller.executeCurrentAbility( controller.getMap().getCell(targetCell));
+
                 } else {
 
                     controller.setCurrentSelectedAbility(chosenAbility);
@@ -220,9 +223,6 @@ public class StrategyManager {
 
         //If too far to hit after movement, apply buff if not yet applied
         if(buffAvailable!= null) {
-
-            System.out.println("dist "+(tentativeTargetDistance > currentCharacter.getMovement() + damageAvailable.getRange()));
-            System.out.println("eff"+(!currentCharacter.hasEffect(buffAvailable.getEffects().get(0))));
 
             if (tentativeTargetDistance > currentCharacter.getMovement() + damageAvailable.getRange()
                     && !currentCharacter.hasEffect(buffAvailable.getEffects().get(0))) {

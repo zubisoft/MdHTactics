@@ -105,7 +105,13 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     private float adjusted_x;
     private int pixel ;
 
+
+
+    CHARACTER_STATE test = null;
+
     public Actor hit (float x, float y, boolean touchable) {
+
+        if (actionInProgress()) return null; //No input allowed while main action in progress
 
         if (getScaleX()==-1) {
             adjusted_x = (getWidth()-(x+offsetx));
@@ -216,6 +222,14 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
         Iterator<Label> iterator = messages.iterator();
         while(iterator.hasNext()) iterator.next().act(stateTime);*/
         characterMessenger.update(deltaTime);
+
+
+
+        if (test == null) test=state;
+        if(!state.equals(test)) {
+            System.out.println("New state: "+state+" from "+test);
+            test=state;
+        }
 
         //Update the current frame
         switch(state) {

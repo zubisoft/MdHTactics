@@ -234,6 +234,25 @@ public class Map {
         return cells;
     }
 
+
+    public Set<MapCell> getCells (MapCell cell, float radius) {
+        Set cells = new HashSet<MapCell>();
+        MapCell auxCell;
+
+        //Only iterate from -radius to +radius, as it is not possible to reach beyond that point since min weight is 1
+        for (float i=-radius; i<=radius; i++) {
+            for (float j=-radius; j<=radius; j++) {
+                auxCell = (MapCell)mapCellsCartesian.get(new Vector2(i,j));
+                if (distance(cell, auxCell) <= radius) {
+                    if (!auxCell.isImpassable() && !auxCell.isOccupied())  {
+                        cells.add(auxCell);
+                    }
+                }
+            }
+        }
+        return cells;
+    }
+/*
     public Set<MapCell> getCellsRecursive(MapCell cell, double radius) {
 
         Set l = new HashSet<MapCell>();
@@ -260,7 +279,7 @@ public class Map {
 
         return l;
     }
-
+*/
     public void totalblockMapCell(MapCell c) {
 
         for (DefaultWeightedEdge e : mapGraph.edgesOf(c)) {

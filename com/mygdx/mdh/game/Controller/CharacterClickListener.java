@@ -24,7 +24,7 @@ public class CharacterClickListener extends ClickListener {
     @Override
     public void clicked(InputEvent evt, float x, float y) {
 
-        LOG.print("zindex "+actor.getZIndex()+" "+actor.getMapCell()+" "+actor.getMapCell().getMapCoordinates().y);
+        //LOG.print("zindex "+actor.getZIndex()+" "+actor.getMapCell()+" "+actor.getMapCell().getMapCoordinates().y);
 
         CombatController stage = (CombatController)evt.getStage();
 
@@ -40,7 +40,6 @@ public class CharacterClickListener extends ClickListener {
 
         }
 
-        System.out.println("[CharacterClickListener] Distance to target "+Map.distance(stage.getSelectedCharacter().getMapCell(),actor.getMapCell()));
         //If the step was targeting, the clicked actor becomes the target.
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
             && Map.distance(stage.getSelectedCharacter().getMapCell(),actor.getMapCell()) <= stage.getCurrentSelectedAbility().getRange()) {
@@ -49,11 +48,15 @@ public class CharacterClickListener extends ClickListener {
 
             stage.executeCurrentAbility(actor);
 
-            if (actor.getCharacter().isActive()) {
-                stage.map.removeHighlightCells();
-            } else {
-                stage.deselectCharacter();
+            if (!stage.getSelectedCharacter().isActive()) {
+
+                stage.map.removeBorders();
+
             }
+
+
+            stage.setGameStep(Combat.GameStepType.SELECTION);
+            stage.map.removeHighlightCells();
 
         }
 

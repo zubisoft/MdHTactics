@@ -332,6 +332,14 @@ public class CombatController extends Stage {
 
     }
 
+    public void enableInput(){
+        Gdx.input.setInputProcessor(multiplexer);
+    }
+
+    public void disableInput(){
+        Gdx.input.setInputProcessor(null);
+    }
+
     public boolean  characterActionsInProgress() {
 
         for(CharacterActor c: getCharacterActors()) {
@@ -354,7 +362,22 @@ public class CombatController extends Stage {
        // System.out.println(Gdx.graphics.getDeltaTime());
         stateTime += deltaTime;          // #15
 
+        double x = System.currentTimeMillis();
+
+        //System.out.println("A) Init");
+
         combatHUD.update(deltaTime);
+
+        x =  System.currentTimeMillis()-x;
+        //System.out.println("B) HUD "+x);
+
+        if (CharacterActor.actionInProgress() && Gdx.input.getInputProcessor() !=null) {
+            System.out.println("Disable");
+            Gdx.input.setInputProcessor(null);
+        } else if (!CharacterActor.actionInProgress() && Gdx.input.getInputProcessor() ==null ) {
+            System.out.println("Enable");
+            Gdx.input.setInputProcessor(multiplexer);
+        }
 
         if (isGameOver()) {
             if(!gameEnd) combatHUD.showMessageBar("Game Over");
@@ -367,6 +390,9 @@ public class CombatController extends Stage {
             System.out.println("Victory");
             gameEnd=true;
         }
+
+        x =  System.currentTimeMillis()-x;
+        //System.out.println("C) Victory checks "+x);
 
         if (!messageInProgress && !baddiesActive() && gameTurn==GameTurn.BADDIES && !characterActionsInProgress()) {
 
@@ -384,6 +410,8 @@ public class CombatController extends Stage {
 
         }
 
+        x =  System.currentTimeMillis()-x;
+        //System.out.println("D) Messaging "+x);
 
 
         if (!combatPaused) {
@@ -408,14 +436,22 @@ public class CombatController extends Stage {
             }
 
 
+            x =  System.currentTimeMillis()-x;
+            //System.out.println("E) Game Turn handling "+x);
+
 
             //TODO Convertir esto en una llamada de evento que viene desde el character cuando cambia un atributo
+
             if (selectedCharacter != null) {
                 if (selectedCharacter.getCharacter().getCell() != selectedCharacterPosition)
                     if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
                         setSelectedCharacter(selectedCharacter);
                     }
             }
+
+
+            x =  System.currentTimeMillis()-x;
+            //System.out.println("F) Char Change "+x);
 
         }
 
@@ -424,8 +460,14 @@ public class CombatController extends Stage {
             a.update(deltaTime);
         }
 
+        x =  System.currentTimeMillis()-x;
+        //System.out.println("G) Actor updating "+x);
+
        // map.act(deltaTime);
         this.act(deltaTime);
+
+        x =  System.currentTimeMillis()-x;
+        //System.out.println("H) Act "+x);
 
     }
 
@@ -573,7 +615,6 @@ public class CombatController extends Stage {
      */
     public void showMovementTiles(CharacterActor actor) {
          map.highlightMovementCells(map.getCell(actor.getCharacter().getCell().getMapCoordinates()), actor.getCharacter().getMovement(),-1);
-
     }
 
     public Ability getCurrentSelectedAbility() {

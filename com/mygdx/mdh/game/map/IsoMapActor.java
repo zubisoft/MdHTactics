@@ -142,16 +142,22 @@ public class IsoMapActor extends Group{
         }*/
 
 
+
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
 
                 if (distance(mapCells[y][x], cell) <= radius) {
-                    if (mapCells[y][x].getCell().getCellType() != MapCell.CellType.IMPASSABLE)
+                    if (mapCells[y][x].getCell().getCellType() != MapCell.CellType.IMPASSABLE) {
                         mapCells[y][x].highlight(color);
+
+
+                    }
+
                 }
 
             }
         }
+
 
 
 
@@ -195,7 +201,7 @@ public class IsoMapActor extends Group{
 
         IsoMapCellActor auxCell;
 
-        for (MapCell c: this.map.getCellsRecursive(cell.getCell(),movementRadius)) {
+        for (MapCell c: this.map.getCells (cell.getCell(),movementRadius)) {
 
 
                 auxCell = getCell(c);

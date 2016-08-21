@@ -72,8 +72,8 @@ public class MovementAction extends GameAction {
             //TODO Do not move if the target is occupied  - but please dont break the bloody gameScreen
             //if (targetCell.getCell().isOccupied()) return true;
 
-            this.stepx = Math.signum(targetx - actor.getX()) * 2;
-            this.stepy = Math.signum(targety - actor.getY()) * 1;
+            this.stepx = Math.signum(targetx - actor.getX()) * 4;
+            this.stepy = Math.signum(targety - actor.getY()) * 2;
 
             ((CharacterActor)actor).setState(CharacterActor.CHARACTER_STATE.MOVING);
 
@@ -99,8 +99,6 @@ public class MovementAction extends GameAction {
             stateTime=0;
 
 
-
-
             if (Math.round(actor.getX())==targetx & Math.round(actor.getY())==targety) {
                 //Target reached
 
@@ -113,7 +111,7 @@ public class MovementAction extends GameAction {
                 //Stop moving
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
-                System.out.println("[CharacterActor] Target reached "+characterActor);
+               // System.out.println("[CharacterActor] Target reached "+characterActor);
 
                 return true;
 
@@ -127,8 +125,7 @@ public class MovementAction extends GameAction {
 
                 } else {
 
-
-                    characterActor.setState(CharacterActor.CHARACTER_STATE.MOVING);
+                     //characterActor.setState(CharacterActor.CHARACTER_STATE.MOVING);
 
                     //Update position
                     if ((stepx > 0 & currenttargetx - actor.getX() > stepx) | (stepx < 0 & currenttargetx - actor.getX() < stepx))

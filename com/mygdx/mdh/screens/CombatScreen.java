@@ -33,12 +33,16 @@ public class CombatScreen extends AbstractGameScreen {
     @Override
     public void render(float deltaTime) {
 
-        //System.out.println(1/deltaTime);
+
 
         // Do not update gameScreen world when paused.
         if(!paused) {
+
+            //System.out.println(Math.round(1/deltaTime)+" "+paused);
+
             // Update gameScreen world by the time that has passed since last rendered frame.
             combatController.update(deltaTime);
+
 
             if ( /*combatController.isVictory() &&*/ combatController.isCombatFinished()) {
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
