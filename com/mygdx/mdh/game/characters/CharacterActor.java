@@ -515,6 +515,9 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
     public void onCharacterHit (int damage)  {
         //LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);
 
+        //TODO: some extra logic would be nice to consider the case when the actor is hitting himself
+        if (damage <0) return; //Do not execute when healing
+
         this.addAction(new TakeDamageAction(1));
         if (character.isDead()) {
             LOG.print(1,"[CharacterActor] Dying:  "+character,LOG.ANSI_RED);

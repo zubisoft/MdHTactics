@@ -134,6 +134,9 @@ public class Effect  /*implements Cloneable*/  {
     boolean defaultIcon=true;
 
 
+
+
+
     boolean failed = false;
 
     public boolean isFailed() {
@@ -238,6 +241,7 @@ public class Effect  /*implements Cloneable*/  {
         cancelled=e.cancelled;
         effectTargetType = e.effectTargetType;
         conditionalEffects = e.conditionalEffects;
+
     }
 
     public Effect copy () {
@@ -285,9 +289,10 @@ public class Effect  /*implements Cloneable*/  {
     public void execute () {
         if ( !isValidTarget() ) return ;
         if ( duration < 0 ) return ;
-        if (cancelled) return;
+        if ( cancelled ) return;
 
         if(chanceRoll>chance) return;
+
     }
 
     /**

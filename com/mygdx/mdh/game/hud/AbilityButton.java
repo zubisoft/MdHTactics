@@ -4,13 +4,12 @@ package com.mygdx.mdh.game.hud;
  * Created by zubisoft on 29/01/2016.
  */
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.model.Ability;
-import com.badlogic.gdx.graphics.Texture;
 import com.mygdx.mdh.game.util.Assets;
 
 /**
@@ -20,7 +19,14 @@ import com.mygdx.mdh.game.util.Assets;
 public class AbilityButton extends ImageButton {
 
     private Ability ability;
-    Texture sprite;
+
+    public boolean isClickable() {
+        return clickable;
+    }
+
+
+
+    boolean clickable = true;
 
     public AbilityButton(Ability ability) {
 
@@ -30,19 +36,33 @@ public class AbilityButton extends ImageButton {
         this.setBounds(this.getX(),this.getY(), 50,50);
 
 
+
         //sprite = new Texture(Gdx.files.internal(ability.getPic()));
 
     }
 
     public Ability getAbility() {return ability;}
 
-    public Texture getSprite() {
-        return sprite;
+
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        if (ability.getCurrentCooldown()>0 && clickable) {
+            getImage().setColor(Color.GRAY);
+            clickable = false;
+        } else if (ability.getCurrentCooldown()==0 && !clickable) {
+            getImage().setColor(Color.WHITE);
+            clickable = true;
+        }
+
     }
 
-    public void draw (SpriteBatch batch) {
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
 
-        draw(batch,1.0f);
-
+        super.draw(batch, parentAlpha);
+        //batch.draw(sprite,getX(),getY(),50,50);
     }
 }

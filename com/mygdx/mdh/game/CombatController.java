@@ -598,12 +598,19 @@ public class CombatController extends Stage {
         switch (step) {
             case SELECTION:
                 deselectCharacter();
-
+                map.removeHighlightCells();
+                map.removeBorders();
+                break;
+            case ACTION_SELECTION:
+                setSelectedCharacter(selectedCharacter);
+                map.removeBorders();
+                break;
+            case TARGETING:
+                map.removeHighlightCells();
                 break;
 
         }
-        map.removeHighlightCells();
-        map.removeBorders();
+
 
         combat.setGameStep(step);
     }

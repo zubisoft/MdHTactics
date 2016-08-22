@@ -100,6 +100,10 @@ public class Character  {
             setAvailableActions(maxActions);
             //this.setActive(true);
 
+            for (Ability a: getAbilities()) {
+                if (a.getCurrentCooldown()>0) a.setCurrentCooldown(a.getCurrentCooldown()-1);
+            }
+
             if (effects.size() > 0) {
                 for (Effect tmp : effects) {
                     //tmp.setTarget(this);

@@ -66,7 +66,7 @@ public class AttackAction extends GameAction {
             if (totalTime > 3) {
                 //Stop moving
 
-
+                System.out.println("Changing state from attack action");
                 characterActor.setState(CharacterActor.CHARACTER_STATE.IDLE);
 
                 return true;

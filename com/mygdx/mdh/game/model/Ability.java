@@ -2,8 +2,6 @@ package com.mygdx.mdh.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mygdx.mdh.game.model.effects.Effect;
-import com.mygdx.mdh.game.util.Dice;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +81,28 @@ public class Ability {
      */
     List<Effect> effects;
 
+    int cooldown=0;
+
+    public int getCurrentCooldown() {
+        return currentCooldown;
+    }
+
+    public void setCurrentCooldown(int currentCooldown) {
+        this.currentCooldown = currentCooldown;
+    }
+
+    int currentCooldown =0;
+
+
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
+
+
     public Ability() {
         effects = new ArrayList<Effect>();
         //addEffect(new Effect("FIRE"));
@@ -107,6 +127,8 @@ public class Ability {
         //Apply effects
         if (effects != null)
             target.addEffect(effects);
+
+        currentCooldown = cooldown;
 
         //source.setAvailableActions(source.getAvailableActions() - 1);
 
