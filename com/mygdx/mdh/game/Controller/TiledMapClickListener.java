@@ -29,6 +29,7 @@ public class TiledMapClickListener extends ClickListener {
 
         System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
+        //Movement
         if (stage.getSelectedCharacter() != null) {
             if (stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
                     && stage.getSelectedCharacter().isActive()
@@ -38,19 +39,22 @@ public class TiledMapClickListener extends ClickListener {
 
                 stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
                 stage.getSelectedCharacter().moveToCell(actor, stage.getMap());
+                stage.map.removeHighlightCells();
 
             }
         }
 
+        //Area attack or cancel
         if ( event.getButton() == Input.Buttons.LEFT ) {
 
-            if (stage.getCombat().getGameStep() == Combat.GameStepType.TARGETING)
+            if (stage.getCombat().getGameStep() == Combat.GameStepType.TARGETING) {
                 stage.executeCurrentAbility(actor);
+            } //else if (stage.getSelectedCharacter()!=null &&  stage.getSelectedCharacter().isActive()) {
+                //stage.setGameStep(Combat.GameStepType.ACTION_SELECTION); }
 
-            stage.setGameStep(Combat.GameStepType.SELECTION);
-            stage.deselectCharacter();
-            System.out.println("[Tile Clicked] "+actor.toString() );
-
+            else {
+                stage.setGameStep(Combat.GameStepType.SELECTION);
+            }
 
             //debug
             //stage.getMap().highlightCells(actor,2, Color.BROWN);
@@ -65,13 +69,14 @@ public class TiledMapClickListener extends ClickListener {
         }
         */
 
+        //Cancel selected character
             if (stage.getSelectedCharacter() != null &&
                     stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)
                     && !stage.getSelectedCharacter().isActive() ) {
                 stage.setGameStep(Combat.GameStepType.SELECTION);
                 stage.deselectCharacter();
             }
-
+        //Cancel targeting
         if (stage.getSelectedCharacter() != null
                 && stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
                 && event.getButton() == Input.Buttons.RIGHT ) {

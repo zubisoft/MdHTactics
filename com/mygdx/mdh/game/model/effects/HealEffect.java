@@ -77,4 +77,25 @@ public class HealEffect  extends Effect{
         return e;
     }
 
+    public String getDescription () {
+        String description;
+
+            description = "Heals ";
+
+            if (hits>1)             description += hits+" times ";
+            if (diceNumber!=0 )      description += ""+diceNumber+"d"+diceSides+(modifier>0?"+":"");
+            if (modifier!=0 )        description += modifier;
+            /*for (EffectSubType est: getEffectSubType())
+                                    description += " " + est.name().toLowerCase();*/
+            description += " damage";
+            if (duration>0)         description += " ("+duration+" rounds)";
+
+
+
+        return description;
+
+
+    }
+
+
 }

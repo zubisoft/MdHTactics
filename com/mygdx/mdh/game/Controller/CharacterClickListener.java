@@ -34,8 +34,8 @@ public class CharacterClickListener extends ClickListener {
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.SELECTION)
             || stage.getCombat().getGameStep().equals(Combat.GameStepType.ACTION_SELECTION)) {
 
-            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
             stage.setSelectedCharacter(actor);
+            stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
 
 
         }
@@ -48,15 +48,15 @@ public class CharacterClickListener extends ClickListener {
 
             stage.executeCurrentAbility(actor);
 
+            /*
             if (!stage.getSelectedCharacter().isActive()) {
-
-                stage.map.removeBorders();
-
+                stage.setGameStep(Combat.GameStepType.SELECTION);
+            } else {
+                stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
             }
+            */
 
 
-            stage.setGameStep(Combat.GameStepType.SELECTION);
-            stage.map.removeHighlightCells();
 
         }
 

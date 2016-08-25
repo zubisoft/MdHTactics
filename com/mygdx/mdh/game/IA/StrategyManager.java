@@ -258,10 +258,16 @@ public class StrategyManager {
             int score = 0;
             for (MapCell auxAreaCell: controller.getMap().getCellsInRange(tentativeTarget,area)) {
                 if (auxAreaCell.getCharacter() != null) {
-                    if (auxAreaCell.getCharacter().isFriendly()) score++;
-                    else score--;
+
+                    if (auxAreaCell.getCharacter().isFriendly()) {
+                        score++;System.out.print(" +1");
+                    }
+                    else {
+                        score--;System.out.print(" -1");
+                    }
                 }
             }
+            System.out.println("Assessing cell "+tentativeTarget+" score: "+score);
             if (score>=maxScore) {
                 bestTarget = tentativeTarget;
                 maxScore = score;

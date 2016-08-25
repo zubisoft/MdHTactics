@@ -33,7 +33,7 @@ public class Map {
     /**
      * Auxiliar structure to access the map by cartesian coordinates
      **/
-    private final HashMap mapCellsCartesian = new HashMap<Vector2, MapCell>();
+    public final HashMap mapCellsCartesian = new HashMap<Vector2, MapCell>();
 
     /**
      * Auxiliar structure to establish cell connections, cost to move, inaccesibility

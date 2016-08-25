@@ -17,6 +17,7 @@ import com.mygdx.mdh.game.model.Map;
 import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.LOG;
+import org.jgrapht.alg.DijkstraShortestPath;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -130,8 +131,117 @@ public class IsoMapActor extends Group{
     }
 
 
+    public float[][] dijkstra (MapCell initial, boolean ignoreOccupied) {
+
+        boolean[][] visited = new boolean[10][10];
+        float[][] distances = new float[10][10];
+
+        int cartesian_x = (int)initial.getCartesianCoordinates().x;
+        int cartesian_y = (int)initial.getCartesianCoordinates().y;
+        int table_x = (int)initial.getMapCoordinates().y;
+        int table_y = (int)initial.getMapCoordinates().x;
+        int aux_tablex ;
+        int aux_tabley ;
+
+
+        MapCell aux;
+
+
+        for (int i=0; i<10; i++) {
+            for (int j=0; j<10; j++) {
+                distances[i][j] = 99999;
+            }
+        }
+        distances[table_x][table_y]=0;
+        float minDist=0;
+        int counter=0;
+
+
+
+        while (minDist < 99999 && counter<100) {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (!(i == 0 && j == 0)
+                            //&& (current_x + i >= 0) && (current_x + i < 10)
+                            //&& (current_y + j >= 0) && (current_y + j < 10)
+                           ) {
+
+
+                        aux = (MapCell) map.mapCellsCartesian.get(new Vector2(cartesian_x + i, cartesian_y + j));
+
+
+
+                        if (aux != null  && !aux.isImpassable()) {
+                            if ( !aux.isOccupied() || ignoreOccupied) {
+                                aux_tablex = (int) aux.getMapCoordinates().y;
+                                aux_tabley = (int) aux.getMapCoordinates().x;
+
+                                if (!visited[aux_tablex][aux_tabley]) {
+                                    minDist = distances[table_x][table_y] + (((i == 0) || (j == 0)) ? 1f : 1.5f);
+                                    if (minDist < distances[aux_tablex][aux_tabley])
+                                        distances[aux_tablex][aux_tabley] = minDist;
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+            }
+
+            visited[table_x][table_y]= true;
+
+
+            minDist = 99999;
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (!visited[i][j] && distances[i][j] < minDist) {
+                        minDist = distances[i][j];
+                        table_x = i;
+                        table_y = j;
+
+                    }
+                }
+            }
+
+
+            aux =  map.getCell(table_x,table_y);
+
+
+            if (aux != null) {
+                cartesian_x = (int)aux.getCartesianCoordinates().x;
+                cartesian_y = (int)aux.getCartesianCoordinates().y;
+                table_x = (int)aux.getMapCoordinates().y;
+                table_y = (int)aux.getMapCoordinates().x;
+            }
+
+            counter++;
+
+        }
+
+/*
+        System.out.println ("Dijkstra: \n ");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                    if (distances[i][j]==99999) System.out.print("x\t");
+                    else                     System.out.print(distances[i][j]+"\t");
+
+            }
+            System.out.println();
+
+        }
+*/
+
+        return distances;
+
+
+
+
+    }
 
     public void highlightCells(IsoMapCellActor cell, int radius, Color color) {
+
+
 
         removeHighlightCells();
 /*
@@ -167,9 +277,12 @@ public class IsoMapActor extends Group{
 
 
     public Set<MapCell> getCellsInRange(MapCell cell, float radius) {
+
+        Set<MapCell> result = new HashSet<>();
+        /*
         IsoMapCellActor source = getCell(cell);
         Vector2 coords = cell.getMapCoordinates();
-        Set<MapCell> result = new HashSet<>();
+
         IsoMapCellActor auxCell;
 
         for (int i=(int)-radius; i<= radius; i++) {
@@ -181,9 +294,43 @@ public class IsoMapActor extends Group{
 
             }
         }
+        */
+        float[][] distances = dijkstra(cell,true);
+        for (int i=0; i<10; i++) {
+            for (int j=0; j<10; j++) {
+                if (distances[i][j] <= radius) {
+                    result.add(mapCells[j][i].getCell());
+                }
+            }
+        }
+
+
 
         return result;
     }
+
+
+
+
+    public Set<MapCell> getMovementCellsInRange(MapCell cell, float radius) {
+
+        Set<MapCell> result = new HashSet<>();
+
+        float[][] distances = dijkstra(cell,false);
+        for (int i=0; i<10; i++) {
+            for (int j=0; j<10; j++) {
+                if (distances[i][j] <= radius) {
+                    result.add(mapCells[j][i].getCell());
+                }
+            }
+        }
+
+
+
+        return result;
+    }
+
+
 
     /**
      * Special case of highlight cells, with default movement tile color and friendly/hostile colors *
@@ -195,8 +342,14 @@ public class IsoMapActor extends Group{
 
         removeHighlightCells();
 
+        for (MapCell c: getMovementCellsInRange(cell.getCell(),movementRadius)) {
+
+            getCell(c).highlight(blueHighlight);
+        }
 
 
+
+    /*
         map.unblockMapCell(cell.getCell());
 
         IsoMapCellActor auxCell;
@@ -222,6 +375,8 @@ public class IsoMapActor extends Group{
         }
 
         map.blockMapCell(cell.getCell());
+*/
+
 
         }
 
@@ -260,6 +415,7 @@ public class IsoMapActor extends Group{
                     if (getCell(a-(1-Math.floorMod(b,2)),b+1)  !=null) {
                         //if(!getCell(a-(1-Math.floorMod(b,2)),b+1).isShowHighlight())    borderBottomLeft=true;
                         if(!getCell(a-(1-Math.floorMod(b,2)),b+1).isInRange(cell,abilityRadius))    borderBottomLeft=true;
+                        else if(getCell(a-(1-Math.floorMod(b,2)),b+1).getCell().isImpassable())    borderBottomLeft=true;
 
                     }
                     else  borderBottomLeft=true;
@@ -267,18 +423,21 @@ public class IsoMapActor extends Group{
                     if (getCell(a+1-(1-Math.floorMod(b,2)),b+1)!=null) {
                         //if(!getCell(a+1-(1-Math.floorMod(b,2)),b+1).isShowHighlight())  borderBottomRight=true;
                         if(!getCell(a+1-(1-Math.floorMod(b,2)),b+1).isInRange(cell,abilityRadius))  borderBottomRight=true;
+                        else if(getCell(a+1-(1-Math.floorMod(b,2)),b+1).getCell().isImpassable())    borderBottomRight=true;
                     }
                     else  borderBottomRight=true;
 
                     if (getCell(a-(1-Math.floorMod(b,2)),b-1)  !=null) {
                         //if(!getCell(a-(1-Math.floorMod(b,2)),b-1).isShowHighlight())    borderTopLeft=true;
                         if(!getCell(a-(1-Math.floorMod(b,2)),b-1).isInRange(cell,abilityRadius))    borderTopLeft=true;
+                        else if(getCell(a-(1-Math.floorMod(b,2)),b-1).getCell().isImpassable())    borderTopLeft=true;
                     }
                     else  borderTopLeft=true;
 
                     if (getCell(a+1-(1-Math.floorMod(b,2)),b-1)!=null) {
                         //if(!getCell(a+1-(1-Math.floorMod(b,2)),b-1).isShowHighlight())  borderTopRight=true;
                         if(!getCell(a+1-(1-Math.floorMod(b,2)),b-1).isInRange(cell,abilityRadius))  borderTopRight=true;
+                        else if(getCell(a+1-(1-Math.floorMod(b,2)),b-1).getCell().isImpassable())    borderTopRight=true;
                     }
                     else  borderTopRight=true;
 

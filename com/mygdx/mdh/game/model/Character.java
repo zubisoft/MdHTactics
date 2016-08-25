@@ -105,6 +105,8 @@ public class Character  {
             }
 
             if (effects.size() > 0) {
+                cleanEffects();
+
                 for (Effect tmp : effects) {
                     //tmp.setTarget(this);
                     //Resolve immediate effects
@@ -113,7 +115,7 @@ public class Character  {
                     EffectManager.instance.execute(tmp);
                     tmp.startTurn();
                 }
-                cleanEffects();
+
             }
         }
     }
@@ -128,7 +130,9 @@ public class Character  {
         if (damage<0 && (getHealth()-damage)>maxHealth)
             health=maxHealth;
 
-        setHealth(getHealth()-damage);
+        if (getHealth()-damage > maxHealth) setHealth(maxHealth);
+        else setHealth(getHealth()-damage);
+
         for(CharacterChangeListener cl: listeners) {
             cl.onCharacterHit(damage);
         }
@@ -346,6 +350,8 @@ public class Character  {
         if (e==null ) return;
 
         int i=0;
+
+
         for (Effect tmp: e) {
             tmp.setTarget(this);
             //Resolve immediate effects
@@ -362,10 +368,11 @@ public class Character  {
             i++;
 
         }
-
-
-
         cleanEffects();
+
+
+
+
 
 
     }

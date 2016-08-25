@@ -172,6 +172,8 @@ public class CombatController extends Stage {
 
         strategyManager = new StrategyManager(this);
 
+
+
     }
 
 
@@ -553,7 +555,7 @@ public class CombatController extends Stage {
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 
 
-        combat.setGameStep(Combat.GameStepType.SELECTION);
+        setGameStep(Combat.GameStepType.SELECTION);
     }
 
 
@@ -590,11 +592,13 @@ public class CombatController extends Stage {
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
+        System.out.println("Executed? "+executed);
 
-        if(executed) combat.setGameStep(Combat.GameStepType.SELECTION);
+        if(executed) setGameStep(Combat.GameStepType.SELECTION);
     }
 
     public void setGameStep(Combat.GameStepType step) {
+        System.out.println("Settting game step: "+step);
         switch (step) {
             case SELECTION:
                 deselectCharacter();

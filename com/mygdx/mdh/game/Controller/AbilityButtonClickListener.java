@@ -24,6 +24,7 @@ public class AbilityButtonClickListener extends ClickListener {
     @Override
     public void clicked(InputEvent evt, float x, float y) {
 
+        if (!abilityButton.isClickable()) return;
         ((CombatHUD)evt.getStage()).controller.setGameStep(Combat.GameStepType.TARGETING);
         ((CombatHUD)evt.getStage()).controller.setCurrentSelectedAbility(abilityButton.getAbility());
 
