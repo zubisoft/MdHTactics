@@ -113,7 +113,6 @@ public class Map {
             }
         }
 
-        LOG.print("" + emp.mapCellsCartesian);
 
         Vector2 auxVector;
         MapCell source, target;
@@ -167,7 +166,7 @@ public class Map {
         //LOG.print(""+list);
 
         emp.initObstacles();
-
+        emp.mapId = mapId;
 
         return emp;
 

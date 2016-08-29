@@ -70,13 +70,6 @@ public class StoryScreen extends AbstractGameScreen {
         messageBar = new StoryMessageBar();
         this.storyType = storyType;
 
-        /*
-        StoryText x = new StoryText("Que pasa hagen, pedazo de pardo, que habra que hacer el mensaje de navidad no?","zubi");
-        messageBar.addMessage(x);
-        x = new StoryText("Pues habra que repartir unas buenas hostias pardas...","hagen");
-        messageBar.addMessage(x);
-        */
-
     }
 
     public void setMessages (java.util.List<StoryText> textList) {

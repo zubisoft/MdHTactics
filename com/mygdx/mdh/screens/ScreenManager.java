@@ -15,7 +15,7 @@ public abstract class ScreenManager implements ApplicationListener {
     private AbstractGameScreen nextScreen;
     private FrameBuffer currFbo;
     private FrameBuffer nextFbo;
-    private SpriteBatch batch;
+    public SpriteBatch batch;
     private float t;
     private ScreenTransition screenTransition;
 

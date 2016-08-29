@@ -34,8 +34,14 @@ public class StoryMessageBar extends Actor {
 
     boolean waitToShow = false;
 
+    public enum Position {
+        LEFT, RIGHT
+    }
 
     Queue<StoryText> story;
+    HashMap characterPosition;
+
+
 
 
     public StoryMessageBar() {
@@ -47,19 +53,21 @@ public class StoryMessageBar extends Actor {
 
         Stack textbox = new Stack();
 
-        Image background = new Image( Assets.instance.guiElements.get("message_bar_bg" ));
+        Image background = new Image( Assets.instance.guiElements.get("menus/message_bar_bg" ));
         background.setColor(new Color(0xd4be90FF));
         background.setSize(Constants.VIEWPORT_GUI_WIDTH,200);
         background.setPosition(0,0);
 
 
-        la =(new TextArea("", Assets.uiSkin, "gradient"));
+        la =(new TextArea("", Assets.uiSkin, "default"));
+        la.getStyle().font = Assets.uiSkin.getFont("handwritten_black");
+        la.getStyle().font.setColor(Color.BLACK);
         la.setSize(Constants.VIEWPORT_GUI_WIDTH,180);
-        la.setPosition(0,0);
         la.setAlignment(Align.center);
+
         Table c = new Table();
         c.setSize(Constants.VIEWPORT_GUI_WIDTH,200);
-        c.add(la).width(Constants.VIEWPORT_GUI_WIDTH);
+        c.add(la).width(Constants.VIEWPORT_GUI_WIDTH-100).pad(25);
         //c.pad(25);
 
 
@@ -75,13 +83,15 @@ public class StoryMessageBar extends Actor {
         layout= new Table();
         layout.setPosition(0,Constants.VIEWPORT_GUI_HEIGHT/2-200);
         layout.setSize(Constants.VIEWPORT_GUI_WIDTH,400);
-        layout.add(portraitImage).align(Align.bottomLeft);
+        layout.add(portraitImage).width(150).padRight(100);
         layout.row();
         layout.add(textbox).width(Constants.VIEWPORT_GUI_WIDTH);
 
 
 
+        characterPosition = new HashMap<Character, Position>();
         this.story = new Queue<>();
+
 
     }
 
@@ -90,14 +100,17 @@ public class StoryMessageBar extends Actor {
     }
 
 
-    public void addMessage( StoryText storyText) {
-            story.addLast(storyText);
-    }
-
-
     public void addMessages(java.util.List<StoryText> storyText) {
         for(StoryText t: storyText)
             story.addLast(t);
+
+        Position p = Position.LEFT;
+        for (StoryText s: storyText) {
+            if (!characterPosition.containsKey(s.getCharacter())) {
+                characterPosition.put(s.getCharacter(), p);
+                p = (p.equals(Position.LEFT)?Position.RIGHT:Position.LEFT); //Alternate position of characters
+            }
+        }
     }
 
 
@@ -118,12 +131,29 @@ public class StoryMessageBar extends Actor {
                 ));
     }
 
+
     @Override
     public void act(float delta) {
         super.act(delta);
 
         if (waitToShow && !layout.hasActions()) {
+
             portraitImage.setDrawable(new SpriteDrawable(new Sprite(Assets.instance.characters.get(story.first().character.getPic()).portrait)));
+
+            if (characterPosition.get(story.first().character) == Position.LEFT) {
+                layout.getCell(portraitImage).left();
+                layout.left();
+                layout.invalidate();
+
+            } else {
+                layout.getCell(portraitImage).right();
+                layout.right();
+                layout.invalidate();
+
+            }
+
+
+
             la.setText(story.removeFirst().text);
 
             layout.addAction(Actions.sequence(
@@ -132,6 +162,8 @@ public class StoryMessageBar extends Actor {
 
 
             ));
+
+
 
             waitToShow = false;
         }
@@ -149,6 +181,7 @@ public class StoryMessageBar extends Actor {
             Color color = getColor();
             batch.setColor(color.r, color.g, color.b, color.a);
             layout.draw(batch, 1.0f);
+
             batch.setColor(1f, 1f, 1f, 1f);
         }
 

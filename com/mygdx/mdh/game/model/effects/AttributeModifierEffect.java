@@ -88,6 +88,7 @@ public class AttributeModifierEffect extends Effect {
             }
 
             effectTriggered();
+            initialized = true;
         }
     }
 
@@ -110,7 +111,7 @@ public class AttributeModifierEffect extends Effect {
         String description = "Adds ";
 
         if (diceNumber!=0 )      description += ""+diceNumber+"d"+diceSides+(modifier>0?"+":"");
-        if (modifier!=0 )        description += ""+modifier+" to";
+        if (modifier!=0 )        description += ""+modifier+" ";
         for (EffectTargetType ett: attributeType)
             description += " " + ett.name().toLowerCase();
         if (duration>0)         description += " ("+duration+" rounds)";

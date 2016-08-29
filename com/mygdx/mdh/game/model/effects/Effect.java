@@ -72,7 +72,7 @@ public class Effect  /*implements Cloneable*/  {
      * Used to classify and handle effects in a more refined way.
      */
     public enum EffectSubType {
-        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING
+        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING,ELECTRIC
     }
 
     EnumSet<EffectSubType> effectSubType;
@@ -333,6 +333,8 @@ public class Effect  /*implements Cloneable*/  {
     public String getDescription () {
         if (duration == 0)
             return "Applies "+ name;
+        else if (chance < 1)
+            return "Applies "+ name +" ("+(int)Math.floor(chance*100)+"% chance, "+duration+" rounds)";
         else
             return "Applies "+ name +" ("+duration+" rounds)";
 

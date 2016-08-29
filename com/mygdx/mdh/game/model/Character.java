@@ -30,6 +30,8 @@ public class Character  {
     int availableActions;
     boolean friendly;
     boolean dead;
+    int xp;
+    int level;
 
     //Position
     @JsonIgnore MapCell cell;
@@ -470,5 +472,26 @@ public class Character  {
          }
         return false;
     }
+
+
+
+    public int getXp() {
+        return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+
+
 } //Character
 

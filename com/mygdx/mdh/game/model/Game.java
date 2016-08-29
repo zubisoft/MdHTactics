@@ -227,8 +227,11 @@ public class Game {
     }
 
     public void addCurrentParty(Character character) {
-        if (currentParty.size()<MAX_PARTY)
+        if (currentParty.size()<MAX_PARTY) {
+            character.setFriendly(true);
             this.currentParty.add(character);
+        }
+
     }
 
     public void removeCurrentParty(Character character) {

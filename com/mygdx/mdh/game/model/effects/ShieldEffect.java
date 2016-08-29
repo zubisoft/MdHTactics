@@ -35,7 +35,7 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
 
         notification = this.getName();
 
-        if (hits>0) {
+        if (hits>0 && !initialized) {
             initialRoll = 0;
             initialized=true;
             //notification = "Shielded vs "+hits+" hits";

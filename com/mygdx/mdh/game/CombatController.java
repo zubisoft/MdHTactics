@@ -129,13 +129,17 @@ public class CombatController extends Stage {
                 LOG.print("Added " + c);
             }
 
+            combat.initCharacterPositions();
+
             //Important step, link characters with the map
+            /*
             int i = 0;
             for (Character c : combat.getCharacters()) {
                 c.setRow(i);
                 c.setColumn(i++);
                 c.setCell(combat.getMap().getCell(c.getRow(), c.getColumn()));
             }
+            */
         }
 
 
@@ -170,6 +174,8 @@ public class CombatController extends Stage {
         gameEnd = false;
         gameTurn = GameTurn.PLAYER;
 
+
+        //combat.initCharacterPositions (); //Randomizes char positions
         strategyManager = new StrategyManager(this);
 
 
@@ -216,16 +222,24 @@ public class CombatController extends Stage {
     /** If all player characters are dead, it´s gameScreen over.*/
     public boolean isGameOver () {
         for(CharacterActor a: characterActors) {
-            if (!a.isDead() & a.isFriendly()) return false;
+            if (!a.isDead() && a.isFriendly()) return false;
         }
+
+
+
         return true;
     }
 
     /** If all enemy characters are dead, it´s a victory*/
     public boolean isVictory () {
+        int xp = 0;
         for(CharacterActor a: characterActors) {
-            if (!a.getCharacter().isDead() & !a.getCharacter().isFriendly()) return false;
+            if (!a.getCharacter().isFriendly()) {
+                if (!a.getCharacter().isDead() ) return false;
+                xp += a.getCharacter().getXp();
+            }
         }
+        combat.setExperience(xp);
         return true;
     }
 
@@ -321,10 +335,6 @@ public class CombatController extends Stage {
 
                     strategyManager.nextAction(c.getCharacter());
                     c.queueAction(new GameWaitAction(2f));
-                    for (CharacterActor x : getCharacterActors()) {
-                        System.out.println(x.getCharacter().getName()+" "+!x.isActive() +" "+ !x.isDead() +" "+ x.isFriendly() +" "+ !x.actionInProgress());
-
-                    }
 
                }
                 i++;
@@ -382,9 +392,16 @@ public class CombatController extends Stage {
         }
 
         if (isGameOver()) {
-            if(!gameEnd) combatHUD.showMessageBar("Game Over");
-            System.out.println("Game Over");
-            gameEnd=true;
+            if(!gameEnd) {
+                combatHUD.showMessageBar("Game Over");
+                System.out.println("Game Over");
+
+                for (CharacterActor a : characterActors) {
+                    System.out.println(a + " " + a.isFriendly());
+                }
+
+                gameEnd = true;
+            }
         }
 
         if (isVictory()) {

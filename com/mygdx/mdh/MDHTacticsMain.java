@@ -53,15 +53,15 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
-        loadTest ();
+        //loadTest ();
 
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
         ScreenTransition transition = ScreenTransitionFade.init(1.0f);
         //setScreen(new CharSelectionScreen(this), transition);
-        setScreen(new CombatScreen(this), transition);
+        //setScreen(new CombatScreen(this), transition);
 
-        //setScreen(new MainMenuScreen(this), transition);
+        setScreen(new MainMenuScreen(this), transition);
     }
 
 

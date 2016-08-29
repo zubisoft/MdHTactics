@@ -36,7 +36,15 @@ public class AbilityButtonClickListener extends ClickListener {
     public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
         if (!abilityButton.isVisible()) return;
 
-        String description=abilityButton.getAbility().getName()+"\n";
+        String description=abilityButton.getAbility().getName();
+        if(abilityButton.getAbility().getCooldown()>0) {
+            if (abilityButton.getAbility().getCurrentCooldown()>0) {
+                description=description   +" (Cooling down... "+abilityButton.getAbility().getCurrentCooldown()+" rounds)";
+            } else
+                description=description   +" (Cooldown: "+abilityButton.getAbility().getCooldown()+" rounds)";
+        }
+        description=description   +"\n";
+
         for (Effect e: abilityButton.getAbility().getEffects())
             description += "- "+ e.getDescription()+"\n";
         CombatHUD.showInfo(description,500,125);

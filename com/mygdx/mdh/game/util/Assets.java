@@ -67,8 +67,14 @@ public class Assets implements Disposable, AssetErrorListener {
             parameter.color = Color.WHITE;
             parameter.magFilter = Texture.TextureFilter.Linear;
             parameter.minFilter = Texture.TextureFilter.Linear;
+            parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúñ";
             font15 = generator.generateFont(parameter);
             uiSkin.add("font15",font15);
+
+            parameter.color = Color.BLACK;
+            parameter.size = 25;
+            font15  = generator.generateFont(parameter);
+            uiSkin.add("handwritten_black",font15);
 
         }
     }

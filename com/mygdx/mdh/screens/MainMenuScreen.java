@@ -17,9 +17,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
+import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
@@ -48,7 +50,17 @@ public class MainMenuScreen extends AbstractGameScreen {
             switch (buttonType) {
                 case NEW_GAME:
                     gameScreen.setGame(Game.loadNewGame());
-                    gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                    //gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                    StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.INTRO);
+                    gameScreen.getGame().setCurrentMission(gameScreen.getGame().getCurrentCampaign().getCampaignMissions().get(0));
+                    screen.setMessages(gameScreen.getGame().getCurrentMission().getIntroText());
+                    for  ( Character c: gameScreen.getGame().getCharacterCollection()) {
+                        gameScreen.getGame().addCurrentParty(c);
+                    }
+
+                    gameScreen.setScreen(screen, transition);
+
+                    //gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
                     break;
                 case LOAD_GAME:
                     gameScreen.setScreen(new LoadGameScreen(gameScreen), transition);

@@ -17,7 +17,8 @@ public class MissionPortrait extends Stack {
     Mission mission;
 
     boolean selected;
-    Image portraitFrame = new Image(Assets.instance.guiElements.get("charselection_portrait_frame"));
+    Image portraitFrame = new Image(Assets.instance.guiElements.get("menus/charselection_portrait_frame"));
+    public Image portrait;
 
     public MissionPortrait(Mission mission) {
 
@@ -25,14 +26,15 @@ public class MissionPortrait extends Stack {
         this.mission = mission;
 
         this.setSize(140,140);
-        this.add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
+        this.add( new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
 
         if (mission != null) {
+            System.out.println("icons/"+mission.getMissionMap().getCell(1,1));
+            portrait = new Image(Assets.instance.maps.get("icons/"+mission.getMissionMap().getMapId()));
 
-            Image i = new Image(Assets.instance.guiElements.get("missionselection_minimap"));
-            i.setSize(140,140);
-            i.scaleBy(0.002f);
-            Container c = new Container(i);
+            portrait.setSize(140,140);
+            portrait.scaleBy(0.002f);
+            Container c = new Container(portrait);
             //c.padLeft(25);
 
             c.size(140,140);

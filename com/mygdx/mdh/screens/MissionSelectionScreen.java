@@ -7,26 +7,18 @@ package com.mygdx.mdh.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.mygdx.mdh.game.CombatController;
-import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.Game;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 import com.mygdx.mdh.screens.widgets.MissionPortrait;
-import com.mygdx.mdh.screens.widgets.Portrait;
 
 
 public class MissionSelectionScreen extends AbstractGameScreen {
@@ -42,17 +34,13 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            if (currentSelectedMission != null) currentSelectedMission.setSelected(false);
-            currentSelectedMission = portrait;
-            portrait.setSelected(true);
-            gameScreen.game.setCurrentMission(currentSelectedMission.getMission());
+            selectCurrentMission(portrait);
 
-
-            gameScreen.getGame().saveGame();
-
+            /*
             System.out.println(gameScreen.game.getCurrentParty());
             System.out.println(gameScreen.game.getCurrentMission().getMissionMap());
             System.out.println(gameScreen.game.getCurrentMission().getBaddies());
+            */
 
         }
     }
@@ -96,24 +84,17 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
     private Stage stage;
 
-    PortraitClickListener listener;
-
-    private static final String TAG = MissionSelectionScreen.class.getName();
-
-    CombatController combatController;
-    CombatRenderer combatRenderer;
-
+    /* Screen background */
+    Image background;
     Table layout;
 
-    Image background;
-
-    ImageButton btnContinue;
     MissionPortrait currentSelectedMission;
+    PortraitClickListener listener;
 
+    TextArea title;
+    TextArea description;
+    Image portrait;
 
-
-
-    SpriteBatch batch = new SpriteBatch();
 
     private boolean paused;
 
@@ -126,24 +107,44 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
     public  void buildStage () {
 
-        //background layout
-        Table backgroundLayout = new Table();
-        background = new Image(Assets.instance.guiElements.get("mainmenu_bg"));
-        backgroundLayout.add(background);
+        //Main Screen Background
+        background = new Image(Assets.instance.guiElements.get("menus/mainmenu_bg"));
+
+        //Mission Info Box
+        Stack missionInfoBox = new Stack();
 
 
-        //background layout
+        //Mission Information Area
+        title = new TextArea("Mission Title",Assets.uiSkin,"mdh_menu_infobox_title" );
+        title.setAlignment(Align.center);
+
+        description = new TextArea("First of all, there are no ads poping on this one, which was annoying as hell.",Assets.uiSkin,"mdh_menu_infobox_title" );
+        description.setAlignment(Align.center);
+
+        portrait = new Image(Assets.instance.characters.get("zubi").portrait);
+
+
+        Table c = new Table();
+        c.top();
+        c.setSize(450,350);
+        c.add(title).center().height(50).pad(30);
+        c.row();
+        c.add(description).size(400,300).center().padLeft(40);
+
+        missionInfoBox.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
+        missionInfoBox.add(c);
+
         Table charInfoBoxLayout = new Table();
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
-        charInfoBoxLayout.add(new Image(Assets.instance.characters.get("zubi").portrait));
+        charInfoBoxLayout.add(portrait).size(150,150);
         charInfoBoxLayout.row();
-        charInfoBoxLayout.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
+        charInfoBoxLayout.add(missionInfoBox);
         charInfoBoxLayout.row();
-        btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
+        ImageButton btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));
         charInfoBoxLayout.add(btnContinue);
 
-        //portrait layout
+        //Mission Selection Area
         Table portraitsLayout = new Table();
         portraitsLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
 
@@ -154,15 +155,6 @@ public class MissionSelectionScreen extends AbstractGameScreen {
             //portraits[i].add(buttons[i]);
             if (gameScreen.game.getCurrentCampaign().getCampaignMissions().size()>i) {
 
-/*
-                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
-
-                Container c = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(i).getPic()).portrait));
-                c.padLeft(25);
-                portraits[i].add(c);
-
-                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
-*/
                 portraits[i] = new MissionPortrait(gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
@@ -172,13 +164,9 @@ public class MissionSelectionScreen extends AbstractGameScreen {
                 portraits[i] = new MissionPortrait(null);
             }
 
-
-
-            //portraitsLayout.add(buttons[i]).pad(10);
             portraitsLayout.add(portraits[i]).pad(10);
 
-
-
+            //Display 3 missions per row
             if(Math.floorMod(i+1,3)==0)   portraitsLayout.row();
 
         }
@@ -187,42 +175,43 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         layout.add(charInfoBoxLayout);
         layout.add(portraitsLayout);
 
-       // layout.setWidth(500);
 
+        //Final layout stack
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
         stack.add(layout);
 
+        //Initialize mission description with the first mission available
+        selectCurrentMission(portraits[0]);
 
-        /*
-        btnNew.setPosition(400,500);
-        btnLoad.setPosition(400,300);
-        btnQuit.setPosition(400,100);
-        */
     }
 
+    public void selectCurrentMission(MissionPortrait mission) {
 
+        //Deselect previous
+        if (currentSelectedMission != null) currentSelectedMission.setSelected(false);
 
+        //Select current
+        currentSelectedMission = mission;
+        mission.setSelected(true);
+        gameScreen.game.setCurrentMission(currentSelectedMission.getMission());
+
+        title.setText(mission.getMission().getName());
+        description.setText(mission.getMission().getDescription());
+        portrait.setDrawable(mission.portrait.getDrawable());
+    }
 
     @Override
     public void render(float deltaTime) {
 
-        batch.begin();
-/*
-        background.draw(batch,0,0,1280,720);
-        layout.draw(batch,1.0f);*/
+        gameScreen.batch.begin();
+
         stage.act(deltaTime);
         stage.draw();
 
-        /*
-        btnNew.draw(batch,1.0f);
-        btnLoad.draw(batch,1.0f);
-        btnQuit.draw(batch,1.0f);
-        */
-
-        batch.end();
+        gameScreen.batch.end();
 
     }
 

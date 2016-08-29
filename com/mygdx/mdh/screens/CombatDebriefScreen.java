@@ -75,21 +75,12 @@ public class CombatDebriefScreen extends AbstractGameScreen {
 
     SpriteBatch batch = new SpriteBatch();
 
-    public CombatController getCombatController() {
-        return combatController;
-    }
-
-    public void setCombatController(CombatController combatController) {
-        this.combatController = combatController;
-    }
-
-
 
     private boolean paused;
 
-    public CombatDebriefScreen(ScreenManager game) {
+    public CombatDebriefScreen(ScreenManager game, CombatController combatController) {
         super(game);
-
+        this.combatController = combatController;
 
     }
 
@@ -103,9 +94,10 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
         Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
 
-        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("mainmenu_top_button"))));
+        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         listener = new MenuClickListener(ButtonType.CONTINUE);
         btnNew.addListener(listener);
+
 
 
 

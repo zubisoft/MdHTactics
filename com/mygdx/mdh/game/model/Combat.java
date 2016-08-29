@@ -185,6 +185,8 @@ public class Combat {
             //In some extreme case, it's possible that no cell is found if there are too many obstacles
             //The character might then be placed on top of an obstacle (not ideal, but not traumatic either)
             c.setCell(cell);
+            c.setRow(row);
+            c.setColumn(col);
 
         }
     }

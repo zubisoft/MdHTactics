@@ -17,7 +17,7 @@ public class Portrait extends Stack {
     Character character;
 
     boolean selected;
-    Image portraitFrame = new Image(Assets.instance.guiElements.get("charselection_portrait_frame"));
+    Image portraitFrame = new Image(Assets.instance.guiElements.get("menus/charselection_portrait_frame"));
 
     public Portrait (Character character) {
 
@@ -25,7 +25,7 @@ public class Portrait extends Stack {
         this.character = character;
 
         this.setSize(140,140);
-        this.add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
+        this.add( new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
 
         if (character != null) {
             Container c = new Container(new Image(Assets.instance.characters.get(character.getPic()).portrait));

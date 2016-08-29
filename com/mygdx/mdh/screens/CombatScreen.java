@@ -46,7 +46,7 @@ public class CombatScreen extends AbstractGameScreen {
 
             if ( /*combatController.isVictory() &&*/ combatController.isCombatFinished()) {
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-                CombatDebriefScreen screen = new CombatDebriefScreen(gameScreen);
+                CombatDebriefScreen screen = new CombatDebriefScreen(gameScreen,combatController);
                 gameScreen.setScreen(screen, transition);
             }
 /*
