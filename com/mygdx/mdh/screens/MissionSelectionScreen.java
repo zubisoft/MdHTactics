@@ -150,14 +150,17 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
         MissionPortrait[] portraits = new MissionPortrait[12];
 
+        int lastUnlockedMission = 0;
         for (int i=0; i<12; i++) {
 
             //portraits[i].add(buttons[i]);
-            if (gameScreen.game.getCurrentCampaign().getCampaignMissions().size()>i) {
+            if (gameScreen.game.getCurrentCampaign().getCampaignMissions().size()>i
+                    && gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i).isUnlocked()) {
 
                 portraits[i] = new MissionPortrait(gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
+                lastUnlockedMission=i;
 
 
             } else {
@@ -184,7 +187,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         stack.add(layout);
 
         //Initialize mission description with the first mission available
-        selectCurrentMission(portraits[0]);
+        selectCurrentMission(portraits[lastUnlockedMission]);
 
     }
 
@@ -196,6 +199,8 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         //Select current
         currentSelectedMission = mission;
         mission.setSelected(true);
+
+        //TODO the campaign must be also set accordingly
         gameScreen.game.setCurrentMission(currentSelectedMission.getMission());
 
         title.setText(mission.getMission().getName());

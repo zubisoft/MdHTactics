@@ -67,6 +67,8 @@ public class Character  {
 
         maxActions = 2;
         availableActions=2;
+        xp =0;
+        level=0;
     }
 
     /*

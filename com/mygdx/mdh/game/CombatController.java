@@ -712,7 +712,7 @@ public class CombatController extends Stage {
     public List<CharacterActor> getCharacersInArea (MapCell center, int area, Ability.AbilityTarget targetType) {
         List<CharacterActor> list = new ArrayList<>();
         for(CharacterActor c: characterActors) {
-            if (IsoMapActor.distance(center,c.getMapCell()) <= area) {
+            if (IsoMapActor.distance(center,c.getMapCell()) <= area && !c.isDead()) {
                 if(gameTurn == GameTurn.PLAYER) {
                     switch (targetType) {
                         case ALLIES:

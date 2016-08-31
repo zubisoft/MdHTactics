@@ -146,6 +146,7 @@ public class Game {
         for(String baddy: baddiesId) {
             this.gameCampaign.add(Campaign.loadFromJSON(baddy));
         }
+        currentCampaign = gameCampaign.get(0);
     }
 
     public static Game loadNewGame () {
@@ -184,6 +185,32 @@ public class Game {
     public Mission getCurrentMission() {
         if (currentMission==null) currentMission=getCurrentCampaign().getCampaignMissions().get(0);
         return currentMission;
+    }
+
+
+    public void completeMission (Mission mission) {
+        String nextMission = mission.getNextMissionId();
+
+        System.out.println("Attempting to unlock mission "+nextMission);
+        int i = 0;
+        for (Mission m: currentCampaign.getCampaignMissions()) {
+            if (m.getMissionId().equals(nextMission)) {
+                m.setUnlocked(true);
+                System.out.println("Unlocked "+mission.getMissionId());
+            }
+            i++;
+        }
+
+        if (i==currentCampaign.getCampaignMissions().size()) {
+            String nextCampaign = currentCampaign.getNextCampaignId();
+            for (Campaign c: gameCampaign) {
+                if (c.getCampaignId().equals(nextCampaign)) {
+                    c.setUnlocked(true);
+                    System.out.println("Unlocked "+nextCampaign);
+                }
+            }
+        }
+
     }
 
 

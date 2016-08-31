@@ -29,12 +29,23 @@ public class Campaign {
 
     List<Mission> campaignMissions;
 
+
+    String nextCampaignId;
+
+
+    boolean unlocked = false;
+
+    /**
+     * Loads the list of missions of the campaign. The first one is unlocked by default.
+     * @param missionList
+     */
     @JsonProperty("missionList")
-    public void setMissionList(List<String> baddiesId) {
+    public void setMissionList(List<String> missionList) {
         this.campaignMissions = new ArrayList<Mission>();
-        for(String baddy: baddiesId) {
-            this.campaignMissions.add(Mission.loadFromJSON(baddy));
+        for(String m: missionList) {
+            this.campaignMissions.add(Mission.loadFromJSON(m));
         }
+        campaignMissions.get(0).setUnlocked(true);
     }
 
 
@@ -84,6 +95,7 @@ public class Campaign {
 
     }
 
+
     //Generic getters and setters
 
     public String getName() {
@@ -132,5 +144,22 @@ public class Campaign {
 
     public void setCampaignMissions(List<Mission> campaignMissions) {
         this.campaignMissions = campaignMissions;
+    }
+
+
+    public String getNextCampaignId() {
+        return nextCampaignId;
+    }
+
+    public void setNextCampaignId(String nextCampaignId) {
+        this.nextCampaignId = nextCampaignId;
+    }
+
+    public boolean isUnlocked() {
+        return unlocked;
+    }
+
+    public void setUnlocked(boolean unlocked) {
+        this.unlocked = unlocked;
     }
 }

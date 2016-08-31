@@ -44,17 +44,19 @@ public class Mission {
 
     List<StoryText> introText;
 
-
-
     List<StoryText> outroText;
     List<StoryText> storyText;
 
     Map missionMap;
     List<Character> baddies;
 
+
+    String nextMissionId;
+
     //Specific instance concepts
     int currentStars;
     int score;
+    boolean unlocked=false;
 
 
     public Mission () {
@@ -112,6 +114,7 @@ public class Mission {
             e.printStackTrace();
         }
 
+        emp.missionId = name;
         //TODO: Dont forget, once the combat is created, to link characters and map.
 
         return emp;
@@ -201,5 +204,22 @@ public class Mission {
 
     public int getScore() {
         return score;
+    }
+
+
+    public boolean isUnlocked() {
+        return unlocked;
+    }
+
+    public void setUnlocked(boolean unlocked) {
+        this.unlocked = unlocked;
+    }
+
+    public String getNextMissionId() {
+        return nextMissionId;
+    }
+
+    public void setNextMissionId(String nextMissionId) {
+        this.nextMissionId = nextMissionId;
     }
 }

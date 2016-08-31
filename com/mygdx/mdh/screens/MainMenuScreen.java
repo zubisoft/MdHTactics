@@ -50,7 +50,8 @@ public class MainMenuScreen extends AbstractGameScreen {
             switch (buttonType) {
                 case NEW_GAME:
                     gameScreen.setGame(Game.loadNewGame());
-                    //gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                    gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                    /*
                     StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.INTRO);
                     gameScreen.getGame().setCurrentMission(gameScreen.getGame().getCurrentCampaign().getCampaignMissions().get(0));
                     screen.setMessages(gameScreen.getGame().getCurrentMission().getIntroText());
@@ -59,8 +60,9 @@ public class MainMenuScreen extends AbstractGameScreen {
                     }
 
                     gameScreen.setScreen(screen, transition);
+                    */
 
-                    //gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+
                     break;
                 case LOAD_GAME:
                     gameScreen.setScreen(new LoadGameScreen(gameScreen), transition);
