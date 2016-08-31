@@ -68,7 +68,7 @@ public class Character  {
         maxActions = 2;
         availableActions=2;
         xp =0;
-        level=0;
+        level=1;
     }
 
     /*
@@ -374,11 +374,10 @@ public class Character  {
         }
         cleanEffects();
 
+    }
 
-
-
-
-
+    public int getNextLevelXP () {
+        return 500*(level+1)*(level+1)-500*(level+1);
     }
 
     public void cleanEffects () {

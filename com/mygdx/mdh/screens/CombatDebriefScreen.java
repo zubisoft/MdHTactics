@@ -5,7 +5,6 @@ package com.mygdx.mdh.screens;
  */
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,15 +13,12 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
-import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
@@ -31,27 +27,89 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 public class CombatDebriefScreen extends AbstractGameScreen {
 
-    TextureRegion barBackground;
-    TextureRegion barFill;
 
-    private class XPBar extends Actor {
-        public XPBar() {
 
-            setSize(200,50);
+    private class XPBarResize extends TemporalAction {
 
-            barBackground = new TextureRegion(Assets.instance.guiElements.get("character/CHAR-healthbar-bg"));
-            barFill = new TextureRegion(Assets.instance.guiElements.get("character/CHAR-healthbar-fill"));
-            //
+        private float startWidth;
+        private float endWidth, endHeight;
+
+        protected void begin () {
+            XPBar xpb = (XPBar)target;
+            startWidth = xpb.barFill.getRegionWidth();
+            //startHeight = target.getHeight();
         }
 
-        public void setProgress (int xp, int levelXp) {
-            barFill.setRegionWidth(Math.round(getWidth()*1.0f*xp/levelXp));
-         }
+        protected void update (float percent) {
+            XPBar xpb = (XPBar)target;
+            xpb.barFill.setRegionWidth( (int)(startWidth + (endWidth - startWidth) * percent));
+            //xpb.barFill.setRegionHeight( (int)(startWidth + (endWidth - startWidth) * percent) );
+            System.out.println("Newwidth: "+xpb.barFill.getRegionWidth());
+
+        }
+
+        public void setSize (float width, float height) {
+            endWidth = width;
+            endHeight = height;
+        }
+
+        public float getWidth () {
+            return endWidth;
+        }
+
+        public void setWidth (float width) {
+            endWidth = width;
+        }
+
+        public float getHeight () {
+            return endHeight;
+        }
+
+        public void setHeight (float height) {
+            endHeight = height;
+        }
+
+
+    }
+
+
+    private class XPBar extends Actor {
+
+        TextureRegion barBackground;
+        TextureRegion barFill;
+
+        public XPBar() {
+
+            setSize(200,33);
+
+            barBackground = new TextureRegion(Assets.instance.guiElements.get("menus/progressbar_bg"));
+            barFill = new TextureRegion(Assets.instance.guiElements.get("menus/progressbar_fill"));
+
+        }
+
+        public void setProgress (Character c, int incrementalXP) {
+            barFill.setRegionWidth(Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP()));
+            int newWidth = Math.round(getWidth()*1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
+            if ( newWidth>getWidth() ) newWidth = (int)getWidth();
+
+            System.out.println("Progress: "+c.getXp()+"/"+c.getNextLevelXP()+"="+ 1.0f*c.getXp()/c.getNextLevelXP()+" new:"+1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
+            System.out.println("Base: "+getWidth()+" Initial "+Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP())+" Final "+newWidth);
+
+            this.addAction(resizeBarAction(newWidth,barFill.getRegionHeight(), 3, Interpolation.linear) );
+
+        }
+
+        public XPBarResize resizeBarAction (float x, float y, float duration, Interpolation interpolation) {
+            XPBarResize action = new XPBarResize();
+            action.setSize(x, y);
+            action.setDuration(duration);
+            action.setInterpolation(interpolation);
+            return action;
+        }
 
         public void draw(Batch batch, float parentAlpha) {
-            System.out.println("draw");
             batch.draw(barBackground       ,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),1,1,0);
-            batch.draw(barFill             ,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),1,1,0);
+            batch.draw(barFill             ,getX(),getY(),getOriginX(),getOriginY(),barFill.getRegionWidth(),getHeight(),1,1,0);
         }
     }
 
@@ -92,17 +150,13 @@ public class CombatDebriefScreen extends AbstractGameScreen {
 
     MenuClickListener listener;
 
-    private static final String TAG = CombatDebriefScreen.class.getName();
 
     CombatController combatController;
-    CombatRenderer combatRenderer;
 
     Table buttonList;
 
     Image background;
     ImageButton btnNew;
-    ImageButton btnLoad;
-    ImageButton btnQuit;
 
     SpriteBatch batch = new SpriteBatch();
 
@@ -131,18 +185,17 @@ public class CombatDebriefScreen extends AbstractGameScreen {
 
         for (Character character: gameScreen.game.getCurrentParty()) {
             XPBar xpb = new XPBar();
-            xpb.setProgress(character.getXp(),(character.getLevel()+1)*500);
+            xpb.setProgress(character, combatController.getCombat().getExperience());
             Container container = new Container(xpb);
-            layout.add(container).size(200,50);
-            xpb.addAction(Actions.sizeTo(100f,50f, 3, Interpolation.linear)
-            );
+            layout.add(container).size(200,33);
+
         }
 
         layout.row();
 
 
-        final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
-        Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
+        //final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
+        //Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
 
         btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         listener = new MenuClickListener(ButtonType.CONTINUE);
@@ -151,7 +204,7 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         buttonList = new Table();
         buttonList.pad(10);
         buttonList.setPosition(600,500);
-        buttonList.add(la);
+        //buttonList.add(la);
         buttonList.row();
         buttonList.add(btnNew);
 
