@@ -225,7 +225,17 @@ public class Character  {
 
     public boolean isFriendly() { return friendly; }
     public String getPic() { return pic; }
-    public List<Ability> getAbilities() { return abilities; }
+    public List<Ability> getAbilities() {
+        List<Ability> aux = new ArrayList<>();
+
+        for (Ability a: abilities) {
+            System.out.println(a.getRequiredLevel()+" "+this.getLevel());
+            if (a.getRequiredLevel() <= this.getLevel()) {
+                aux.add(a);
+            }
+        }
+        return aux;
+    }
 
 
 
@@ -480,8 +490,17 @@ public class Character  {
         return xp;
     }
 
+    public void addXp (int x) {
+        setXp(getXp() + x);
+    }
+
     public void setXp(int xp) {
+
         this.xp = xp;
+
+        while (xp >= getNextLevelXP() && level <= 20) {
+            setLevel(getLevel()+1);
+        }
     }
 
     public int getLevel() {

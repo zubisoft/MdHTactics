@@ -76,6 +76,9 @@ public class Ability {
 
     boolean enabled = true;
 
+
+    int requiredLevel = 0;
+
     /**
      * Effects that are applied by using the ability
      */
@@ -111,6 +114,8 @@ public class Ability {
 
         hits = 1;
         area = 0;
+
+        requiredLevel = 0;
 
         pic="btn-flame";
     }
@@ -214,6 +219,13 @@ public class Ability {
         if (targetType == AbilityTarget.SELF) range=0;
 
         this.targetType = targetType;
+    }
+    public int getRequiredLevel() {
+        return requiredLevel;
+    }
+
+    public void setRequiredLevel(int requiredLevel) {
+        this.requiredLevel = requiredLevel;
     }
 
 

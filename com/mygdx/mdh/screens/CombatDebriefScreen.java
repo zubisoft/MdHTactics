@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -28,7 +30,9 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 public class CombatDebriefScreen extends AbstractGameScreen {
 
 
-
+    /**
+     * Animation to resize the progress bar
+     */
     private class XPBarResize extends TemporalAction {
 
         private float startWidth;
@@ -44,7 +48,7 @@ public class CombatDebriefScreen extends AbstractGameScreen {
             XPBar xpb = (XPBar)target;
             xpb.barFill.setRegionWidth( (int)(startWidth + (endWidth - startWidth) * percent));
             //xpb.barFill.setRegionHeight( (int)(startWidth + (endWidth - startWidth) * percent) );
-            System.out.println("Newwidth: "+xpb.barFill.getRegionWidth());
+
 
         }
 
@@ -72,7 +76,9 @@ public class CombatDebriefScreen extends AbstractGameScreen {
 
     }
 
-
+    /**
+     * Progress Bar
+     */
     private class XPBar extends Actor {
 
         TextureRegion barBackground;
@@ -88,14 +94,30 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         }
 
         public void setProgress (Character c, int incrementalXP) {
+
+            int remainingXP = incrementalXP;
+
             barFill.setRegionWidth(Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP()));
-            int newWidth = Math.round(getWidth()*1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
-            if ( newWidth>getWidth() ) newWidth = (int)getWidth();
 
-            System.out.println("Progress: "+c.getXp()+"/"+c.getNextLevelXP()+"="+ 1.0f*c.getXp()/c.getNextLevelXP()+" new:"+1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
-            System.out.println("Base: "+getWidth()+" Initial "+Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP())+" Final "+newWidth);
+            SequenceAction action = Actions.sequence();
+            while (remainingXP > 0 && c.getLevel() <= 20) {
+                int auxXP = Math.min(remainingXP, c.getNextLevelXP()-c.getXp());
+                remainingXP = remainingXP - auxXP;
 
-            this.addAction(resizeBarAction(newWidth,barFill.getRegionHeight(), 3, Interpolation.linear) );
+                int newWidth = Math.round(getWidth()*1.0f*(c.getXp()+auxXP)/c.getNextLevelXP());
+                if ( newWidth>getWidth() ) newWidth = (int)getWidth();
+
+                System.out.println("Progress: "+c.getXp()+"/"+c.getNextLevelXP()+"="+ 1.0f*c.getXp()/c.getNextLevelXP()+" new:"+1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
+                System.out.println("Base: "+getWidth()+" Initial "+Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP())+" Final "+newWidth);
+
+                c.addXp(auxXP);
+
+                action.addAction(resizeBarAction(newWidth,barFill.getRegionHeight(), 2, Interpolation.pow2Out) );
+
+                if (remainingXP>0) action.addAction(resizeBarAction(0,barFill.getRegionHeight(), 0, Interpolation.pow2Out) );
+
+            }
+            this.addAction(action);
 
         }
 
@@ -113,10 +135,9 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         }
     }
 
-    private enum ButtonType {
-        CONTINUE
-    }
-
+    /**
+     * Button controller
+     */
     private class MenuClickListener extends ClickListener {
 
         ButtonType buttonType;
@@ -144,6 +165,12 @@ public class CombatDebriefScreen extends AbstractGameScreen {
             }
 
         }
+    }
+
+
+
+    private enum ButtonType {
+        CONTINUE
     }
 
     private Stage stage;
@@ -183,9 +210,11 @@ public class CombatDebriefScreen extends AbstractGameScreen {
 
         layout.row();
 
+
+        int individualXP = 100*combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
         for (Character character: gameScreen.game.getCurrentParty()) {
             XPBar xpb = new XPBar();
-            xpb.setProgress(character, combatController.getCombat().getExperience());
+            xpb.setProgress(character, individualXP);
             Container container = new Container(xpb);
             layout.add(container).size(200,33);
 
@@ -216,8 +245,6 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
         stack.add(layout);
-
-
 
         gameScreen.game.completeMission(gameScreen.game.getCurrentMission());
 
