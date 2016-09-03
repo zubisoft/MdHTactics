@@ -571,8 +571,10 @@ public class CombatController extends Stage {
         //TODO Probably better from an event?
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 
-
-        setGameStep(Combat.GameStepType.SELECTION);
+        if (selectedCharacter.getCharacter().getAvailableActions()>0)
+            setGameStep(Combat.GameStepType.ACTION_SELECTION);
+        else
+            setGameStep(Combat.GameStepType.SELECTION);
     }
 
 

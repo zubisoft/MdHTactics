@@ -1,11 +1,18 @@
 package com.mygdx.mdh.game.model;
 
+import java.io.IOException;
 import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.effects.AttributeModifierEffect;
@@ -16,10 +23,11 @@ import com.mygdx.mdh.game.util.LOG;
  * Created by zubisoft on 27/01/2016.
  */
 
-
 public class Character  {
 
+
     //Core attributes
+    public String characterId;
     public String name;
     int attack;
     int defence;
@@ -302,6 +310,8 @@ public class Character  {
             e.printStackTrace();
         }
 
+        emp.characterId = name;
+
         return emp;
 
     }
@@ -309,6 +319,8 @@ public class Character  {
     public static Character loadByName (String name) {
         return Character.loadFromJSON(name);
     }
+
+
 
     public String toString() {
         return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions;

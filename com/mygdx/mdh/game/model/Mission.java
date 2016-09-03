@@ -60,7 +60,7 @@ public class Mission {
 
 
     public Mission () {
-
+        currentStars =0;
     }
 
 

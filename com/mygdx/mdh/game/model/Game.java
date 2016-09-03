@@ -7,13 +7,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.ser.std.MapSerializer;
+import com.mygdx.mdh.game.util.CharacterDeserializer;
 import com.mygdx.mdh.game.util.LOG;
+import com.mygdx.mdh.game.util.MissionDeserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +26,10 @@ import java.util.List;
  * Created by zubisoft on 13/05/2016.
  */
 public class Game {
+
+    /**
+     * Serializes the campaign as a campaign ID, which defines the template for the campaign
+     */
 
     public class CampaignSerializer extends JsonSerializer<Campaign> {
         @Override
@@ -34,17 +41,37 @@ public class Game {
         }
     }
 
+    /**
+     * Serializes the campaign as a mission ID, which defines the template for the campaign,
+     * but also stores the fields containing the mission status in the current game (i.e. the score)
+     */
     public class MissionSerializer extends JsonSerializer<Mission> {
         @Override
         public void serialize(Mission value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException, JsonProcessingException {
             jgen.writeStartObject();
             jgen.writeStringField("missionId", value.missionId);
+            jgen.writeNumberField("currentStars", value.currentStars);
+            jgen.writeBooleanField("unlocked", value.unlocked);
+            jgen.writeEndObject();
+        }
+    }
+
+    public class CharacterSerializer extends JsonSerializer<Character> {
+        @Override
+        public void serialize(Character value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonProcessingException {
+            jgen.writeStartObject();
+            //TODO I should use the ID in the files, using the name only adds confusion
+            jgen.writeStringField("characterId", value.characterId );
+            jgen.writeNumberField("xp", value.xp);
             jgen.writeEndObject();
         }
     }
 
 
+
+/*
     public class MapSerializer extends JsonSerializer<Map> {
         @Override
         public void serialize(Map value, JsonGenerator jgen, SerializerProvider provider)
@@ -65,7 +92,7 @@ public class Game {
             jgen.writeEndObject();
         }
     }
-
+*/
 
     final int MAX_PARTY = 3;
 
@@ -88,8 +115,9 @@ public class Game {
         ObjectMapper mapper  = new ObjectMapper();
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(Campaign.class, new CampaignSerializer());
+        //module.addSerializer(Campaign.class, new CampaignSerializer());
         module.addSerializer(Mission.class, new MissionSerializer());
+        module.addSerializer(Character.class, new CharacterSerializer());
 
         //module.addSerializer(StoryText.class, new StoryTextSerializer());
         mapper.registerModule(module);
@@ -115,6 +143,11 @@ public class Game {
         String jsonData = file.readString();
 
         ObjectMapper mapper = new ObjectMapper();
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Character.class, new CharacterDeserializer());
+        module.addDeserializer(Mission.class, new MissionDeserializer());
+        mapper.registerModule(module);
 
         Game emp = new Game();
 
@@ -159,6 +192,8 @@ public class Game {
         FileHandle file = Gdx.files.internal("core/assets/data/games/"+name+".txt");
         String jsonData = file.readString();
 
+
+
         //create ObjectMapper instance
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -190,6 +225,7 @@ public class Game {
 
     public void completeMission (Mission mission) {
         String nextMission = mission.getNextMissionId();
+        mission.setCurrentStars(mission.getCurrentStars()+1);
 
         System.out.println("Attempting to unlock mission "+nextMission);
         int i = 0;

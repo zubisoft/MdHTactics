@@ -152,6 +152,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
 */
+                System.out.println("Portraiting character "+gameScreen.game.getCharacterCollection().get(i));
                 portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);

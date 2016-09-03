@@ -5,12 +5,14 @@ package com.mygdx.mdh.screens;
  */
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -79,10 +81,13 @@ public class CombatDebriefScreen extends AbstractGameScreen {
     /**
      * Progress Bar
      */
-    private class XPBar extends Actor {
+    private class XPBar extends Group {
 
         TextureRegion barBackground;
         TextureRegion barFill;
+
+        Label la =(new Label("LEVEL UP!",Assets.uiSkin, "gradient-font",Color.WHITE));
+
 
         public XPBar() {
 
@@ -91,8 +96,18 @@ public class CombatDebriefScreen extends AbstractGameScreen {
             barBackground = new TextureRegion(Assets.instance.guiElements.get("menus/progressbar_bg"));
             barFill = new TextureRegion(Assets.instance.guiElements.get("menus/progressbar_fill"));
 
+            la.setY(60);
+            la.getColor().a = 0;
+            this.addActor(la);
         }
 
+
+        /**
+         * Updates character experience and shows progress in the bar.
+         * Displays level up message when new levels are attained.
+         * @param c
+         * @param incrementalXP
+         */
         public void setProgress (Character c, int incrementalXP) {
 
             int remainingXP = incrementalXP;
@@ -100,6 +115,9 @@ public class CombatDebriefScreen extends AbstractGameScreen {
             barFill.setRegionWidth(Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP()));
 
             SequenceAction action = Actions.sequence();
+
+            int level;
+
             while (remainingXP > 0 && c.getLevel() <= 20) {
                 int auxXP = Math.min(remainingXP, c.getNextLevelXP()-c.getXp());
                 remainingXP = remainingXP - auxXP;
@@ -107,17 +125,34 @@ public class CombatDebriefScreen extends AbstractGameScreen {
                 int newWidth = Math.round(getWidth()*1.0f*(c.getXp()+auxXP)/c.getNextLevelXP());
                 if ( newWidth>getWidth() ) newWidth = (int)getWidth();
 
-                System.out.println("Progress: "+c.getXp()+"/"+c.getNextLevelXP()+"="+ 1.0f*c.getXp()/c.getNextLevelXP()+" new:"+1.0f*(c.getXp()+incrementalXP)/c.getNextLevelXP());
-                System.out.println("Base: "+getWidth()+" Initial "+Math.round(getWidth()*1.0f*c.getXp()/c.getNextLevelXP())+" Final "+newWidth);
-
+                level = c.getLevel();
                 c.addXp(auxXP);
 
                 action.addAction(resizeBarAction(newWidth,barFill.getRegionHeight(), 2, Interpolation.pow2Out) );
 
                 if (remainingXP>0) action.addAction(resizeBarAction(0,barFill.getRegionHeight(), 0, Interpolation.pow2Out) );
 
+                if (level < c.getLevel()) {
+                    //Total duration of this animation mus be less than the bar progress animation
+                    action.addAction(Actions.addAction(
+                            Actions.sequence(
+                                    Actions.moveTo(getX(), getY() + 60)
+                                    , Actions.alpha(1, 0.3f, Interpolation.fade)
+                                    , Actions.moveTo(getX(), getY() + 200, 1f, Interpolation.exp5Out)
+                                    , Actions.delay(0.3f)
+                                    , Actions.alpha(0, 0.3f, Interpolation.fade)
+                            )  ,
+                            la
+
+                    ));
+
+                }
+
             }
             this.addAction(action);
+            //la.addAction(textAction);
+
+
 
         }
 
@@ -129,9 +164,20 @@ public class CombatDebriefScreen extends AbstractGameScreen {
             return action;
         }
 
+
+        @Override
+        protected void positionChanged() {
+            super.positionChanged();
+            //la.setPosition(getX(),getY());
+
+        }
+
+
         public void draw(Batch batch, float parentAlpha) {
+            super.draw(batch, parentAlpha);
             batch.draw(barBackground       ,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),1,1,0);
             batch.draw(barFill             ,getX(),getY(),getOriginX(),getOriginY(),barFill.getRegionWidth(),getHeight(),1,1,0);
+
         }
     }
 
@@ -247,6 +293,7 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         stack.add(layout);
 
         gameScreen.game.completeMission(gameScreen.game.getCurrentMission());
+        gameScreen.game.saveGame();
 
 
         /*
