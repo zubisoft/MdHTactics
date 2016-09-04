@@ -1,8 +1,12 @@
 package com.mygdx.mdh.screens.widgets;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Mission;
@@ -17,8 +21,27 @@ public class MissionPortrait extends Stack {
     Mission mission;
 
     boolean selected;
-    Image portraitFrame = new Image(Assets.instance.guiElements.get("menus/charselection_portrait_frame"));
+    Image portraitFrame =new Image(Assets.instance.guiElements.get("menus/charselection_portrait_frame"));
     public Image portrait;
+
+    public Group getPicWithStars () {
+        Group group = new Group();
+        group.addActor(portraitFrame);
+        Table t = new Table();
+        t.setSize(125,25);
+        t.padLeft(15);
+        Actor a;
+        for (int i = 0; i<5; i++) {
+            a = new Image(Assets.instance.guiElements.get("menus/icon_d20_bordered"));
+            a.setSize(25,25);
+
+            if(mission!=null && i<mission.getCurrentStars()) a.setColor(Color.GOLD);
+            t.add(a);
+        }
+        group.addActor(t);
+
+        return group;
+    }
 
     public MissionPortrait(Mission mission) {
 
@@ -26,7 +49,7 @@ public class MissionPortrait extends Stack {
         this.mission = mission;
 
         this.setSize(140,140);
-        this.add( new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
+        this.add(  new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
 
         if (mission != null) {
             System.out.println("icons/"+mission.getMissionMap().getCell(1,1));
@@ -42,7 +65,7 @@ public class MissionPortrait extends Stack {
             this.add(c);
         }
 
-        this.add( portraitFrame );
+        this.add( getPicWithStars() );
 
     }
 
