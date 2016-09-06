@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 29/03/2016.
@@ -72,15 +71,15 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
 
             int blocked=0;
             for (int i=0; i<de.getHits();i++) {
-                if (de.getDamageRolls().get(i).getRoll() != null) {
+                if (de.getDamageRolls().get(i).getRolledDamage() != null) {
                     if (hits > 0) {
-                        blocked = de.getDamageRolls().get(i).getRoll().getRoll();
+                        blocked = de.getDamageRolls().get(i).getRolledDamage().getRoll();
                         hits--;
                     } else {
-                        blocked = Math.min(initialRoll - blockedDamage, de.getDamageRolls().get(i).getRoll().getRoll());
+                        blocked = Math.min(initialRoll - blockedDamage, de.getDamageRolls().get(i).getRolledDamage().getRoll());
                     }
 
-                    de.getDamageRolls().get(i).getRoll().addModifier(-blocked);
+                    de.getDamageRolls().get(i).getRolledDamage().addModifier(-blocked);
                     blockedDamage += blocked;
 
                 }

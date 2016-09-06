@@ -2,10 +2,12 @@ package com.mygdx.mdh.game.model.effects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.AttackRoll;
+import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -18,6 +20,10 @@ public class DamageEffect extends Effect {
      * If true, the default attack chance is ignored and the damage is always applied.
      */
     boolean directDamage = false;
+
+
+    EnumSet<Character.CHARACTER_TAGS> conditionalType;
+
 
     public List<AttackRoll> getDamageRolls() {
         return damageRolls;
@@ -43,6 +49,8 @@ public class DamageEffect extends Effect {
         DamageEffect e = new DamageEffect();
         e.copy(this);
         e.directDamage = directDamage;
+        e.conditionalType = conditionalType;
+
 
         return e;
     }
@@ -90,6 +98,7 @@ public class DamageEffect extends Effect {
         super.execute();
 
         setFailed(true);
+        if (!conditionalType.isEmpty() && !conditionalType.contains(getTarget().getTags()) ) return;
 
             for (int i=0; i<hits;i++) {
                 //double attackRoll = Math.random();
@@ -100,7 +109,7 @@ public class DamageEffect extends Effect {
                     int rolledResult;
 
                     //A damage roll can never be negative - Use heal for that
-                    rolledResult = Math.max(damageRolls.get(i).getRoll().getRoll(), 0);
+                    rolledResult = Math.max(damageRolls.get(i).getRolledDamage().getRoll(), 0);
 
                     if (rolledResult>0) {
                         LOG.print(2, "[DamageEffect] Inflicted: " + rolledResult + "(" + rolledResult + "+" + modifier + ")", LOG.ANSI_RED);

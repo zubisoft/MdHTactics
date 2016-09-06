@@ -498,7 +498,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onEffectTriggered (Effect e) {
-        //LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRoll().getRoll());
+        //LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRolledDamage().getRolledDamage());
 
             EffectAction ea = new EffectAction(e, 0.15f);
             this.addEffectAction(ea);

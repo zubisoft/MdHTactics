@@ -167,15 +167,7 @@ public class StrategyManager {
                             healAvailable = a;
                         }
                         break;
-                    case MELEE:
-                        if (damageAvailable == null) {
-                            damageAvailable = a;
-                        } else if (Math.random()<0.5) {
-                            //To randomize which attack the enemy chooses
-                            damageAvailable = a;
-                        }
-                        break;
-                    case RANGED:
+                      case DAMAGE:
                         if (damageAvailable == null) {
                             damageAvailable = a;
                         } else if (Math.random()<0.5) {

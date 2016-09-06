@@ -5,13 +5,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.EnumSet;
 
 /**
  * Created by zubisoft on 29/03/2016.
  */
+
+
+/**
+ * Protection Effects are used to apply immunities or reduce the damage to the character.
+ */
+
 public class ProtectionEffect extends Effect implements CharacterChangeListener {
 
     boolean initialized=false;
@@ -61,6 +66,7 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
         super.process(d);
 
         if ( Math.random() > chance) return;
+        if ( d.getSource() != this.getSource()) return; //Only inbound damage!
 
         if (immunityType.contains(d.getEffectType()) || immunitySubType.contains(d.getEffectSubType())) {
             d.setDuration(-1); // Completely cancelled
@@ -74,11 +80,12 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
             int originalDamage=0;
             int newDamage=0;
             for (int i=0; i<de.getHits();i++) {
-                if (de.getDamageRolls().get(i).getRoll() != null) {
-                    originalDamage += de.getDamageRolls().get(i).getRoll().getRoll();
-                    de.getDamageRolls().get(i).getRoll().addPercentModifier(perecentProtection);
-                    de.getDamageRolls().get(i).getRoll().addModifier(fixedProtection);
-                    newDamage += de.getDamageRolls().get(i).getRoll().getRoll();
+                if (de.getDamageRolls().get(i).getRolledDamage() != null) {
+                    originalDamage += de.getDamageRolls().get(i).getRolledDamage().getRoll();
+                    if (perecentProtection>0) de.getDamageRolls().get(i).getRolledDamage().addPercentModifier(perecentProtection);
+                    if (fixedProtection>0) de.getDamageRolls().get(i).getRolledDamage().addModifier(fixedProtection);
+                    if (diceNumber>0 || modifier>0) de.getDamageRolls().get(i).getRolledDamage().addModifier(roll.roll());
+                    newDamage += de.getDamageRolls().get(i).getRolledDamage().getRoll();
                 }
             }
 
@@ -103,6 +110,8 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
 
         e.perecentProtection = perecentProtection;
         e.fixedProtection = fixedProtection;
+        e.immunityType = immunityType;
+        e.immunitySubType = immunitySubType;
 
         return e;
 

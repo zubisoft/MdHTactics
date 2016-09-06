@@ -34,7 +34,7 @@ public class AttackRoll   {
         return (hit?damageRoll:null);
     }
 
-    public Roll getRoll() {
+    public Roll getRolledDamage() {
         return (hit?damageRoll:null);
     }
 

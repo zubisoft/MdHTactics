@@ -5,17 +5,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
 
+import java.util.EnumSet;
+
 /**
  * Created by zubisoft on 29/03/2016.
+ */
+
+/**
+ * Damage Modifier Effects modify the inbound/outbound damage to/from a Character
  */
 public class DamageModifierEffect extends Effect {
 
     boolean initialized=false;
 
-
     /**
-     * Normally true to apply the modifier to outbound damage (damage emitted from the same source)
-     * However can be set to false to use it as a damage protection kind of effect
+     * By default, applies the modifier to outbound damage (damage emitted from the current character)
+     * However can be set to false to use it as a damage protection effect for inbound damage (damage coming from other characters)
      */
     boolean outbound;
 
@@ -75,8 +80,8 @@ public class DamageModifierEffect extends Effect {
             DamageEffect de = (DamageEffect)d;
 
             for (int i=0; i<de.getHits();i++) {
-                if (de.getDamageRolls().get(i).getRoll() != null)
-                    de.getDamageRolls().get(i).getRoll().addModifier(roll.getRoll());
+                if (de.getDamageRolls().get(i).getRolledDamage() != null)
+                    de.getDamageRolls().get(i).getRolledDamage().addModifier(roll.getRoll());
             }
 
             d.setChanceModifier(this.getChanceModifier());

@@ -20,6 +20,7 @@ import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 import com.mygdx.mdh.screens.widgets.Portrait;
+import com.mygdx.mdh.screens.widgets.WidgetCharterSheet;
 
 
 public class CharSelectionScreen extends AbstractGameScreen {
@@ -126,7 +127,15 @@ public class CharSelectionScreen extends AbstractGameScreen {
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
         charInfoBoxLayout.add(new Image(Assets.instance.characters.get("zubi").portrait));
         charInfoBoxLayout.row();
-        charInfoBoxLayout.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
+
+        Stack s = new Stack();
+        s.setSize(400,350);
+        s.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
+        s.add(new WidgetCharterSheet(gameScreen.game.getCharacterCollection().get(0)));
+        charInfoBoxLayout.add(s);
+
+
+
         charInfoBoxLayout.row();
         btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));

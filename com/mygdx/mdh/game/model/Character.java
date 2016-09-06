@@ -41,6 +41,20 @@ public class Character  {
     int xp;
     int level;
 
+    public enum CHARACTER_TAGS {
+        EVIL, FANTASY, SCIFI, TECH
+    }
+
+    public Enum<CHARACTER_TAGS> getTags() {
+        return tags;
+    }
+
+    public void setTags(Enum<CHARACTER_TAGS> tags) {
+        this.tags = tags;
+    }
+
+    Enum<CHARACTER_TAGS> tags;
+
     //Position
     @JsonIgnore MapCell cell;
     @JsonIgnore int column;

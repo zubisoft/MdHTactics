@@ -35,6 +35,7 @@ public class MissionPortrait extends Stack {
             a = new Image(Assets.instance.guiElements.get("menus/icon_d20_bordered"));
             a.setSize(25,25);
 
+            a.setColor(Color.LIGHT_GRAY);
             if(mission!=null && i<mission.getCurrentStars()) a.setColor(Color.GOLD);
             t.add(a);
         }

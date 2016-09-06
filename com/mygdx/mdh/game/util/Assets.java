@@ -14,7 +14,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.util.HashMap;
@@ -76,6 +79,8 @@ public class Assets implements Disposable, AssetErrorListener {
             font15  = generator.generateFont(parameter);
             uiSkin.add("handwritten_black",font15);
 
+            uiSkin.get("handwritten_black", Label.LabelStyle.class).font = font15;
+            uiSkin.get("handwritten_black", TextArea.TextFieldStyle.class).font = font15;
         }
     }
 

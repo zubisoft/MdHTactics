@@ -11,16 +11,16 @@ import java.util.List;
  */
 
 
-
 public class Ability {
 
 
 
     /**
-     * Main type of the ability
+     * General type of the ability
+     * This is mainly used to help the IA find the appropiate ability for each moment.
      */
     public enum AbilityType {
-        RANGED, MELEE, BUFF, DEBUFF, HEAL
+        DAMAGE, BUFF, DEBUFF, HEAL
     }
 
     AbilityType type;
@@ -161,8 +161,7 @@ public class Ability {
 
         if (pic.equals("btn-flame")) {
             switch (type) {
-                case RANGED: pic = "btn-attack"; break;
-                case MELEE: pic = "btn-gladius"; break;
+                case DAMAGE: pic = "btn-gladius"; break;
                 case BUFF: pic = "btn-shield"; break;
                 case DEBUFF: pic = "btn-demoralize"; break;
                 case HEAL:  pic = "btn-transfusion"; break;
