@@ -2,6 +2,7 @@ package com.mygdx.mdh.game;
 
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.model.effects.EffectManagerListener;
+import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,8 @@ public class EffectManager {
     public boolean apply( Effect effectTemplate ) {
 
         Effect e = effectTemplate.copy();
-        System.out.println("[EffectManager] Applying: "+e.getEffectClass()+" to "+e.getTarget()+" "+e.hashCode());
+        LOG.print(3,"[EffectManager] Applying: "+e.getEffectClass()+" to "+e.getTarget()+" "+e.hashCode());
+
 
         if (e.getTarget() == null) return false;
         notifyEffectApplyAttempt(e);

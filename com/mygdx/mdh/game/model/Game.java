@@ -227,12 +227,12 @@ public class Game {
         String nextMission = mission.getNextMissionId();
         mission.setCurrentStars(mission.getCurrentStars()+1);
 
-        System.out.println("Attempting to unlock mission "+nextMission);
+
         int i = 0;
         for (Mission m: currentCampaign.getCampaignMissions()) {
             if (m.getMissionId().equals(nextMission)) {
                 m.setUnlocked(true);
-                System.out.println("Unlocked "+mission.getMissionId());
+
             }
             i++;
         }
@@ -242,7 +242,7 @@ public class Game {
             for (Campaign c: gameCampaign) {
                 if (c.getCampaignId().equals(nextCampaign)) {
                     c.setUnlocked(true);
-                    System.out.println("Unlocked "+nextCampaign);
+
                 }
             }
         }
@@ -289,11 +289,13 @@ public class Game {
         return currentParty;
     }
 
-    public void addCurrentParty(Character character) {
+    public boolean addCurrentParty(Character character) {
         if (currentParty.size()<MAX_PARTY) {
             character.setFriendly(true);
             this.currentParty.add(character);
+            return true;
         }
+        return false;
 
     }
 

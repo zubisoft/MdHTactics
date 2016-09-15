@@ -58,7 +58,7 @@ public class Roll {
         baseRoll = Dice.roll(Math.abs(diceNumber), diceSides) + modifier;
         if (diceNumber<0) baseRoll = -baseRoll;
         rolled = true;
-        return Math.round((1+percentModifier)*(baseRoll+modifier));
+        return Math.round((1+percentModifier)*(baseRoll));
     }
 
     public int getRoll () {
@@ -122,5 +122,8 @@ public class Roll {
         this.rollType = rollType;
     }
 
+    public String toString () {
+        return "[Damage Roll: "+diceNumber+"d"+diceSides+"+"+modifier+" * "+(1+percentModifier)+"  Total: "+getRoll()+"]";
 
+    }
 }

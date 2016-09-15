@@ -19,7 +19,6 @@ public class Orto {
 
     @JsonCreator
     public static Orto factory (@JsonProperty("ortoId") String ortoId) {
-        System.out.println("ORTO");
 
         String x = new String(ortoId);
 

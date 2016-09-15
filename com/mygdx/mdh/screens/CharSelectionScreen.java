@@ -36,15 +36,18 @@ public class CharSelectionScreen extends AbstractGameScreen {
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            if (!portrait.isSelected()) {
-                gameScreen.game.addCurrentParty(portrait.getCharacter());
-                portrait.setSelected(true);
+            if (!portrait.isSelected() ) {
+                if (gameScreen.game.addCurrentParty(portrait.getCharacter())) {
+                    characterPortrait.setActor(new Image(Assets.instance.characters.get(portrait.getCharacter().getPic()).portrait));
+                    characterSheet.loadCharacter(portrait.getCharacter());
+                    portrait.setSelected(true);
+                }
             } else {
                 gameScreen.game.removeCurrentParty(portrait.getCharacter());
                 portrait.setSelected(false);
             }
 
-            System.out.println(gameScreen.game.getCurrentParty());
+
 
 
 
@@ -114,6 +117,12 @@ public class CharSelectionScreen extends AbstractGameScreen {
         if(gameScreen.game == null) gameScreen.setGame(Game.loadNewGame());
     }
 
+
+    Container characterPortrait;
+    WidgetCharterSheet characterSheet;
+
+
+
     public  void buildStage () {
 
         //background layout
@@ -125,13 +134,15 @@ public class CharSelectionScreen extends AbstractGameScreen {
         //background layout
         Table charInfoBoxLayout = new Table();
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
-        charInfoBoxLayout.add(new Image(Assets.instance.characters.get("zubi").portrait));
+        characterPortrait = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(0).getPic()).portrait));
+        charInfoBoxLayout.add(characterPortrait);
         charInfoBoxLayout.row();
 
         Stack s = new Stack();
-        s.setSize(400,350);
+        s.setSize(400,600);
         s.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
-        s.add(new WidgetCharterSheet(gameScreen.game.getCharacterCollection().get(0)));
+        characterSheet = new WidgetCharterSheet(gameScreen.game.getCharacterCollection().get(0));
+        s.add(characterSheet);
         charInfoBoxLayout.add(s);
 
 
@@ -161,7 +172,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
                 portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
 */
-                System.out.println("Portraiting character "+gameScreen.game.getCharacterCollection().get(i));
+
                 portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);

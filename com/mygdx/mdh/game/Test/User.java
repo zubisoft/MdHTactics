@@ -17,7 +17,6 @@ public class User {
     }
 
     public User loadFromJSON (String mapId) {
-        System.out.println("BIEEEEN");
 
         String x = new String(mapId);
 

@@ -121,12 +121,12 @@ public class CombatController extends Stage {
 
             for (Character c : screenManager.getGame().getCurrentParty()) {
                 combat.addCharacter(c);
-                LOG.print("Added " + c);
+
             }
 
             for (Character c : screenManager.getGame().getCurrentMission().getBaddies()) {
                 combat.addCharacter(c);
-                LOG.print("Added " + c);
+
             }
 
             combat.initCharacterPositions();
@@ -384,21 +384,14 @@ public class CombatController extends Stage {
         //System.out.println("B) HUD "+x);
 
         if (CharacterActor.actionInProgress() && Gdx.input.getInputProcessor() !=null) {
-            System.out.println("Disable");
             Gdx.input.setInputProcessor(null);
         } else if (!CharacterActor.actionInProgress() && Gdx.input.getInputProcessor() ==null ) {
-            System.out.println("Enable");
             Gdx.input.setInputProcessor(multiplexer);
         }
 
         if (isGameOver()) {
             if(!gameEnd) {
                 combatHUD.showMessageBar("Game Over");
-                System.out.println("Game Over");
-
-                for (CharacterActor a : characterActors) {
-                    System.out.println(a + " " + a.isFriendly());
-                }
 
                 gameEnd = true;
             }
@@ -406,7 +399,6 @@ public class CombatController extends Stage {
 
         if (isVictory()) {
             if(!gameEnd) combatHUD.showMessageBar("Victory");
-            System.out.println("Victory");
             gameEnd=true;
         }
 
@@ -611,13 +603,12 @@ public class CombatController extends Stage {
         }
 
         //getCharacterActor(a.getSource()).useAbility(a, target);
-        System.out.println("Executed? "+executed);
 
         if(executed) setGameStep(Combat.GameStepType.SELECTION);
     }
 
     public void setGameStep(Combat.GameStepType step) {
-        System.out.println("Settting game step: "+step);
+
         switch (step) {
             case SELECTION:
                 deselectCharacter();

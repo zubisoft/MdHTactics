@@ -68,11 +68,10 @@ public class DamageModifierEffect extends Effect {
     public void process(Effect d) {
         super.process(d);
 
-        LOG.print(2,"[DamageModifierEffect] Applied: "+roll.getRoll()+" damage modifier", LOG.ANSI_BLUE);
+        if ( roll.getRoll() == 0 && this.getChanceModifier() == 0 ) return;
 
-        if ( roll.getRoll() == 0 ) return;
+        if (outbound && d.source == this.target) return;
 
-        if (outbound && d.source != this.target) return;
         if (!outbound && d.source == this.target) return; //This would exclude damage going to oneself
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
@@ -84,9 +83,8 @@ public class DamageModifierEffect extends Effect {
                     de.getDamageRolls().get(i).getRolledDamage().addModifier(roll.getRoll());
             }
 
-            d.setChanceModifier(this.getChanceModifier());
+            d.addChanceModifier(this.getChanceModifier());
 
-            LOG.print(2,"[DamageModifierEffect] Applied: "+roll.getRoll()+" damage modifier", LOG.ANSI_BLUE);
 
             effectTriggered ();
         }

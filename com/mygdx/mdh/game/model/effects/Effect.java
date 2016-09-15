@@ -72,7 +72,7 @@ public class Effect  /*implements Cloneable*/  {
      * Used to classify and handle effects in a more refined way.
      */
     public enum EffectSubType {
-        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING,ELECTRIC
+        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING,ELECTRIC, UNARMED
     }
 
     EnumSet<EffectSubType> effectSubType;
@@ -107,6 +107,15 @@ public class Effect  /*implements Cloneable*/  {
     float chance;
     float chanceModifier;
     int hits;
+
+    public int getStacking() {
+        return stacking;
+    }
+
+    public void setStacking(int stacking) {
+        this.stacking = stacking;
+    }
+
     int stacking = 0;
 
 
@@ -273,6 +282,9 @@ public class Effect  /*implements Cloneable*/  {
      * Default implementation does nothing.
      */
     public void process(Effect d) {
+
+
+
         if ( !isValidTarget() ) return ;
         if ( duration < 0 ) return ;
         if (cancelled) return;
@@ -307,9 +319,10 @@ public class Effect  /*implements Cloneable*/  {
        // if(chanceRoll>chance) return;
 
         //System.out.println("[Effect] Applying Effect "+this.getEffectClass()+" stacking: "+target.getEffectsByName(this.getName()).size());
+        /*
         for (Effect e: target.getEffects()) {
             System.out.println( "* "+e.getName()+"\n");
-        }
+        }*/
 
         if (target.getEffectsByNameAndClass(this.name, this.effectClass).size() <= stacking)
             target.addEffect(this);
@@ -542,6 +555,10 @@ public class Effect  /*implements Cloneable*/  {
 
     public void setChanceModifier(float chanceModifier) {
         this.chanceModifier = chanceModifier;
+    }
+
+    public void addChanceModifier(float chanceModifier) {
+        this.chanceModifier += chanceModifier;
     }
 
 

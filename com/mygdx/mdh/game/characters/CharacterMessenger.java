@@ -82,7 +82,6 @@ public class CharacterMessenger extends Group {
      */
     public void showMessage (String iconName, String message, Color c) {
 
-        LOG.print("[CharMessenger] message "+message);
         Label la=(new Label(message, Assets.uiSkin, "font15", Color.WHITE));
 
         la.setColor(c);

@@ -38,7 +38,6 @@ public class CameraManager {
 
         this.zoom = zoom;
 
-        System.out.println("[Camera position] "+position);
     }
 
 

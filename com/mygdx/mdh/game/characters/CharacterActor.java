@@ -227,7 +227,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
         if (test == null) test=state;
         if(!state.equals(test)) {
-            System.out.println("New state: "+state+" from "+test);
             test=state;
         }
 

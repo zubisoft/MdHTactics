@@ -242,7 +242,7 @@ public class StrategyManager {
 
     public MapCell findBestAreaTarget(MapCell sourceCell, int range, int area) {
 
-        System.out.println("Exploring Range"+range+" area "+area+" inrange"+controller.getMap().getCellsInRange(sourceCell,range));
+        //System.out.println("Exploring Range"+range+" area "+area+" inrange"+controller.getMap().getCellsInRange(sourceCell,range));
 
         MapCell bestTarget=null;
         int maxScore = 0;
@@ -252,21 +252,20 @@ public class StrategyManager {
                 if (auxAreaCell.getCharacter() != null) {
 
                     if (auxAreaCell.getCharacter().isFriendly()) {
-                        score++;System.out.print(" +1");
+                        score++;
                     }
                     else {
-                        score--;System.out.print(" -1");
+                        score--;
                     }
                 }
             }
-            System.out.println("Assessing cell "+tentativeTarget+" score: "+score);
+
             if (score>=maxScore) {
                 bestTarget = tentativeTarget;
                 maxScore = score;
             }
         }
 
-        System.out.println("Strategy: best cell "+bestTarget+" score: "+maxScore);
 
         return bestTarget;
 

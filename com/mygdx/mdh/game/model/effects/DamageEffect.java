@@ -7,6 +7,7 @@ import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -43,6 +44,8 @@ public class DamageEffect extends Effect {
         color= Color.RED;
 
         damageRolls = new ArrayList<>();
+
+        conditionalType = EnumSet.noneOf(Character.CHARACTER_TAGS.class);
     }
 
     public DamageEffect copy () {
@@ -73,6 +76,11 @@ public class DamageEffect extends Effect {
         this.directDamage = directDamage;
     }
 
+
+    /**
+     * Calculates the attack chance and rolls the dice for attack and damage.
+     * Since everything is initialized here, it allows modifications on the rolls before applying the damage.
+     */
     @Override
     public void init() {
         super.init();
@@ -92,18 +100,26 @@ public class DamageEffect extends Effect {
     }
 
 
+    public void addChanceModifier(float chanceModifier) {
+        this.chanceModifier += chanceModifier;
+        for (int i=0; i< hits; i++) {
+            damageRolls.get(i).addHitChanceModifier(chanceModifier);
+        }
+    }
 
 
     public void execute () {
         super.execute();
 
         setFailed(true);
-        if (!conditionalType.isEmpty() && !conditionalType.contains(getTarget().getTags()) ) return;
+
+        if (!conditionalType.isEmpty() && Collections.disjoint(conditionalType,target.getTags()) ) return;
 
             for (int i=0; i<hits;i++) {
                 //double attackRoll = Math.random();
                 //LOG.print(2, "[DamageEffect] Rolled: " + attackRoll+" Needed: "+(chance-chanceModifier), LOG.ANSI_RED);
 
+                LOG.print(2,"[DamageEffect] Attack roll"+damageRolls.get(i), LOG.ANSI_RED);
                 if ( damageRolls.get(i).isHit()  ) {
 
                     int rolledResult;
@@ -112,7 +128,6 @@ public class DamageEffect extends Effect {
                     rolledResult = Math.max(damageRolls.get(i).getRolledDamage().getRoll(), 0);
 
                     if (rolledResult>0) {
-                        LOG.print(2, "[DamageEffect] Inflicted: " + rolledResult + "(" + rolledResult + "+" + modifier + ")", LOG.ANSI_RED);
                         notification=" -"+rolledResult+" HP";
                         target.hit(rolledResult);
                     } else {

@@ -149,7 +149,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     public void hideAbilityButtons() {
 
-        LOG.print("[CombatHUD] Hiding buttons ");
         for (Actor actor :this.abilityButtons) {
             actor.removeListener(actor.getListeners().first());
             actor.remove();
@@ -162,7 +161,6 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     public void showMessageBar (String message) {
 
-        LOG.print("[CombatHUD] Showing message bar");
 
         messageBar.setMessage(message);
         messageBar.show();
@@ -171,7 +169,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     }
 
     public void showMessageBar (String message, int duration) {
-        LOG.print("[CombatHUD] Showing message bar");
+
 
         messageBar.setMessage(message);
         messageBar.show(duration);
@@ -211,7 +209,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         //TODO: hacer esto en cada iteracion es una gitanada
         effectsLayout.clear();
         for (Effect e : controller.getSelectedCharacter().getCharacter().getEffects()) {
-            //System.out.print("Active effects: "+e.getName());
+
 
             EffectButton eb = new EffectButton(e);
             effectsLayout.add(eb).size(20,20).pad(2);

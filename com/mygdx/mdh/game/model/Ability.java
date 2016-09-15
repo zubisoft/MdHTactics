@@ -27,6 +27,8 @@ public class Ability {
 
     /**
      * Type of target for the ability
+     * This is the first filter that is used to check which character are affected.
+     * The effects can further refine the target with their own target type.
      */
     public enum AbilityTarget {
         SELF,          //Target and source must be the same
@@ -37,54 +39,36 @@ public class Ability {
 
     AbilityTarget targetType;
 
+    /**
+     * Main parameters of the ability
+     */
     int range;
-
-
     int area;
-
-    @JsonIgnore    Character source;
-    @JsonIgnore    Character target;
-
-    String pic;
-    String name;
-
-    String message;
+    int cooldown=0;
+    int requiredLevel = 0;
 
     /**
-     * Number and type of dice to roll
+     * Visual elements and description
      */
-    int diceNumber;
-    int diceSides;
+    String pic;
+    String name;
+    String message;
 
-    public int getHits() {
-        return hits;
-    }
-
-    public void setHits(int hits) {
-        this.hits = hits;
-    }
-
-    int hits;
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    boolean enabled = true;
-
-
-    int requiredLevel = 0;
 
     /**
      * Effects that are applied by using the ability
      */
     List<Effect> effects;
 
-    int cooldown=0;
+
+    /**
+     * Game handling attributes
+     */
+    @JsonIgnore    Character source;
+    @JsonIgnore    Character target;
+    boolean enabled = true;
+
+
 
     public int getCurrentCooldown() {
         return currentCooldown;
@@ -112,7 +96,6 @@ public class Ability {
 
         range = 1;
 
-        hits = 1;
         area = 0;
 
         requiredLevel = 0;
@@ -228,21 +211,7 @@ public class Ability {
     }
 
 
-    public int getDiceSides() {
-        return diceSides;
-    }
 
-    public void setDiceSides(int diceSides) {
-        this.diceSides = diceSides;
-    }
-
-    public int getDiceNumber() {
-        return diceNumber;
-    }
-
-    public void setDiceNumber(int diceNumber) {
-        this.diceNumber = diceNumber;
-    }
 
     public int getArea() {
         return area;
@@ -256,5 +225,12 @@ public class Ability {
         return this.getName()+" "+this.getType()+" "+this.getRange();
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
 } //Ability

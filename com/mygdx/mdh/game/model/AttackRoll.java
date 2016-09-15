@@ -67,11 +67,26 @@ public class AttackRoll   {
         return hitChanceModifier;
     }
 
+    public void addHitChanceModifier(float x) {
+
+        hitChanceModifier+=x;
+
+
+            if (hitRoll >= hitChance-hitChanceModifier || isDirectDamage()) hit=true;
+            else hit = false;
+
+
+
+
+    }
+
     public void setHitChanceModifier(float hitChanceModifier) {
         this.hitChanceModifier = hitChanceModifier;
     }
 
-
+    public String toString() {
+        return "Attack [To Hit: "+hitChance+" Rolled:"+Math.ceil(hitRoll*100.0)/100+"+"+hitChanceModifier+" Result:"+hit+ "] Damage: "+damageRoll;
+    }
 
 
 

@@ -53,7 +53,7 @@ public class MissionPortrait extends Stack {
         this.add(  new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
 
         if (mission != null) {
-            System.out.println("icons/"+mission.getMissionMap().getCell(1,1));
+
             portrait = new Image(Assets.instance.maps.get("icons/"+mission.getMissionMap().getMapId()));
 
             portrait.setSize(140,140);

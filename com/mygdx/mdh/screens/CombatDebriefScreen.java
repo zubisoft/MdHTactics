@@ -257,7 +257,7 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         layout.row();
 
 
-        int individualXP = 100*combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
+        int individualXP = combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
         for (Character character: gameScreen.game.getCurrentParty()) {
             XPBar xpb = new XPBar();
             xpb.setProgress(character, individualXP);

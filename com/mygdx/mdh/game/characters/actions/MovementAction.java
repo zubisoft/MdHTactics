@@ -91,7 +91,6 @@ public class MovementAction extends GameAction {
             currenttargety = map.getCell(path.get(currentargetIndex)).getY();
 
 
-            System.out.println("[CharacterActor] From  "+actor.getX()+" to "+targetx+" step "+stepx);
         }
 
         stateTime += delta;

@@ -42,18 +42,11 @@ public class Character  {
     int level;
 
     public enum CHARACTER_TAGS {
-        EVIL, FANTASY, SCIFI, TECH
+        GOOD, EVIL, FANTASY, SCIFI, TECH
     }
 
-    public Enum<CHARACTER_TAGS> getTags() {
-        return tags;
-    }
 
-    public void setTags(Enum<CHARACTER_TAGS> tags) {
-        this.tags = tags;
-    }
-
-    Enum<CHARACTER_TAGS> tags;
+    EnumSet<CHARACTER_TAGS> tags;
 
     //Position
     @JsonIgnore MapCell cell;
@@ -91,6 +84,16 @@ public class Character  {
         availableActions=2;
         xp =0;
         level=1;
+        tags = EnumSet.noneOf(CHARACTER_TAGS.class);
+    }
+
+
+    public EnumSet<CHARACTER_TAGS> getTags() {
+        return tags;
+    }
+
+    public void setTags(EnumSet<CHARACTER_TAGS> tags) {
+        this.tags = tags;
     }
 
     /*
@@ -251,7 +254,7 @@ public class Character  {
         List<Ability> aux = new ArrayList<>();
 
         for (Ability a: abilities) {
-            System.out.println(a.getRequiredLevel()+" "+this.getLevel());
+
             if (a.getRequiredLevel() <= this.getLevel()) {
                 aux.add(a);
             }
@@ -384,7 +387,7 @@ public class Character  {
      * @param e
      */
     public void addEffect (List<Effect> e) {
-        LOG.print("[Character] Adding effect list");
+
 
        // if (e != null) effects.addAll(e);
         if (e==null ) return;
@@ -428,6 +431,7 @@ public class Character  {
                 iterator.remove();
             }
         }
+
     }
 
 
