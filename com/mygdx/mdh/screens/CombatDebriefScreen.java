@@ -6,6 +6,7 @@ package com.mygdx.mdh.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,7 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.CombatController;
+import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
@@ -29,8 +34,10 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 
-public class CombatDebriefScreen extends AbstractGameScreen {
+public class CombatDebriefScreen extends AbstractGameScreen implements CharacterChangeListener {
 
+
+    Table unlocksTable = new Table();
 
     /**
      * Animation to resize the progress bar
@@ -257,8 +264,9 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         layout.row();
 
 
-        int individualXP = combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
+        int individualXP = 100*combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
         for (Character character: gameScreen.game.getCurrentParty()) {
+            character.addListener(this);
             XPBar xpb = new XPBar();
             xpb.setProgress(character, individualXP);
             Container container = new Container(xpb);
@@ -273,17 +281,19 @@ public class CombatDebriefScreen extends AbstractGameScreen {
         //Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
 
         btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
+        //btnNew.setWidth(100);
         listener = new MenuClickListener(ButtonType.CONTINUE);
         btnNew.addListener(listener);
 
         buttonList = new Table();
         buttonList.pad(10);
-        buttonList.setPosition(600,500);
         //buttonList.add(la);
-        buttonList.row();
-        buttonList.add(btnNew);
+        buttonList.add(btnNew).width(200);
 
-        layout.add(buttonList).colspan(3);
+        layout.add(buttonList).colspan(1);
+
+        unlocksTable.background(new TextureRegionDrawable(Assets.instance.guiElements.get("combatui/HUD-messagebox")));
+        layout.add(unlocksTable).colspan(2);
 
         Stack stack = new Stack();
 
@@ -359,6 +369,12 @@ public class CombatDebriefScreen extends AbstractGameScreen {
     @Override
     public InputProcessor getInputProcessor() {
         return stage;
+    }
+
+
+    public  void onAbilityUnlock (Character c, Ability a) {
+        unlocksTable.add(new Label(c.getName()+" unlocked "+a.getName(),Assets.uiSkin,"handwritten_black" )).align(Align.center).expand().pad(20);
+
     }
 
 }

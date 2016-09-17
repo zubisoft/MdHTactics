@@ -510,6 +510,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
 
+    public void onAbilityUnlock (Ability a) {};
 
     public void onCharacterHit (int damage)  {
         //LOG.print(2,"[CharacterActor] Checking Death"+LOG.ANSI_RED);

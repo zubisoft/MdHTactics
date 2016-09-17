@@ -1,4 +1,5 @@
 package com.mygdx.mdh.game.controller;
+import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 
 /**
@@ -6,8 +7,9 @@ import com.mygdx.mdh.game.model.Character;
  */
 public interface CharacterChangeListener {
 
-    public void onCharacterHit (int damage) ;
-    public void onCharacterActive (Character c);
-    public void onCharacterInactive (Character c);
+    default  void onCharacterHit (int damage) {}
+    default  void onCharacterActive (Character c) {}
+    default  void onCharacterInactive (Character c) {}
+    default  void onAbilityUnlock (Character c, Ability a) {}
 
 }

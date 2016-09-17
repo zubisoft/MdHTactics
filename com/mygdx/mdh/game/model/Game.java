@@ -106,6 +106,17 @@ public class Game {
     Campaign currentCampaign;
     Mission currentMission;
 
+
+    public boolean isInParty (String characterId) {
+        for (Character c: currentParty) {
+            if (c.characterId.equals(characterId)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     public Game () {
         this.currentParty = new ArrayList<>();
 
@@ -167,8 +178,26 @@ public class Game {
     @JsonProperty("characterList")
     public void setCharacterList(List<String> baddiesId) {
         this.characterCollection = new ArrayList<Character>();
-        for(String baddy: baddiesId) {
-            this.characterCollection.add(Character.loadFromJSON(baddy));
+        Character c;
+        for (String baddy : baddiesId) {
+            c = Character.loadFromJSON(baddy);
+            c.setFriendly(true);
+            this.characterCollection.add(c);
+
+        }
+    }
+
+
+    public void setCurrentParty(List<Character> party) {
+
+        this.currentParty = new ArrayList<Character>();
+        for(Character p: party) {
+            for(Character c: characterCollection) {
+                if (p.characterId.equals(c.characterId)) {
+                    addCurrentParty(c);
+                }
+            }
+
         }
 
     }
@@ -299,8 +328,8 @@ public class Game {
 
     }
 
-    public void removeCurrentParty(Character character) {
-            this.currentParty.remove(character);
+    public void removeCurrentParty(Character removed) {
+        this.currentParty.remove(removed);
     }
 
 }

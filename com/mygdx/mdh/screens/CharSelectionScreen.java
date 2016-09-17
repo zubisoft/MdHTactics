@@ -139,7 +139,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
         charInfoBoxLayout.row();
 
         Stack s = new Stack();
-        s.setSize(400,600);
+        s.setSize(430,600);
         s.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
         characterSheet = new WidgetCharterSheet(gameScreen.game.getCharacterCollection().get(0));
         s.add(characterSheet);
@@ -176,6 +176,11 @@ public class CharSelectionScreen extends AbstractGameScreen {
                 portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
+
+                if (gameScreen.game.isInParty(gameScreen.game.getCharacterCollection().get(i).characterId)) {
+                    portraits[i].setSelected(true);
+                }
+
 
 
 

@@ -3,6 +3,7 @@ package com.mygdx.mdh.game.model.effects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
 
@@ -121,4 +122,5 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
     public void onCharacterHit (int damage) {} ;
     public void onCharacterActive (Character c) {};
     public void onCharacterInactive (Character c) {};
+    public void onAbilityUnlock (Ability a) {};
 }

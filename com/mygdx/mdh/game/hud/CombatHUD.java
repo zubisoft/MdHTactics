@@ -290,6 +290,9 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
     public void onCharacterHit (int damage)  {
     }
 
+
+    public void onAbilityUnlock (Ability a) {};
+
     public void onCharacterActive (Character c)  {
         if (controller.getSelectedCharacter()==null) return;
         if (c == controller.getSelectedCharacter().getCharacter()) {

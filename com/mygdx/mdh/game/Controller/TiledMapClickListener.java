@@ -27,7 +27,6 @@ public class TiledMapClickListener extends ClickListener {
     public void clicked(InputEvent event, float x, float y) {
         CombatController stage = (CombatController)event.getStage();
 
-        System.out.println("[Tile Clicked]"+actor.getX() +","+actor.getY()+ " has been clicked."+ this.getButton() );
 
         //Movement
         if (stage.getSelectedCharacter() != null) {
@@ -35,7 +34,6 @@ public class TiledMapClickListener extends ClickListener {
                     && stage.getSelectedCharacter().isActive()
                     && event.getButton() == Input.Buttons.RIGHT
                     && !actor.getCell().isOccupied()) {
-                System.out.println("[Tile Clicked] Moving character to " + actor.getMapCoordinates());
 
                 stage.setGameStep(Combat.GameStepType.ACTION_SELECTION);
                 stage.getSelectedCharacter().moveToCell(actor, stage.getMap());

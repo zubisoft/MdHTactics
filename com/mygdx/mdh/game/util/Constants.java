@@ -12,6 +12,9 @@ public class Constants {
     public static final int VIEWPORT_GUI_WIDTH = 1240;
     public static final int VIEWPORT_GUI_HEIGHT = 720;
 
+    //public static final int VIEWPORT_GUI_WIDTH = 1920;
+    //public static final int VIEWPORT_GUI_HEIGHT = 1080;
+
     // Location of description of texture atlas
     public static final String TEXTURE_ATLAS_CHARACTERS =
             "core/assets/graphics/mdhtactics-characters.pack.atlas";

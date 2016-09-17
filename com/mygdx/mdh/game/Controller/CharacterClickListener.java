@@ -28,7 +28,7 @@ public class CharacterClickListener extends ClickListener {
 
         CombatController stage = (CombatController)evt.getStage();
 
-        System.out.println("[Actor Clicked]"+x +","+y+ " has been clicked."+actor.getX()+"/"+actor.getWidth()+" Effects: "+actor.getCharacter().getEffects().size());
+        //System.out.println("[Actor Clicked]"+x +","+y+ " has been clicked."+actor.getX()+"/"+actor.getWidth()+" Effects: "+actor.getCharacter().getEffects().size());
         if (actor.isDead() ) return;
 
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.SELECTION)
@@ -43,8 +43,6 @@ public class CharacterClickListener extends ClickListener {
         //If the step was targeting, the clicked actor becomes the target.
         if (stage.getCombat().getGameStep().equals(Combat.GameStepType.TARGETING)
             && Map.distance(stage.getSelectedCharacter().getMapCell(),actor.getMapCell()) <= stage.getCurrentSelectedAbility().getRange()) {
-
-            System.out.println("[CharacterClickListener] Targeted "+actor.getCharacter().getName());
 
             stage.executeCurrentAbility(actor);
 

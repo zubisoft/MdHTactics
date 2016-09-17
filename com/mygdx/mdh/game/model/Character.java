@@ -538,7 +538,17 @@ public class Character  {
     }
 
     public void setLevel(int level) {
+        if (this.level == level) return;
+
         this.level = level;
+
+        for (Ability a: abilities) {
+            if (a.getRequiredLevel() == level) {
+                for (CharacterChangeListener l: listeners) {
+                    l.onAbilityUnlock(this,a);
+                }
+            }
+        }
     }
 
 

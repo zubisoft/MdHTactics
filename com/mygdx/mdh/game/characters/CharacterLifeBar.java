@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.util.Assets;
 
@@ -32,6 +33,7 @@ public class CharacterLifeBar extends Actor implements CharacterChangeListener {
     public void onCharacterHit (int damage) { };
     public void onCharacterActive (Character c) {};
     public void onCharacterInactive (Character c) {};
+    public void onAbilityUnlock (Ability a) {};
 
 
     public CharacterLifeBar (CharacterActor actor) {

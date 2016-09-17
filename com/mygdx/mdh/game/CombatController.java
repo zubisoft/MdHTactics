@@ -140,6 +140,8 @@ public class CombatController extends Stage {
                 c.setCell(combat.getMap().getCell(c.getRow(), c.getColumn()));
             }
             */
+
+            //System.out.println(combat.getCharacters());
         }
 
 
@@ -177,7 +179,6 @@ public class CombatController extends Stage {
 
         //combat.initCharacterPositions (); //Randomizes char positions
         strategyManager = new StrategyManager(this);
-
 
 
     }
@@ -232,6 +233,7 @@ public class CombatController extends Stage {
 
     /** If all enemy characters are dead, it´s a victory*/
     public boolean isVictory () {
+
         int xp = 0;
         for(CharacterActor a: characterActors) {
             if (!a.getCharacter().isFriendly()) {
