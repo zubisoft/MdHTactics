@@ -46,6 +46,12 @@ public class DamageEffect extends Effect {
         damageRolls = new ArrayList<>();
 
         conditionalType = EnumSet.noneOf(Character.CHARACTER_TAGS.class);
+
+        if (pic ==null) {
+            if (effectSubType.contains(EffectSubType.ELECTRIC)) pic = "effect_electric";
+            else if (effectSubType.contains(EffectSubType.FIRE)) pic = "effect_burning";
+            else pic="effect_gunshot";
+        }
     }
 
     public DamageEffect copy () {
@@ -128,7 +134,7 @@ public class DamageEffect extends Effect {
                     rolledResult = Math.max(damageRolls.get(i).getRolledDamage().getRoll(), 0);
 
                     if (rolledResult>0) {
-                        notification=" -"+rolledResult+" HP";
+                        notification=(damageRolls.get(i).isCritical()?"Critic!":"")+" -"+rolledResult+" HP";
                         target.hit(rolledResult);
                     } else {
                         notification="No Damage!";

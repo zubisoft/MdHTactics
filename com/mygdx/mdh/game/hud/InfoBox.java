@@ -29,9 +29,6 @@ public class InfoBox extends Actor {
 
     public InfoBox () {
 
-
-
-
         TextureRegion tex = Assets.instance.guiElements.get("menus/info_box");
         NinePatchDrawable tableBackground = new NinePatchDrawable(new NinePatch(tex,20,20,20,20));
 

@@ -45,7 +45,10 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     Stack abilitiesBar;
 
-    TextureRegion sprite = Assets.instance.guiElements.get("combatui/HUD-messagebox");
+    TextureRegion sprite = Assets.instance.guiElements.get("menus/generic-box");
+
+
+
     TextureRegion abilityBarSprite = Assets.instance.guiElements.get("combatui/HUD-bar");
     TextureRegion characterHUDSprite = Assets.instance.guiElements.get("combatui/HUD-characterpanel");
     TextureRegion characterNameSprite = Assets.instance.guiElements.get("combatui/HUD-charname-bg");
@@ -133,8 +136,12 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
             hudTableLayout.add(actor).size(35,35).pad(2);
 
-            EventListener eventListener = new AbilityButtonClickListener(actor);
+
+            AbilityButtonClickListener eventListener = new AbilityButtonClickListener(actor);
             actor.addListener(eventListener);
+
+            if (!selectedCharacter.isFriendly()) eventListener.disableClick();
+
             //this.addActor(actor);
             abilityButtons.add(actor);
         }
@@ -247,14 +254,14 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         this.act();
 
 
-        batch.setColor(1f, 1f, 1f,  1f);
-        batch.draw(sprite,950,0);
-        batch.setColor(1f, 1f, 1f, 1f);
+        batch.setColor(1f, 1f, 1f,  0.5f);
+        batch.draw(sprite,900,0,350,200);
+        batch.setColor(1f, 1f, 1f,1f);
 
 
-        BitmapFont font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.draw(batch, notificationText, 1000, 100);
+        //BitmapFont font = new BitmapFont();
+        //.setColor(Color.BLACK);
+        //font.draw(batch, notificationText, 1000, 100);
 
 
         //Draw current character HUD
@@ -264,7 +271,7 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
             if (    showAbilities &&
                     controller.getSelectedCharacter().isActive() &&
-                    controller.getSelectedCharacter().isFriendly() &&
+                    //controller.getSelectedCharacter().isFriendly() &&
                     !controller.getSelectedCharacter().actionInProgress()
                     ) {
 

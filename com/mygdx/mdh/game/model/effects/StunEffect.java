@@ -21,6 +21,8 @@ public class StunEffect  extends Effect  {
             color= Color.YELLOW;
             notification  = null;
 
+            if (pic ==null) pic="effect_red";
+
         }
 
         @Override

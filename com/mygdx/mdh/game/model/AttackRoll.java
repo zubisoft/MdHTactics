@@ -12,7 +12,17 @@ public class AttackRoll   {
     float hitChanceModifier=0;
     float hitChance=0.5f;
     double hitRoll;
+    float criticalChance = 0.95f;
 
+    public boolean isCritical() {
+        return isCritical;
+    }
+
+    public void setCritical(boolean critical) {
+        isCritical = critical;
+    }
+
+    boolean isCritical = false;
 
     boolean directDamage;
 
@@ -30,6 +40,13 @@ public class AttackRoll   {
 
         if (hitRoll >= hitChance-hitChanceModifier || isDirectDamage()) hit=true;
         else hit = false;
+
+        //Critic
+        isCritical = false;
+        if (hitRoll >= criticalChance) {
+            damageRoll.addPercentModifier(1);
+            isCritical = true;
+        }
 
         return (hit?damageRoll:null);
     }

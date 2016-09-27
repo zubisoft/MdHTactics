@@ -59,52 +59,76 @@ public class WidgetAbilitySheet extends Window {
         abilityInfo.row();
         abilityInfo.add(new Label(mainEffect.getEffectType()+" "+mainEffect.getEffectClass() ,Assets.uiSkin,"handwritten_black" )).align(Align.left);
         abilityInfo.row();
-        abilityInfo.add(new Label(""+a.getRequiredLevel(),Assets.uiSkin,"handwritten_black" )).align(Align.left);
+        if (a.getRequiredLevel()>0)
+            abilityInfo.add(new Label("Required Level:"+a.getRequiredLevel(),Assets.uiSkin,"handwritten_black" )).align(Align.left);
 
         Table mainLayout = new Table();
         mainLayout.add(icon).size(50,50);
         mainLayout.add(abilityInfo);
         mainLayout.row();
 
-        mainLayout.add(new Label("Range",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+a.getRange(),Assets.uiSkin,"handwritten_black" ));
+
+        mainLayout.add(new Label("Range", Assets.uiSkin, "handwritten_black"));
+        mainLayout.add(new Label("" + a.getRange(), Assets.uiSkin, "handwritten_black"));
         mainLayout.row();
 
-        mainLayout.add(new Label("Area",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+a.getArea(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (a.getArea()>0) {
+            mainLayout.add(new Label("Area",Assets.uiSkin,"handwritten_black" ));
+            mainLayout.add(new Label(""+a.getArea(),Assets.uiSkin,"handwritten_black" ));
+            mainLayout.row();
+        }
 
+        if (mainEffect.getChance()!=1.0f) {
         mainLayout.add(new Label("Chance",Assets.uiSkin,"handwritten_black" ));
         mainLayout.add(new Label(""+mainEffect.getChance(),Assets.uiSkin,"handwritten_black" ));
         mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Roll",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getDiceNumber()+"d"+mainEffect.getDiceSides()+"+"+mainEffect.getModifier(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getDiceNumber()>0 || mainEffect.getModifier()>0) {
+            mainLayout.add(new Label("Roll", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label(""
+                    + (mainEffect.getDiceNumber() != 0 ? mainEffect.getDiceNumber() + "d" + mainEffect.getDiceSides() : "")
+                    + (mainEffect.getModifier() > 0 ?  "+" : "")
+                    + (mainEffect.getModifier() != 0 ?  mainEffect.getModifier() : "")
+                    , Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Duration",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getDuration(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getDuration()>0) {
+            mainLayout.add(new Label("Duration", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + mainEffect.getDuration(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Cooldown",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+a.getCooldown(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (a.getCooldown()>0){
+            mainLayout.add(new Label("Cooldown", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + a.getCooldown(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Hits",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getHits(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getHits()>1) {
+            mainLayout.add(new Label("Hits", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + mainEffect.getHits(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Stacking",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getStacking(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getStacking()>0) {
+            mainLayout.add(new Label("Stacking", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + mainEffect.getStacking(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Type",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getEffectSubType(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getEffectSubType().size()>0) {
+            mainLayout.add(new Label("Type", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + mainEffect.getEffectSubType(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
-        mainLayout.add(new Label("Requirements",Assets.uiSkin,"handwritten_black" ));
-        mainLayout.add(new Label(""+mainEffect.getConditionalEffects(),Assets.uiSkin,"handwritten_black" ));
-        mainLayout.row();
+        if (mainEffect.getConditionalEffects().size()>0) {
+            mainLayout.add(new Label("Requirements", Assets.uiSkin, "handwritten_black"));
+            mainLayout.add(new Label("" + mainEffect.getConditionalEffects(), Assets.uiSkin, "handwritten_black"));
+            mainLayout.row();
+        }
 
         //Other effects
         mainLayout.setBackground(tableBackground);

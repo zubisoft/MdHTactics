@@ -24,6 +24,8 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         effectClass = EffectClass.SHIELD;
         effectType = EffectType.BUFF;
         color= Color.BLUE;
+
+        if (pic ==null) pic="effect_shield";
     }
 
     /**

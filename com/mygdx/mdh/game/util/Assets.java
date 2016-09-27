@@ -79,8 +79,13 @@ public class Assets implements Disposable, AssetErrorListener {
             font15  = generator.generateFont(parameter);
             uiSkin.add("handwritten_black",font15);
 
-            uiSkin.get("handwritten_black", Label.LabelStyle.class).font = font15;
+
             uiSkin.get("handwritten_black", TextArea.TextFieldStyle.class).font = font15;
+
+            parameter.color = Color.WHITE;
+            parameter.size = 25;
+            font15  = generator.generateFont(parameter);
+            uiSkin.add("handwritten_white", font15);
         }
     }
 

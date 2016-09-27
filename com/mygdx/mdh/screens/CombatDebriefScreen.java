@@ -7,10 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -21,20 +18,23 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
+import com.mygdx.mdh.game.controller.GameEventListener;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.Mission;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 
-public class CombatDebriefScreen extends AbstractGameScreen implements CharacterChangeListener {
+public class CombatDebriefScreen extends AbstractGameScreen implements CharacterChangeListener, GameEventListener {
 
 
     Table unlocksTable = new Table();
@@ -264,7 +264,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         layout.row();
 
 
-        int individualXP = 100*combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
+        int individualXP = combatController.getCombat().getExperience()/gameScreen.game.getCurrentParty().size();
         for (Character character: gameScreen.game.getCurrentParty()) {
             character.addListener(this);
             XPBar xpb = new XPBar();
@@ -280,7 +280,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         //final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
         //Label la = (new Label(""+combatController.getCombat().getExperience(), uiSkin, "default-font", Color.ORANGE));
 
-        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
+        btnNew = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/btn-continue"))));
         //btnNew.setWidth(100);
         listener = new MenuClickListener(ButtonType.CONTINUE);
         btnNew.addListener(listener);
@@ -292,8 +292,14 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
 
         layout.add(buttonList).colspan(1);
 
-        unlocksTable.background(new TextureRegionDrawable(Assets.instance.guiElements.get("combatui/HUD-messagebox")));
-        layout.add(unlocksTable).colspan(2);
+
+        ScrollPane scroller = new ScrollPane(unlocksTable);
+        scroller.getStyle().background =  new NinePatchDrawable(new NinePatch(Assets.instance.guiElements.get("menus/generic-box"),20,20,20,20));
+
+        unlocksTable.pad(20);
+        unlocksTable.setSize(400,200);
+
+        layout.add(scroller).colspan(2).size(400,200);
 
         Stack stack = new Stack();
 
@@ -302,6 +308,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         stack.add(background);
         stack.add(layout);
 
+        gameScreen.game.addListener(this);
         gameScreen.game.completeMission(gameScreen.game.getCurrentMission());
         gameScreen.game.saveGame();
 
@@ -373,8 +380,28 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
 
 
     public  void onAbilityUnlock (Character c, Ability a) {
-        unlocksTable.add(new Label(c.getName()+" unlocked "+a.getName(),Assets.uiSkin,"handwritten_black" )).align(Align.center).expand().pad(20);
+        //unlocksTable.add(new Label(c.getName()+" unlocked "+a.getName(),Assets.uiSkin,"handwritten_black" )).align(Align.center).expand().pad(20);
+        //unlocksTable.row();
 
+        Stack s = new Stack();
+
+        Image pic = new Image(Assets.instance.characters.get(c.getPic()).portrait);
+        s.add(pic);
+
+        pic = new Image(Assets.instance.abilities.get(a.getPic()));
+        Table aux = new Table();
+        aux.right().bottom();
+        aux.add(pic).size(30,30).align(Align.bottomRight);
+        s.add(aux);
+
+        unlocksTable.add(s).size(100,100);
+
+    }
+
+    public  void onMissionUnlocked (Mission m) {
+        unlocksTable.add(new Image(Assets.instance.maps.get("icons/"+m.getMissionMap().getMapId()))).size(100,100);
+
+        //unlocksTable.row();
     }
 
 }

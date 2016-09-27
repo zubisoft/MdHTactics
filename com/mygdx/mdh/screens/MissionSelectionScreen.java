@@ -140,9 +140,9 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         charInfoBoxLayout.row();
         charInfoBoxLayout.add(missionInfoBox);
         charInfoBoxLayout.row();
-        ImageButton btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
+        ImageButton btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/btn-continue"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));
-        charInfoBoxLayout.add(btnContinue);
+        charInfoBoxLayout.add(btnContinue).height(75).pad(25);
 
         //Mission Selection Area
         Table portraitsLayout = new Table();
@@ -175,7 +175,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         }
 
         layout = new Table();
-        layout.add(charInfoBoxLayout);
+        layout.add(charInfoBoxLayout).width(Constants.VIEWPORT_GUI_WIDTH/2);;
         layout.add(portraitsLayout);
 
 

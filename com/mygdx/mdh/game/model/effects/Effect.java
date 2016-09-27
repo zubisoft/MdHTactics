@@ -216,7 +216,8 @@ public class Effect  /*implements Cloneable*/  {
         conditionalEffects = new HashSet<>();
 
         gameSegment = GameSegmentType.IMMEDIATE;
-        pic="core/assets/graphics/effects/effect_gunshot.png";
+        //pic="core/assets/graphics/effects/effect_gunshot.png";
+        pic=null;
     }
 
 
@@ -374,6 +375,9 @@ public class Effect  /*implements Cloneable*/  {
 
 
     public void setEffectSubType(EnumSet<EffectSubType> list) {
+
+
+
         effectSubType=list;
         /*
         effectSubType=EnumSet.noneOf(EffectSubType.class);
@@ -435,7 +439,6 @@ public class Effect  /*implements Cloneable*/  {
 
 
     public void setEffecType(EffectClass effecType) {
-
 
         this.effectClass = effecType;
     }

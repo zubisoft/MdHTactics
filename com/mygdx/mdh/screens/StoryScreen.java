@@ -5,13 +5,13 @@ package com.mygdx.mdh.screens;
  */
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.mdh.game.hud.StoryMessageBar;
 import com.mygdx.mdh.game.model.Combat;
@@ -24,11 +24,14 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
 public class StoryScreen extends AbstractGameScreen {
 
+    ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+
     private class MenuClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            ScreenTransition transition = ScreenTransitionFade.init(0.75f);
+
+
             if(messageBar.hasMoreMessages()==false)
                 switch(storyType) {
                     case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
@@ -90,6 +93,26 @@ public class StoryScreen extends AbstractGameScreen {
         stage.addActor(messageBar);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
+
+
+
+
+        Label la =(new Label("Skip",Assets.uiSkin, "handwritten_white", Color.WHITE));
+        Table t = new Table();
+        t.setFillParent(true);
+        t.bottom().right().pad(50);
+        t.add(la);
+
+        la.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent evt, float x, float y) {
+                super.clicked(evt,x,y);
+                gameScreen.setScreen(new CombatScreen(gameScreen), transition);
+            }
+        }
+        );
+
+        stack.add(t);
 
         background.addListener(listener);
 

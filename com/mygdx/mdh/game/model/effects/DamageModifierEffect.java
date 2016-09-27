@@ -18,6 +18,8 @@ public class DamageModifierEffect extends Effect {
 
     boolean initialized=false;
 
+    boolean notificationShown = false;
+
     /**
      * By default, applies the modifier to outbound damage (damage emitted from the current character)
      * However can be set to false to use it as a damage protection effect for inbound damage (damage coming from other characters)
@@ -32,6 +34,8 @@ public class DamageModifierEffect extends Effect {
         effectType = EffectType.BUFF;
         color= Color.BLUE;
         outbound = true;
+
+        if (pic ==null) pic="effect_blue";
 
     }
 
@@ -92,11 +96,33 @@ public class DamageModifierEffect extends Effect {
 
 
     public String toString() {
-        return "*"+ getEffectClass()+" ("+roll.getRoll()+" HP)";
+
+        String description;
+        String sign = "+";
+
+        if (!outbound) sign="-";
+
+        description = "Adds "+sign;
+        if (!outbound) description = "Prevents ";
+
+        if (diceNumber!=0 )      description += ""+Math.abs(diceNumber)+"d"+diceSides+(modifier>0?"+":"");
+        if (modifier!=0 )        description += Math.abs(modifier);
+        if (outbound ) description +=  " to ";
+        description +=  " damage";
+        if (this.getChanceModifier()!=0 )        description += " and "+sign+Math.floor(getChanceModifier()*20)+" to attack roll";
+        if (duration!=0 )   description+=" ("+duration+" rounds)";
+        return description;
+    }
+    public String getDescription () {
+        return this.toString();
     }
 
     public String notification() {
-        return "Damage Modifier";
+        if (!notificationShown) {
+            notificationShown=true;
+            return ""+ getName()+" ("+getDuration()+" rounds)";
+        }
+        else return null;
     }
 
 

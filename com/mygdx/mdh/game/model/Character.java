@@ -41,6 +41,9 @@ public class Character  {
     int xp;
     int level;
 
+
+    String persona;
+
     public enum CHARACTER_TAGS {
         GOOD, EVIL, FANTASY, SCIFI, TECH
     }
@@ -68,8 +71,7 @@ public class Character  {
     //Graphic info
     String pic;
 
-    //Auxiliary
-    @JsonIgnore private List<Effect> effectsAux;
+
 
 
     public Character() {
@@ -77,7 +79,7 @@ public class Character  {
         abilities = new ArrayList<Ability>();
 
         effects = new ArrayList<Effect> ();
-        effectsAux = new ArrayList<Effect> ();
+
         listeners = new ArrayList<> ();
 
         maxActions = 2;
@@ -85,6 +87,13 @@ public class Character  {
         xp =0;
         level=1;
         tags = EnumSet.noneOf(CHARACTER_TAGS.class);
+    }
+
+    public void reset() {
+        effects.clear();
+        setAvailableActions(getMaxActions());
+        setHealth(getMaxHealth());
+        setDead(false);
     }
 
 
@@ -552,6 +561,14 @@ public class Character  {
     }
 
 
+
+    public String getPersona() {
+        return persona;
+    }
+
+    public void setPersona(String persona) {
+        this.persona = persona;
+    }
 
 } //Character
 

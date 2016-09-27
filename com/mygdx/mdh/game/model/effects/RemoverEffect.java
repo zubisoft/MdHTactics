@@ -53,6 +53,8 @@ public class RemoverEffect extends Effect {
         targetType = EnumSet.noneOf(EffectType.class);
         targetSubType = EnumSet.noneOf(EffectSubType.class);
 
+        if (pic ==null) pic="effect_red";
+
     }
 
 

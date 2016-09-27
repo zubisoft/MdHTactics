@@ -2,20 +2,15 @@ package com.mygdx.mdh.game.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
+import com.mygdx.mdh.game.controller.GameEventListener;
+import com.mygdx.mdh.game.model.util.PersonaList;
 import com.mygdx.mdh.game.util.CharacterDeserializer;
-import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.game.util.MissionDeserializer;
 
 import java.io.IOException;
@@ -26,6 +21,8 @@ import java.util.List;
  * Created by zubisoft on 13/05/2016.
  */
 public class Game {
+
+    List <GameEventListener> listeners;
 
     /**
      * Serializes the campaign as a campaign ID, which defines the template for the campaign
@@ -65,6 +62,7 @@ public class Game {
             //TODO I should use the ID in the files, using the name only adds confusion
             jgen.writeStringField("characterId", value.characterId );
             jgen.writeNumberField("xp", value.xp);
+            jgen.writeNumberField("level", value.level);
             jgen.writeEndObject();
         }
     }
@@ -106,6 +104,13 @@ public class Game {
     Campaign currentCampaign;
     Mission currentMission;
 
+    public void setPersonaList(PersonaList personaList) {
+        this.personaList = personaList;
+    }
+
+    @JsonIgnore
+    PersonaList personaList;
+
 
     public boolean isInParty (String characterId) {
         for (Character c: currentParty) {
@@ -113,12 +118,14 @@ public class Game {
                 return true;
             }
         }
+
         return false;
 
     }
 
     public Game () {
         this.currentParty = new ArrayList<>();
+        this.listeners = new ArrayList<>();
 
     }
 
@@ -143,7 +150,7 @@ public class Game {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));*/
 
         try {
-            mapper.writeValue(Gdx.files.internal("core/assets/data/games/savegame01.txt").file(), this);
+            mapper.writeValue(Gdx.files.internal("core/assets/data/games/autosave.txt").file(), this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,20 +178,28 @@ public class Game {
             e.printStackTrace();
         }
 
+        emp.setPersonaList(new PersonaList(emp.getCharacterCollection()));
+
         return emp;
     }
 
 
     @JsonProperty("characterList")
-    public void setCharacterList(List<String> baddiesId) {
+    public void setCharacterList(List<String> charid) {
         this.characterCollection = new ArrayList<Character>();
         Character c;
-        for (String baddy : baddiesId) {
+        for (String baddy : charid) {
             c = Character.loadFromJSON(baddy);
             c.setFriendly(true);
             this.characterCollection.add(c);
 
         }
+
+        personaList = new PersonaList(characterCollection);
+    }
+
+    public PersonaList getPersonaList () {
+        return personaList;
     }
 
 
@@ -261,6 +276,7 @@ public class Game {
         for (Mission m: currentCampaign.getCampaignMissions()) {
             if (m.getMissionId().equals(nextMission)) {
                 m.setUnlocked(true);
+                notifyMissionUnlocked(m);
 
             }
             i++;
@@ -278,7 +294,15 @@ public class Game {
 
     }
 
+    public void addListener (GameEventListener l) {
+        listeners.add(l);
+    }
 
+    public void notifyMissionUnlocked (Mission m) {
+        for (GameEventListener l: listeners) {
+            l.onMissionUnlocked(m);
+        }
+    }
 
 
     //Generic getters and setters
@@ -331,5 +355,6 @@ public class Game {
     public void removeCurrentParty(Character removed) {
         this.currentParty.remove(removed);
     }
+
 
 }

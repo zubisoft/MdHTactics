@@ -336,7 +336,8 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
         //Draw current animation
-        batch.draw(currentFrame,getX()+offsetx
+        batch.draw(currentFrame
+                ,getX()+offsetx
                 ,getY()+offsety
                 ,getOriginX()
                 ,getOriginY()
@@ -421,7 +422,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
 
     public void showMessage (String icon, String message, Color c) {
-
+        if(message != null)
         characterMessenger.showMessage(icon, message,c);
     }
 
@@ -429,6 +430,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     public void showMessage (String message) {
         //showMessage (message, Color.WHITE);
+        if(message != null)
         characterMessenger.showMessage(message, Color.WHITE);
     }
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
+import com.mygdx.mdh.game.hud.ScrollableBox;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
@@ -130,11 +131,23 @@ public class MainMenuScreen extends AbstractGameScreen {
         buttonList.row();
         buttonList.add(btnQuit);
 
+        buttonList.row();
+        ScrollableBox sb = new ScrollableBox();
+        sb.setSize(300,200);
+        sb.setText("hola que tal");
+        buttonList.add(sb);
+
+
+
+
+
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
         stack.add(buttonList);
+
+
 
 
         /*

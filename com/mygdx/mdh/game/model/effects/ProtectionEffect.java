@@ -41,6 +41,8 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
         immunityType = EnumSet.noneOf(EffectType.class);
         immunitySubType = EnumSet.noneOf(EffectSubType.class);
 
+        if (pic ==null) pic="effect_shield";
+
     }
 
     /**

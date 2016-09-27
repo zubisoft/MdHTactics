@@ -233,7 +233,7 @@ public class StrategyManager {
             }
         }
 
-        LOG.print(3,"[StrategyManager] Action: Generic attack",LOG.ANSI_PURPLE);
+        LOG.print(3,"[StrategyManager] Action: Generic attack"+damageAvailable.getName(),LOG.ANSI_PURPLE);
 
         //Otherwise attack!
         return damageAvailable;

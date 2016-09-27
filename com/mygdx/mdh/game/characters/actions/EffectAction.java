@@ -1,13 +1,17 @@
 package com.mygdx.mdh.game.characters.actions;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.model.effects.Effect;
+import com.mygdx.mdh.game.util.Assets;
 
 /**
  * Created by zubisoft on 09/03/2016.
@@ -77,12 +81,18 @@ public class EffectAction  extends Action {
 
     public void draw (SpriteBatch batch) {
 
-        if(!finished)
+        if(!finished) {
+            if (effect.getEffectClass()== Effect.EffectClass.DAMAGE_MODIFIER) {
+                batch.setColor(Color.WHITE);
+                batch.getColor().a = 0.95f;
+            }
             batch.draw(currentFrame
-                    ,target.getX()+offsetX+target.getWidth()/2
-                    ,target.getY()+offsetY+target.getHeight()/2
+                    , target.getX() + offsetX + target.getWidth() / 2 - currentFrame.getRegionWidth() / 2 +30
+                    , target.getY() + offsetY + target.getHeight() / 2 - currentFrame.getRegionHeight() / 2 +30
             );
+            batch.setBlendFunction(-1,-1);
 
+        }
     }
 
 
@@ -91,8 +101,8 @@ public class EffectAction  extends Action {
 
 
         //TODO: fix the reference to the files for gods sake
-        Texture texture = new Texture(Gdx.files.internal(effect.getPic())); // #9
-        TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/FRAME_COLS, texture.getHeight());              // #10
+        TextureRegion texture = new TextureRegion(Assets.instance.effects.get(effect.getPic())); // #9
+        TextureRegion[][] tmp = texture.split(texture.getRegionWidth()/FRAME_COLS, texture.getRegionHeight());              // #10
         TextureRegion[] frames = new TextureRegion[FRAME_COLS];
         int index = 0;
 
@@ -104,8 +114,8 @@ public class EffectAction  extends Action {
 
 
 
-        width = texture.getWidth()/FRAME_COLS;
-        height = texture.getHeight();
+        width = texture.getRegionWidth()/FRAME_COLS;
+        height = texture.getRegionHeight();
 
 
         offsetX=0;
@@ -114,6 +124,7 @@ public class EffectAction  extends Action {
             //83 is the width of a charaacteractor
             offsetX=0;
         }
+
 
     }
 

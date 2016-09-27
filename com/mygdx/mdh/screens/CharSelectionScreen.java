@@ -12,15 +12,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
 import com.mygdx.mdh.game.model.Game;
+import com.mygdx.mdh.game.model.util.PersonaList;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 import com.mygdx.mdh.screens.widgets.Portrait;
 import com.mygdx.mdh.screens.widgets.WidgetCharterSheet;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 
 public class CharSelectionScreen extends AbstractGameScreen {
@@ -31,22 +36,47 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
         PortraitClickListener(Portrait p) {
             this.portrait = p;
+            buttonType = ButtonType.SELECT;
+        }
+
+        ButtonType buttonType;
+
+        public PortraitClickListener (Portrait p, ButtonType type) {
+            this.portrait = p;
+            this.buttonType = type;
         }
 
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
-            if (!portrait.isSelected() ) {
-                if (gameScreen.game.addCurrentParty(portrait.getCharacter())) {
-                    characterPortrait.setActor(new Image(Assets.instance.characters.get(portrait.getCharacter().getPic()).portrait));
-                    characterSheet.loadCharacter(portrait.getCharacter());
-                    portrait.setSelected(true);
-                }
-            } else {
-                gameScreen.game.removeCurrentParty(portrait.getCharacter());
-                portrait.setSelected(false);
-            }
 
+            switch(buttonType) {
+                case SELECT:
+                    if (!portrait.isSelected()) {
+                        if (gameScreen.game.addCurrentParty(portrait.getCharacter())) {
+                            selectCharacter(portrait);
+
+                        }
+                    } else {
+                        gameScreen.game.removeCurrentParty(portrait.getCharacter());
+                        portrait.setSelected(false);
+                    }
+                    break;
+
+                case NEXT:
+                    gameScreen.game.removeCurrentParty(portrait.getCharacter());
+                    portrait.next();
+                    selectCharacter(portrait);
+                    gameScreen.game.addCurrentParty(portrait.getCharacter());
+                    break;
+
+                case PREV:
+                    gameScreen.game.removeCurrentParty(portrait.getCharacter());
+                    portrait.prev();
+                    selectCharacter(portrait);
+                    gameScreen.game.addCurrentParty(portrait.getCharacter());
+                    break;
+            }
 
 
 
@@ -56,7 +86,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
 
     private enum ButtonType {
-        CONTINUE
+        CONTINUE, SELECT, NEXT, PREV
     }
 
 
@@ -120,8 +150,9 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
     Container characterPortrait;
     WidgetCharterSheet characterSheet;
+    PersonaList availableCharacters;
 
-
+    Image leftArrow,rightArrow;
 
     public  void buildStage () {
 
@@ -134,8 +165,19 @@ public class CharSelectionScreen extends AbstractGameScreen {
         //background layout
         Table charInfoBoxLayout = new Table();
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
-        characterPortrait = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(0).getPic()).portrait));
-        charInfoBoxLayout.add(characterPortrait);
+
+        Table t = new Table ();
+
+        leftArrow = new Image(Assets.instance.guiElements.get("menus/btn-arrow"));
+        leftArrow.setScaleX(-1);
+        t.add(leftArrow);
+        characterPortrait = new Container();
+        t.add(characterPortrait);
+        rightArrow = new Image(Assets.instance.guiElements.get("menus/btn-arrow"));
+        t.add(rightArrow);
+
+
+        charInfoBoxLayout.add(t).bottom();
         charInfoBoxLayout.row();
 
         Stack s = new Stack();
@@ -148,9 +190,9 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
 
         charInfoBoxLayout.row();
-        btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/mainmenu_top_button"))));
+        btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/btn-continue"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));
-        charInfoBoxLayout.add(btnContinue);
+        charInfoBoxLayout.add(btnContinue).height(75);
 
         //portrait layout
         Table portraitsLayout = new Table();
@@ -158,26 +200,24 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
         Portrait[] portraits = new Portrait[12];
 
+
+        availableCharacters = gameScreen.game.getPersonaList();
+        java.util.List<String> personaIds = new java.util.ArrayList(availableCharacters.getPersonas());
+
+
+
         for (int i=0; i<12; i++) {
 
-            //portraits[i].add(buttons[i]);
-            if (gameScreen.game.getCharacterCollection().size()>i) {
+            if (availableCharacters.getPersonas().size()>i) {
 
-/*
-                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait")));
 
-                Container c = new Container(new Image(Assets.instance.characters.get(gameScreen.game.getCharacterCollection().get(i).getPic()).portrait));
-                c.padLeft(25);
-                portraits[i].add(c);
 
-                portraits[i].add( new Image(Assets.instance.guiElements.get("charselection_portrait_frame")));
-*/
-
-                portraits[i] = new Portrait(gameScreen.game.getCharacterCollection().get(i));
+                portraits[i] = new Portrait(availableCharacters.get(personaIds.get(i),0));
+                portraits[i].setAlternateCharacters(availableCharacters.get(personaIds.get(i)));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
 
-                if (gameScreen.game.isInParty(gameScreen.game.getCharacterCollection().get(i).characterId)) {
+                if (gameScreen.game.isInParty( portraits[i].getCharacter().characterId)) {
                     portraits[i].setSelected(true);
                 }
 
@@ -188,20 +228,19 @@ public class CharSelectionScreen extends AbstractGameScreen {
                 portraits[i] = new Portrait(null);
             }
 
-
-
             //portraitsLayout.add(buttons[i]).pad(10);
+
+
             portraitsLayout.add(portraits[i]).pad(10);
-
-
 
             if(Math.floorMod(i+1,3)==0)   portraitsLayout.row();
 
         }
 
         layout = new Table();
-        layout.add(charInfoBoxLayout);
+        layout.add(charInfoBoxLayout).width(Constants.VIEWPORT_GUI_WIDTH/2);;
         layout.add(portraitsLayout);
+
 
        // layout.setWidth(500);
 
@@ -210,6 +249,9 @@ public class CharSelectionScreen extends AbstractGameScreen {
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
         stack.add(layout);
+
+        selectCharacter(portraits[0]);
+        gameScreen.game.addCurrentParty(portraits[0].getCharacter());
 
 
         /*
@@ -220,6 +262,26 @@ public class CharSelectionScreen extends AbstractGameScreen {
     }
 
 
+    public void selectCharacter(Portrait portrait) {
+        characterPortrait.setActor(new Image(Assets.instance.characters.get(portrait.getCharacter().getPic()).portrait));
+        characterSheet.loadCharacter(portrait.getCharacter());
+
+
+        if (portrait.hasNext() ) {
+            rightArrow.setVisible(true);
+            rightArrow.addListener(new PortraitClickListener(portrait, ButtonType.NEXT));
+        } else
+            rightArrow.setVisible(false);
+
+        if (portrait.hasPrev() ) {
+            leftArrow.setVisible(true);
+            leftArrow.addListener(new PortraitClickListener(portrait, ButtonType.PREV));
+        } else
+            leftArrow.setVisible(false);
+
+        portrait.setSelected(true);
+
+    }
 
 
     @Override

@@ -44,7 +44,7 @@ public class IsoMapCellActor extends Actor {
     final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
     Label la;
 
-    boolean debug = true;
+    boolean debug = false;
 
 
     public IsoMapCellActor (MapCell cell) {

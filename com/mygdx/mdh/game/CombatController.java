@@ -120,11 +120,13 @@ public class CombatController extends Stage {
             combat.setMap(screenManager.getGame().getCurrentMission().getMissionMap());
 
             for (Character c : screenManager.getGame().getCurrentParty()) {
+                c.reset();
                 combat.addCharacter(c);
 
             }
 
             for (Character c : screenManager.getGame().getCurrentMission().getBaddies()) {
+                c.reset();
                 combat.addCharacter(c);
 
             }
@@ -409,7 +411,6 @@ public class CombatController extends Stage {
 
         if (!messageInProgress && !baddiesActive() && gameTurn==GameTurn.BADDIES && !characterActionsInProgress()) {
 
-            LOG.print(3,"[Controller] Player Start",LOG.ANSI_BLUE);
             combatHUD.showMessageBar("Player Turn",3);
             messageInProgress = true;
 
@@ -417,7 +418,6 @@ public class CombatController extends Stage {
 
         if (!messageInProgress && !friendliesActive() && gameTurn==GameTurn.PLAYER  && !characterActionsInProgress() ) {
 
-            LOG.print(3,"[Controller] Baddies Start - Effect Action Executing: "+CharacterActor.effectActions.size,LOG.ANSI_BLUE);
             combatHUD.showMessageBar("Enemy Turn",3);
             messageInProgress = true;
 
@@ -507,9 +507,10 @@ public class CombatController extends Stage {
         if (selectedCharacter != null) {
             selectedCharacter.setSelected(true);
             setCurrentSelectedAbility(null);
+            combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
             if (selectedCharacter.getCharacter().isFriendly() & selectedCharacter.getCharacter().isActive()) {
                 selectedCharacterPosition = selectedCharacter.getCharacter().getCell();
-                combatHUD.showAbilityButtons(selectedCharacter.getCharacter());
+
                 showMovementTiles(selectedCharacter);
             }
 
@@ -565,7 +566,7 @@ public class CombatController extends Stage {
         //TODO Probably better from an event?
         if (target.getCharacter().isDead()) this.getActors().removeValue(target,true);
 
-        if (selectedCharacter.getCharacter().getAvailableActions()>0)
+        if (selectedCharacter!= null && gameTurn != GameTurn.BADDIES && selectedCharacter.getCharacter().getAvailableActions()>0)
             setGameStep(Combat.GameStepType.ACTION_SELECTION);
         else
             setGameStep(Combat.GameStepType.SELECTION);

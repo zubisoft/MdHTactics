@@ -52,7 +52,7 @@ public class WidgetCharterSheet extends Table {
         //characterInfo.align(Align.center);
         characterInfo.setSize(430,75);
 
-        characterInfo.add(new Label(c.getName(),Assets.uiSkin,"handwritten_black" )).expand().center().colspan(2).height(70);
+        characterInfo.add(new Label(c.getName(),Assets.uiSkin,"handwritten_black" )).expand().center().colspan(2).height(50);
         characterInfo.row();
         characterInfo.add(new Label("Level: "+c.getLevel(),Assets.uiSkin,"handwritten_black" )).align(Align.center).expand();
         characterInfo.add(new Label("Experience: "+c.getXp()+"/"+c.getNextLevelXP(),Assets.uiSkin,"handwritten_black" )).expand();

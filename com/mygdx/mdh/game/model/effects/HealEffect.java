@@ -18,6 +18,8 @@ public class HealEffect  extends Effect{
             effectClass = EffectClass.HEAL;
             effectType = EffectType.BUFF;
             color= Color.GREEN;
+
+            if (pic ==null) pic="effect_green";
         }
 
         @Override

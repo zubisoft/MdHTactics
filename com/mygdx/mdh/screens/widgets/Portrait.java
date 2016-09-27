@@ -3,10 +3,13 @@ package com.mygdx.mdh.screens.widgets;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.model.Character;
 import javafx.scene.paint.Color;
+
+import java.util.List;
 
 /**
  * Created by zubisoft on 19/05/2016.
@@ -16,8 +19,16 @@ public class Portrait extends Stack {
 
     Character character;
 
+    public void setAlternateCharacters(List<Character> alternateCharacters) {
+        this.alternateCharacters = alternateCharacters;
+    }
+
+    List<Character> alternateCharacters;
+    int altNum = 0;
+
     boolean selected;
     Image portraitFrame = new Image(Assets.instance.guiElements.get("menus/charselection_portrait_frame"));
+    Container c;
 
     public Portrait (Character character) {
 
@@ -28,7 +39,7 @@ public class Portrait extends Stack {
         this.add( new Image(Assets.instance.guiElements.get("menus/charselection_portrait")));
 
         if (character != null) {
-            Container c = new Container(new Image(Assets.instance.characters.get(character.getPic()).portrait));
+            c = new Container(new Image(Assets.instance.characters.get(character.getPic()).portrait));
             //c.padLeft(25);
             //c.setWidth(115);
             c.align(Align.center);
@@ -37,6 +48,34 @@ public class Portrait extends Stack {
 
         this.add( portraitFrame );
 
+    }
+
+    public void next() {
+        if (alternateCharacters != null && altNum+1 < alternateCharacters.size()) {
+            character = alternateCharacters.get(++altNum);
+            this.c.setActor(new Image(Assets.instance.characters.get(character.getPic()).portrait));
+        }
+    }
+
+    public void prev() {
+        if (alternateCharacters != null && altNum-1 >= 0) {
+            character = alternateCharacters.get(--altNum);
+            this.c.setActor(new Image(Assets.instance.characters.get(character.getPic()).portrait));
+        }
+    }
+
+    public boolean hasNext() {
+        if (alternateCharacters != null && altNum+1 < alternateCharacters.size()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasPrev() {
+        if (alternateCharacters != null && altNum-1 >= 0) {
+            return true;
+        }
+        return false;
     }
 
     public void setSelected(boolean selected) {

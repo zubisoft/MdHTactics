@@ -36,6 +36,8 @@ public class AttributeModifierEffect extends Effect {
         effectType = EffectType.BUFF;
         color= Color.BLUE;
         negative = false;
+
+        if (pic ==null) pic="effect_blue";
     }
 
 
