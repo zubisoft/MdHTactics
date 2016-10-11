@@ -3,6 +3,7 @@ package com.mygdx.mdh.game.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
@@ -43,6 +44,7 @@ public class Combat {
         characters = new ArrayList<Character>();
         gameStep=GameStepType.SELECTION;
         playerTurn = true;
+
     }
 
     public  List<Character> getCharacters() {
@@ -187,6 +189,8 @@ public class Combat {
             c.setCell(cell);
             c.setRow(row);
             c.setColumn(col);
+
+            System.out.println("Map "+map.hashCode()+" Cell "+cell.hashCode()+" Locked "+cell+" "+cell.isOccupied());
 
         }
     }

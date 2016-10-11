@@ -44,6 +44,39 @@ public class Character  {
 
     String persona;
 
+    public void copy(Character b) {
+        this.characterId=b.characterId;
+        this.name=b.name;
+        this.attack=b.attack;
+        this.defence=b.defence;
+        this.health=b.health;
+        this.maxHealth=b.maxHealth;
+        this.movement=b.movement;
+        this.maxActions=b.maxActions;
+        this.availableActions=b.availableActions; //Default?
+        this.friendly=b.friendly;
+        this.dead=b.dead;
+        this.xp=b.xp;
+        this.level=b.level;
+        this.persona=b.persona;
+        this.tags=b.tags;
+        //this.cell=b.cell; //Dangerous
+        this.column=b.column;
+        this.row=b.row;
+        this.effects=b.effects; //Not necessarily
+        //this.listeners=b.listeners;//Dangerous
+        this.pic=b.pic;
+
+        this.abilities.clear();
+        for (Ability a: b.abilities) {
+            Ability aux = new Ability();
+            aux.copy(a);
+            aux.setSource(this);
+            this.abilities.add(aux);
+        }
+
+    }
+
     public enum CHARACTER_TAGS {
         GOOD, EVIL, FANTASY, SCIFI, TECH
     }
@@ -349,7 +382,7 @@ public class Character  {
 
 
     public String toString() {
-        return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions;
+        return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions+" @ "+cell ;
     }
 
 
@@ -397,7 +430,6 @@ public class Character  {
      */
     public void addEffect (List<Effect> e) {
 
-
        // if (e != null) effects.addAll(e);
         if (e==null ) return;
 
@@ -407,8 +439,6 @@ public class Character  {
         for (Effect tmp: e) {
             tmp.setTarget(this);
             //Resolve immediate effects
-            //LOG.print("[Character] Calling effect manager");
-
 
 
             //TODO If first attack fails, further effects are not applied - MUY CHAPUCERO
@@ -493,7 +523,7 @@ public class Character  {
     }
 
     public void setCell(MapCell cell) {
-        if(this.cell !=null)  this.cell.setOccupied(null);
+        if(this.cell !=null && this.cell != cell)  this.cell.setOccupied(null);
         this.cell = cell;
         this.cell.setOccupied(this);
         this.column = (int)cell.getMapCoordinates().x;

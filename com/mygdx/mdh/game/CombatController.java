@@ -49,7 +49,19 @@ public class CombatController extends Stage {
     public InputMultiplexer multiplexer;
 
     public static Combat combat;
-    java.util.List<CharacterActor> characterActors;
+
+
+    java.util.List<CharacterActor> characterActors = new ArrayList<>();
+
+
+    public void addCharacterActor (CharacterActor c) {
+        newCharacterActors.add(c);
+
+    }
+
+    final java.util.List<CharacterActor> newCharacterActors = new ArrayList<>();
+
+
     public CombatHUD combatHUD;
 
     public CameraManager cameraManager;
@@ -98,6 +110,12 @@ public class CombatController extends Stage {
 
     GameTurn gameTurn;
 
+    public enum GameSequence {
+        START, MAIN
+    }
+
+    public static GameSequence gameSequence;
+
 
     StrategyManager strategyManager;
 
@@ -108,6 +126,7 @@ public class CombatController extends Stage {
 
         //Initialize gameScreen logic
         this.characterActors = new ArrayList<CharacterActor>();
+
 
         if (screenManager.getGame() == null) {
             LOG.print(1,"[Combat Controller] Loading debug combat", LOG.ANSI_RED);
@@ -183,6 +202,12 @@ public class CombatController extends Stage {
         strategyManager = new StrategyManager(this);
 
 
+        EffectManager.instance.setCombatController(this);
+
+
+        System.out.println("map "+map.getCell(1,1).getCell().getMap().hashCode());
+
+
     }
 
 
@@ -248,6 +273,7 @@ public class CombatController extends Stage {
     }
 
     public void playerTurnBegin () {
+        gameSequence = GameSequence.START;
         gameTurn = GameTurn.PLAYER;
 
         LOG.print(1,"[CombatController] Player Turn Start", LOG.ANSI_YELLOW);
@@ -260,10 +286,12 @@ public class CombatController extends Stage {
                 LOG.print(3,c.toString());
             }
         }
+
+        gameSequence = GameSequence.MAIN;
     }
 
     public void baddiesTurnBegin () {
-
+        gameSequence = GameSequence.START;
         gameTurn = GameTurn.BADDIES;
 
         /* Start turn for all characters */
@@ -279,6 +307,8 @@ public class CombatController extends Stage {
                 LOG.print(3,c.toString());
             }
         }
+
+        gameSequence = GameSequence.MAIN;
 
 
     }
@@ -469,6 +499,10 @@ public class CombatController extends Stage {
         }
 
         Collections.sort(characterActors, new ActorComparator());
+
+
+        addNewCharacters();
+
         for(CharacterActor a: characterActors) {
             a.update(deltaTime);
         }
@@ -482,6 +516,31 @@ public class CombatController extends Stage {
         x =  System.currentTimeMillis()-x;
         //System.out.println("H) Act "+x);
 
+    }
+
+    public void addNewCharacters() {
+
+        if (newCharacterActors.size()<=0) return;
+
+        for (int i=0; i<newCharacterActors.size();i++) {
+            characterActors.add(newCharacterActors.get(i));
+
+            IsoMapCellActor m = map.getCell(newCharacterActors.get(i).getCharacter().getCell().getMapCoordinates());
+            Vector2 position = m.getPosition();
+
+            newCharacterActors.get(i).setX(position.x);
+            newCharacterActors.get(i).setY(position.y);
+            newCharacterActors.get(i).setOffset(m.getWidth() / 2 - 35, m.getHeight() / 2 - 10);
+
+            this.addActor(newCharacterActors.get(i));
+            EventListener eventListener = new CharacterClickListener(newCharacterActors.get(i));
+            newCharacterActors.get(i).addListener(eventListener);
+            //newCharacterActors.get(i).update(deltaTime);
+
+            combat.getCharacters().add(newCharacterActors.get(i).getCharacter());
+
+            newCharacterActors.clear();
+        }
     }
 
     public Combat getCombat() {

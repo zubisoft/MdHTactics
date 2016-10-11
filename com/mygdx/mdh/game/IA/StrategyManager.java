@@ -18,18 +18,20 @@ public class StrategyManager {
     Combat combat;
     CombatController controller;
 
-    int numCharacters;
+
     float[][] characterDistances;
 
+    final int MAX_CHARACTERS = 20;
 
     public StrategyManager (CombatController c) {
         controller=c;
         combat=controller.getCombat();
 
-        //TODO this wont work with summons
-        numCharacters = combat.getCharacters().size();
+        characterDistances= new float[MAX_CHARACTERS][MAX_CHARACTERS];
+    }
 
-        characterDistances= new float[numCharacters][numCharacters];
+    public int getNumCharacters() {
+        return combat.getCharacters().size();
     }
 
     public boolean nextAction(Character c) {
@@ -44,7 +46,7 @@ public class StrategyManager {
         LOG.print(3,"[StrategyManager] Calculating next action for "+c,LOG.ANSI_PURPLE);
 
         //Find closest target
-        for (int x=0; x<numCharacters;x++) {
+        for (int x=0; x<getNumCharacters();x++) {
 
                 if (    x!=combat.getCharacters().indexOf(c)
                         && combat.getCharacters().get(x).isFriendly()
@@ -112,10 +114,9 @@ public class StrategyManager {
     }
 
     public void calculateDistances () {
-        for (int x=0; x<numCharacters;x++) {
-            for (int y = 0; y < numCharacters; y++) {
+        for (int x=0; x<getNumCharacters();x++) {
+            for (int y = 0; y < getNumCharacters(); y++) {
                 characterDistances[x][y] = Map.distance(combat.getCharacters().get(x).getCell(), combat.getCharacters().get(y).getCell());
-
             }
         }
     }

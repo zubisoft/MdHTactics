@@ -6,6 +6,7 @@ package com.mygdx.mdh.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.mygdx.mdh.game.model.Campaign;
+import com.mygdx.mdh.game.model.Mission;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
@@ -37,6 +40,12 @@ public class MissionSelectionScreen extends AbstractGameScreen {
             selectCurrentMission(portrait);
 
             /*
+            Testing
+            gameScreen.game.completeMission(portrait.getMission());
+            selectCampaign(gameScreen.game.getCurrentCampaign());
+            */
+
+            /*
             System.out.println(gameScreen.game.getCurrentParty());
             System.out.println(gameScreen.game.getCurrentMission().getMissionMap());
             System.out.println(gameScreen.game.getCurrentMission().getBaddies());
@@ -47,7 +56,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
 
     private enum ButtonType {
-        CONTINUE
+        CONTINUE, PREV, NEXT
     }
 
 
@@ -73,6 +82,12 @@ public class MissionSelectionScreen extends AbstractGameScreen {
                     LOG.print(1,"texto"+currentSelectedMission.getMission().getIntroText(),LOG.ANSI_GREEN);
                     gameScreen.setScreen(screen, transition);
                     break;
+                case NEXT:
+                    selectCampaign(gameScreen.game.getNextCampaign());
+                    break;
+                case PREV:
+                    selectCampaign(gameScreen.game.getPrevCampaign());
+                    break;
             }
 
             //new StoryScreen(gameScreen)
@@ -95,6 +110,9 @@ public class MissionSelectionScreen extends AbstractGameScreen {
     TextArea description;
     Image portrait;
 
+    Table portraitsLayout;
+    Table charInfoBoxLayout;
+    Table campaignTitleLayout;
 
     private boolean paused;
 
@@ -107,12 +125,58 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
     public  void buildStage () {
 
-        //Main Screen Background
         background = new Image(Assets.instance.guiElements.get("menus/mainmenu_bg"));
 
-        //Mission Info Box
-        Stack missionInfoBox = new Stack();
+        //Elements
+        layout = new Table();
 
+        createCampaignTitleLayout ();
+
+        charInfoBoxLayout = new Table();
+        createMissionInfoLayout();
+
+        portraitsLayout = new Table();
+        //createMissionLayout(gameScreen.game.getCurrentCampaign());
+        selectCampaign(gameScreen.game.getCurrentCampaign());
+
+        //Structure
+        layout.add(campaignTitleLayout).colspan(2).expand();
+        layout.row();
+        layout.add(charInfoBoxLayout).width(Constants.VIEWPORT_GUI_WIDTH/2).expand();
+        layout.add(portraitsLayout);
+
+        Stack stack = new Stack();
+        stage.addActor(stack);
+        stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        stack.add(background);
+        stack.add(layout);
+
+
+
+    }
+
+    Image leftArrow, rightArrow;
+    Label campaignTitle;
+
+    public void createCampaignTitleLayout () {
+        campaignTitleLayout= new Table();
+
+        leftArrow = new Image(Assets.instance.guiElements.get("menus/btn-arrow"));
+        leftArrow.setScaleX(-1);
+        campaignTitleLayout.add(leftArrow);
+
+        campaignTitle =(new Label("The Museum of Madness", Assets.uiSkin, "gradient-font", Color.WHITE));
+        campaignTitleLayout.add(campaignTitle);
+
+        rightArrow = new Image(Assets.instance.guiElements.get("menus/btn-arrow"));
+        campaignTitleLayout.add(rightArrow);
+
+        rightArrow.addListener(new MenuClickListener(ButtonType.NEXT));
+        leftArrow.addListener(new MenuClickListener( ButtonType.PREV));
+
+    }
+
+    public void createMissionInfoLayout () {
 
         //Mission Information Area
         title = new TextArea("Mission Title",Assets.uiSkin,"mdh_menu_infobox_title" );
@@ -124,17 +188,20 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         portrait = new Image(Assets.instance.characters.get("zubi").portrait);
 
 
+        //Mission Info Box
+        Stack missionInfoBox = new Stack();
+
         Table c = new Table();
         c.top();
-        c.setSize(450,350);
+        c.setSize(450,200);
         c.add(title).center().height(50).pad(30);
         c.row();
-        c.add(description).size(400,300).center().padLeft(40);
+        c.add(description).size(400,150).center().padLeft(40);
 
         missionInfoBox.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
         missionInfoBox.add(c);
 
-        Table charInfoBoxLayout = new Table();
+
         charInfoBoxLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
         charInfoBoxLayout.add(portrait).size(150,150);
         charInfoBoxLayout.row();
@@ -142,22 +209,28 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         charInfoBoxLayout.row();
         ImageButton btnContinue = new ImageButton(new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/btn-continue"))));
         btnContinue.addListener(new MenuClickListener(ButtonType.CONTINUE));
-        charInfoBoxLayout.add(btnContinue).height(75).pad(25);
+        charInfoBoxLayout.add(btnContinue).height(75).expand();
+
+    }
+
+
+    public void createMissionLayout (Campaign c) {
+
+        portraitsLayout.clear();
 
         //Mission Selection Area
-        Table portraitsLayout = new Table();
         portraitsLayout.setWidth(Constants.VIEWPORT_GUI_WIDTH/2);
 
         MissionPortrait[] portraits = new MissionPortrait[12];
 
         int lastUnlockedMission = 0;
-        for (int i=0; i<12; i++) {
+        for (int i=0; i<9; i++) {
 
             //portraits[i].add(buttons[i]);
-            if (gameScreen.game.getCurrentCampaign().getCampaignMissions().size()>i
-                    && gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i).isUnlocked()) {
+            if (c.getCampaignMissions().size()>i
+                    && c.getCampaignMissions().get(i).isUnlocked()) {
 
-                portraits[i] = new MissionPortrait(gameScreen.game.getCurrentCampaign().getCampaignMissions().get(i));
+                portraits[i] = new MissionPortrait(c.getCampaignMissions().get(i));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
                 lastUnlockedMission=i;
@@ -174,20 +247,36 @@ public class MissionSelectionScreen extends AbstractGameScreen {
 
         }
 
-        layout = new Table();
-        layout.add(charInfoBoxLayout).width(Constants.VIEWPORT_GUI_WIDTH/2);;
-        layout.add(portraitsLayout);
-
-
-        //Final layout stack
-        Stack stack = new Stack();
-        stage.addActor(stack);
-        stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        stack.add(background);
-        stack.add(layout);
 
         //Initialize mission description with the first mission available
         selectCurrentMission(portraits[lastUnlockedMission]);
+
+
+    }
+
+
+    public void selectCampaign (Campaign c) {
+
+        gameScreen.game.setCurrentCampaign(c);
+
+        System.out.println(c.getName());
+        campaignTitle.setText(c.getName());
+
+        if (gameScreen.game.getNextCampaign() != null ) {
+            rightArrow.setVisible(true);
+
+        } else
+            rightArrow.setVisible(false);
+
+        if (gameScreen.game.getPrevCampaign() != null ) {
+            leftArrow.setVisible(true);
+
+        } else
+            leftArrow.setVisible(false);
+
+        createMissionLayout(c);
+
+        layout.invalidate();
 
     }
 

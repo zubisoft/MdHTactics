@@ -69,7 +69,9 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
         super.process(d);
 
         if ( Math.random() > chance) return;
-        if ( d.getSource() != this.getSource()) return; //Only inbound damage!
+        if ( d.getSource() == this.getTarget()) return; //Only inbound damage!
+
+
 
         if (immunityType.contains(d.getEffectType()) || immunitySubType.contains(d.getEffectSubType())) {
             d.setDuration(-1); // Completely cancelled

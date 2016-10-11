@@ -22,6 +22,7 @@ import java.util.*;
 
 @JsonSubTypes({
           @JsonSubTypes.Type(value = ShieldEffect.class, name = "SHIELD")
+        , @JsonSubTypes.Type(value = SummonEffect.class, name = "SUMMON")
         , @JsonSubTypes.Type(value = DamageEffect.class, name = "DAMAGE")
         , @JsonSubTypes.Type(value = ProtectionEffect.class, name = "PROTECTION")
         , @JsonSubTypes.Type(value = HealEffect.class, name = "HEAL")
@@ -43,7 +44,7 @@ public class Effect  /*implements Cloneable*/  {
      * This will determine what the effect does.
      */
     public enum EffectClass {
-        DAMAGE, HEAL, STUN, SHIELD, DAMAGE_MODIFIER, ATTRIBUTE_MODIFIER, REMOVER
+        DAMAGE, HEAL, STUN, SHIELD, DAMAGE_MODIFIER, ATTRIBUTE_MODIFIER, REMOVER, SUMMON
     }
 
     EffectClass effectClass;
@@ -201,6 +202,9 @@ public class Effect  /*implements Cloneable*/  {
 
     public Effect () {
         roll = new Roll(Roll.RollType.GENERIC);
+        diceNumber=0;
+        diceSides=0;
+
         chanceModifier =0;
         modifier=0;
         duration =0;

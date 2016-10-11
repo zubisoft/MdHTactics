@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.characters.actions.*;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
@@ -23,6 +24,7 @@ import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.model.effects.EffectListener;
 import com.mygdx.mdh.game.model.MapCell;
@@ -200,6 +202,51 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
     }
 
+
+
+
+    public CharacterActor(Character character) {
+        super();
+        this.character = character;
+
+        selected = false;
+
+        this.setWidth(83);
+        this.setHeight(125);
+
+        this.setOriginX(getWidth()/2);
+
+//TODO revisar esto
+        if (character.isFriendly()) setScaleX(-1);
+
+        lifebar = new CharacterLifeBar(this);
+        //lifebar.setX(startX);
+        //lifebar.setY(startY);
+
+
+        loadAnimations();
+
+        this.state=CHARACTER_STATE.IDLE;
+
+        TextureRegion texture = Assets.instance.guiElements.get("character/CHAR-selection-circle");
+        selectionCircle = new Sprite(texture);
+        selectionCircle.setPosition(getX() + 20, getY() + 10);
+        selectionCircle.setSize(100, 50);
+
+        // effectActions = new ArrayList<>();
+        actionQueue = new ArrayList<>();
+        messages = new ArrayList<>();
+
+        EffectManager.instance.addEffectListener(this);
+
+
+        character.addListener(this);
+
+        characterMessenger= new CharacterMessenger(this);
+
+
+    }
+
     public static boolean actionInProgress () {
         //LOG.print("[CharacterActor] Effects running "+effectActions.size);
         return (queueActions.size>0)||(effectActions.size>0);
@@ -334,7 +381,6 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
             selectionCircle.draw(batch,0.7f);
         }
 
-
         //Draw current animation
         batch.draw(currentFrame
                 ,getX()+offsetx
@@ -402,12 +448,16 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      * Adds an action to the action queue
      */
     public void useAbility( Ability a, CharacterActor target) {
+        if (!this.isFriendly()) this.showMessage(a.getPic(), a.getName(), a.getEffects().get(0).getColor());
+
         AttackAction action = new AttackAction(0.15f, a, target);
 
         this.queueAction(action);
     }
 
     public void useAbility( Ability a, List<CharacterActor> target) {
+        if (!this.isFriendly()) this.showMessage(a.getPic(), a.getName(), a.getEffects().get(0).getColor());
+
         AttackAction action = new AttackAction(0.15f, a, target);
 
         this.queueAction(action);
@@ -440,6 +490,7 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
      */
     public void receiveAbility (Ability a) {
         if (a != null) {
+
 
             //if(IsoMapActor.distance(a.getSource().getCell(),this.getCharacter().getCell()) <= a.getRange())
                 a.apply(this.getCharacter());
@@ -499,10 +550,16 @@ public class CharacterActor extends Actor implements EffectManagerListener, Effe
 
 
     public void onEffectTriggered (Effect e) {
-        //LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered. "+e.getRolledDamage().getRolledDamage());
+        LOG.print(3,"[CharacterActor] "+character.hashCode()+" effect triggered during "+CombatController.gameSequence);
 
             EffectAction ea = new EffectAction(e, 0.15f);
-            this.addEffectAction(ea);
+
+            if (e.getGameSegment() == Effect.GameSegmentType.TURN_START && CombatController.gameSequence == CombatController.GameSequence.START)
+                this.addEffectAction(ea);
+            else if (e.getGameSegment() == Effect.GameSegmentType.IMMEDIATE && CombatController.gameSequence == CombatController.GameSequence.MAIN)
+                this.addEffectAction(ea);
+
+
 
         //this.queueAction(new GameWaitAction(2));
 

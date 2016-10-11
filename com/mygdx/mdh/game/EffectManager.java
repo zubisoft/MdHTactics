@@ -1,7 +1,10 @@
 package com.mygdx.mdh.game;
 
+import com.mygdx.mdh.game.characters.CharacterActor;
+import com.mygdx.mdh.game.model.Combat;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.model.effects.EffectManagerListener;
+import com.mygdx.mdh.game.model.effects.SummonEffect;
 import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
@@ -12,6 +15,13 @@ import java.util.List;
  */
 public class EffectManager {
 
+
+    public void setCombatController(CombatController combat) {
+        this.combat = combat;
+    }
+
+    //This is used purely for summons
+    CombatController combat;
 
     List<EffectManagerListener> effectListeners;
 
@@ -33,8 +43,14 @@ public class EffectManager {
 
         //target = c.getCharacterActor(e.getTarget());
 
+
+
         e.init();
 
+        if (e.getEffectClass()== Effect.EffectClass.SUMMON) {
+            if (((SummonEffect) e).getCharacter()!= null)
+                combat.addCharacterActor(new CharacterActor(((SummonEffect) e).getCharacter(), 3, 3));
+        }
 
 
         if (e.getGameSegment()== Effect.GameSegmentType.IMMEDIATE) {
@@ -128,6 +144,9 @@ public class EffectManager {
 
         effectListeners.add(l);
     }
+
+
+
 
 
 }

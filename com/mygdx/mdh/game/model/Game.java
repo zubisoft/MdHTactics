@@ -15,6 +15,7 @@ import com.mygdx.mdh.game.util.MissionDeserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -123,6 +124,17 @@ public class Game {
 
     }
 
+    public boolean isInCollection (String characterId) {
+        for (Character c: characterCollection) {
+            if (c.characterId.equals(characterId)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
     public Game () {
         this.currentParty = new ArrayList<>();
         this.listeners = new ArrayList<>();
@@ -192,6 +204,22 @@ public class Game {
             c = Character.loadFromJSON(baddy);
             c.setFriendly(true);
             this.characterCollection.add(c);
+
+        }
+
+        personaList = new PersonaList(characterCollection);
+    }
+
+    public void addCharacterList(List<String> charid) {
+
+        Character c;
+        if (charid == null) return;
+
+        for (String cid : charid) {
+            c = Character.loadFromJSON(cid);
+            c.setFriendly(true);
+            if (!isInCollection(cid))
+                this.characterCollection.add(c);
 
         }
 
@@ -279,18 +307,23 @@ public class Game {
                 notifyMissionUnlocked(m);
 
             }
-            i++;
+            if (m.getCurrentStars()>0) i++;
         }
 
         if (i==currentCampaign.getCampaignMissions().size()) {
+
             String nextCampaign = currentCampaign.getNextCampaignId();
+
             for (Campaign c: gameCampaign) {
                 if (c.getCampaignId().equals(nextCampaign)) {
+
                     c.setUnlocked(true);
 
                 }
             }
         }
+
+        this.addCharacterList(mission.unlockedCharacters);
 
     }
 
@@ -310,6 +343,7 @@ public class Game {
     public void setCurrentMission(Mission currentMission) {
         this.currentMission = currentMission;
     }
+
     public void setCurrentCampaign(Campaign currentCampaign) {
         this.currentCampaign = currentCampaign;
     }
@@ -325,6 +359,19 @@ public class Game {
     public List<Campaign> getGameCampaign() {
         return gameCampaign;
     }
+
+    public Campaign getNextCampaign() {
+        int i = this.gameCampaign.indexOf(currentCampaign);
+        if (i<0 || i+1>=gameCampaign.size() || !gameCampaign.get(i+1).isUnlocked()) return null;
+        return gameCampaign.get(i+1);
+    }
+
+    public Campaign getPrevCampaign() {
+        int i = this.gameCampaign.indexOf(currentCampaign);
+        if (i==-1 || i-1<0 || !gameCampaign.get(i-1).isUnlocked()) return null;
+        return gameCampaign.get(i-1);
+    }
+
 
     public void setGameCampaign(List<Campaign> gameCampaign) {
         this.gameCampaign = gameCampaign;

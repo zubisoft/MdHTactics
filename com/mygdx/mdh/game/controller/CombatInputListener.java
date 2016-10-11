@@ -55,7 +55,7 @@ public class CombatInputListener extends InputAdapter {
         //gameScreen.getTiledMap().getLayers().get(1).setVisible(!gameScreen.getTiledMap().getLayers().get(1).isVisible());
         if(keycode==Input.Keys.F10) {
             for (Character c : CombatController.combat.getCharacters()) {
-                c.setAttack(20);
+                c.setAvailableActions(0);
             }
         }
 

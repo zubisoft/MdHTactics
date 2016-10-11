@@ -213,7 +213,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
 
             if (combatController.isGameOver() && combatController.isCombatFinished()) {
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-                MissionSelectionScreen screen = new MissionSelectionScreen(gameScreen);
+                CharSelectionScreen screen = new CharSelectionScreen(gameScreen);
                 gameScreen.setScreen(screen, transition);
             }
 
@@ -299,7 +299,9 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         unlocksTable.pad(20);
         unlocksTable.setSize(400,200);
 
-        layout.add(scroller).colspan(2).size(400,200);
+        unlocksTable.row();
+
+        layout.add(scroller).colspan(2).size(400,200).align(Align.topLeft);
 
         Stack stack = new Stack();
 
@@ -399,7 +401,12 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
     }
 
     public  void onMissionUnlocked (Mission m) {
-        unlocksTable.add(new Image(Assets.instance.maps.get("icons/"+m.getMissionMap().getMapId()))).size(100,100);
+        Table t = new Table ();
+        t.add(new Image(Assets.instance.maps.get("icons/"+m.getMissionMap().getMapId()))).size(75,75);
+        t.row();
+        t.add(new Label("Unlocked mission\n"+m.getName(),Assets.uiSkin,"handwritten_black" )).align(Align.center);
+
+        unlocksTable.add(t).size(100,100);
 
         //unlocksTable.row();
     }

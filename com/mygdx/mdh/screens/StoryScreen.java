@@ -35,7 +35,7 @@ public class StoryScreen extends AbstractGameScreen {
             if(messageBar.hasMoreMessages()==false)
                 switch(storyType) {
                     case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
-                    case OUTRO: gameScreen.setScreen(new MissionSelectionScreen(gameScreen), transition); break;
+                    case OUTRO: gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition); break;
 
                 }
             else {

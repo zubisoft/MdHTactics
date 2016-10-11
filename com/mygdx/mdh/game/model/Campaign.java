@@ -54,11 +54,13 @@ public class Campaign {
     }
 
     public void setCampaignId(String campaignId) {
+
         this.campaignId = campaignId;
 
         Campaign c = loadFromJSON(campaignId);
         this.name=c.name;
         this.description=c.description;
+        this.nextCampaignId=c.nextCampaignId;
         this.enabled=c.enabled;
         this.introText=c.introText;
         this.storyText=c.storyText;
@@ -87,6 +89,8 @@ public class Campaign {
         }
 
         emp.campaignId = campaignId;
+
+
 
         //LOG.print(1,"campaign id "+emp.campaignId, LOG.ANSI_CYAN);
 

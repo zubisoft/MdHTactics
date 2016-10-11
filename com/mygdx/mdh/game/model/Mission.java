@@ -53,6 +53,16 @@ public class Mission {
 
     String nextMissionId;
 
+    public List<String> getUnlockedCharacters() {
+        return unlockedCharacters;
+    }
+
+    public void setUnlockedCharacters(List<String> unlockedCharacters) {
+        this.unlockedCharacters = unlockedCharacters;
+    }
+
+    List<String> unlockedCharacters;
+
     //Specific instance concepts
     int currentStars;
     int score;

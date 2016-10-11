@@ -130,13 +130,13 @@ public class MainMenuScreen extends AbstractGameScreen {
         buttonList.add(btnLoad);
         buttonList.row();
         buttonList.add(btnQuit);
-
+/*
         buttonList.row();
         ScrollableBox sb = new ScrollableBox();
-        sb.setSize(300,200);
-        sb.setText("hola que tal");
-        buttonList.add(sb);
-
+        sb.setSize(500,200);
+        sb.setText("Welcome to MdH vs Evil v0.1");
+        buttonList.add(sb).size(500,200);
+*/
 
 
 

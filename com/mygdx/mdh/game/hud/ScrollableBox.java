@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -20,26 +21,50 @@ import com.mygdx.mdh.game.util.Assets;
 public class ScrollableBox extends Group {
 
     private ScrollPane box;
-    private TextArea textArea = new TextArea("",Assets.uiSkin, "default");
+    private TextArea textArea;
+    Stack c;
 
 
     public ScrollableBox() {
 
-        textArea.setAlignment(Align.topLeft);
-        textArea.setPrefRows(25);
-        textArea.getStyle().font = Assets.uiSkin.getFont("handwritten_black");
+        textArea = new TextArea("",Assets.uiSkin, "default")
+/*
+        {
+            public float getPrefHeight() {
+                return getLines() * getStyle().font.getLineHeight();
+            }
 
-        Container c = new Container(textArea);
-        c.pad(15).align(Align.topLeft);
+
+        }*/
+        ;
+
+
+        //textArea.setPrefRows(20);
+        textArea.setFillParent(true);
+
+        //textArea.setPrefRows(20);
+        //textArea.setSize(300,200);
+        //textArea.getStyle().font = Assets.uiSkin.getFont("handwritten_white");
+        //textArea.setFillParent(true);
+
+        //new Label("Unlocked mission\n"+m.getName(),Assets.uiSkin,"default" ))
+
+
+        c = new Stack();
+        c.add(textArea);
+        //c.setSize(200,200);
+
+
+
+
 
         box = new ScrollPane(c);
+
 
         NinePatchDrawable tableBackground = new NinePatchDrawable(new NinePatch(Assets.instance.guiElements.get("menus/generic-box"),20,20,20,20));
         box.getStyle().background = tableBackground;
 
         SpriteDrawable txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/knob")));
-
-
 
         box.getStyle().vScrollKnob = txr;
         box.getStyle().vScrollKnob.setMinHeight(10);
@@ -48,28 +73,38 @@ public class ScrollableBox extends Group {
         txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/scrollbar")));
         box.getStyle().vScroll = txr;
         box.getStyle().vScroll.setMinWidth(10);
+        box.setFillParent(true);
+
+        //box.debugAll();
+       // c.debugAll();
 
 
         this.addActor(box);
 
     }
 
-    @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        box.setPosition(x,y);
-    }
 
     @Override
-    public void setSize(float x, float y) {
-        super.setSize(x, y);
-        box.setSize(x,y);
+    public void sizeChanged () {
+        //c.setSize(getWidth(), getHeight());
+
+        c.invalidate();
+        box.invalidate();
 
     }
+
 
     public void setText(String text) {
 
-        this.textArea.setText(text+"\n");
+                this.textArea.setText(text +"\n"
+
+                );
+
+System.out.println("asdf "+textArea.getText().split("\n").length);
+        textArea.setPrefRows(textArea.getText().split("\n").length);
+        textArea.invalidate();
+        c.invalidate();
+        box.invalidate();
 
 
     }
