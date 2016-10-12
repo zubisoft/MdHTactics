@@ -31,7 +31,7 @@ public class StunEffect  extends Effect  {
                 super.init();
                 notification = "Stun applied!";
                 effectTriggered();
-                LOG.print(2,"[StunEffect] Initialized. ", LOG.ANSI_RED);
+                LOG.print(3,"[StunEffect] Initialized. ", LOG.ANSI_RED);
                 initialized = true;
             }
 
@@ -45,10 +45,10 @@ public class StunEffect  extends Effect  {
 
             //For those effects that have a chance to happen
             if ( Math.random() > chance) {
-                LOG.print(2,"[StunEffect] Stun failed. ", LOG.ANSI_RED);
+                LOG.print(3,"[StunEffect] Stun failed. ", LOG.ANSI_RED);
                 notification = "Stun failed.";
             } else {
-                LOG.print(2, "[StunEffect] Stunned!: ", LOG.ANSI_RED);
+                LOG.print(3, "[StunEffect] Stunned!: ", LOG.ANSI_RED);
                 notification = "Stunned!";
                 target.setAvailableActions(target.getAvailableActions() - 1);
             }

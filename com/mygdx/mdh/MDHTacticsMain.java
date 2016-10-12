@@ -53,7 +53,7 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
-        //loadTest ();
+        loadTest ();
 
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen
@@ -121,6 +121,82 @@ public class MDHTacticsMain extends ScreenManager {
 
 
 */
+        LOG.setLevel(2);
+        testDamageEffects();
+        testStunEffects();
+
+
+
+
+
+    }
+
+    public void testDamageEffects () {
+        Character c1 = Character.loadFromJSON("zubi_filmmaker");
+        Character c2 = Character.loadFromJSON("cultist");
+
+        int[] damages = new int[1000];
+
+        c2.setMaxHealth(100);
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(100);
+            c2.setDefence(1);
+
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = 100-c2.getHealth();
+        }
+
+
+        //On average we should see 6.75
+        int test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+        if (test/1000.0f > 5.75 && test/1000.0f < 7.75)
+            LOG.print(1,"[OK] Zubi 0 - Damage Effect",LOG.ANSI_GREEN);
+        else
+            LOG.print(1,"[Error] Zubi 0 - Damage Effect",LOG.ANSI_RED);
+
+    }
+
+
+    public void testStunEffects () {
+        Character c1 = Character.loadFromJSON("zubi_filmmaker");
+        Character c2 = Character.loadFromJSON("cultist");
+
+        int[] stuns = new int[1000];
+
+        c2.setMaxHealth(100);
+        c1.setAttack(20);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+            c2.setAvailableActions(2);
+            c2.getEffects().clear();
+
+            c1.getAbilities().get(0).apply(c2);
+            c2.startTurn();
+
+            stuns[i] = 2-c2.getAvailableActions();
+        }
+
+
+        //On average we should see 6.75
+        int test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=stuns[i];
+        }
+
+
+        if (test/1000.0f > 0.23 && test/1000.0f < 0.27)
+            LOG.print(1,"[OK] Zubi 0 - Stun Effect",LOG.ANSI_GREEN);
+        else
+            LOG.print(1,"[Error] Zubi 0 - Stun Effect",LOG.ANSI_RED);
+
 
     }
 }

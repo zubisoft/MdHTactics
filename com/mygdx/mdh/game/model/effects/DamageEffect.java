@@ -125,7 +125,7 @@ public class DamageEffect extends Effect {
                 //double attackRoll = Math.random();
                 //LOG.print(2, "[DamageEffect] Rolled: " + attackRoll+" Needed: "+(chance-chanceModifier), LOG.ANSI_RED);
 
-                LOG.print(2,"[DamageEffect] Attack roll"+damageRolls.get(i), LOG.ANSI_RED);
+                LOG.print(3,"[DamageEffect] Attack roll"+damageRolls.get(i)+" attack score"+source, LOG.ANSI_RED);
                 if ( damageRolls.get(i).isHit()  ) {
 
                     int rolledResult;

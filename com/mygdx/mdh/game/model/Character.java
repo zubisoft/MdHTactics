@@ -271,7 +271,7 @@ public class Character  {
             }
 
         }
-        return defence+modifier;
+        return attack+modifier;
     }
     public int getDefence() {
         int modifier=0;
