@@ -24,6 +24,7 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         effectClass = EffectClass.SHIELD;
         effectType = EffectType.BUFF;
         color= Color.BLUE;
+        hits = 0;
 
         if (pic ==null) pic="effect_shield";
     }
@@ -56,7 +57,6 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         }
 
 
-
     }
 
     /**
@@ -66,13 +66,18 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
      */
     public void process(Effect d) {
         super.process(d);
+
+
         if ( roll.getRoll() <= 0 ) return;
+
+
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
 
             DamageEffect de = (DamageEffect)d;
 
             int blocked=0;
+            blockedDamage = 0;
             for (int i=0; i<de.getHits();i++) {
                 if (de.getDamageRolls().get(i).getRolledDamage() != null) {
                     if (hits > 0) {

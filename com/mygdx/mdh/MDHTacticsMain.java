@@ -19,6 +19,7 @@ import com.mygdx.mdh.game.Test.Orto;
 import com.mygdx.mdh.game.Test.User;
 import com.mygdx.mdh.game.model.*;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.effects.DamageEffect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
@@ -122,8 +123,12 @@ public class MDHTacticsMain extends ScreenManager {
 
 */
         LOG.setLevel(2);
+
+        testShields();
         testDamageEffects();
         testStunEffects();
+        testAttributeModifier();
+        testRemover();
 
 
 
@@ -156,9 +161,9 @@ public class MDHTacticsMain extends ScreenManager {
         }
 
         if (test/1000.0f > 5.75 && test/1000.0f < 7.75)
-            LOG.print(1,"[OK] Zubi 0 - Damage Effect",LOG.ANSI_GREEN);
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
-            LOG.print(1,"[Error] Zubi 0 - Damage Effect",LOG.ANSI_RED);
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
     }
 
@@ -193,10 +198,99 @@ public class MDHTacticsMain extends ScreenManager {
 
 
         if (test/1000.0f > 0.23 && test/1000.0f < 0.27)
-            LOG.print(1,"[OK] Zubi 0 - Stun Effect",LOG.ANSI_GREEN);
+            LOG.print(1, "[OK] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
-            LOG.print(1,"[Error] Zubi 0 - Stun Effect",LOG.ANSI_RED);
+            LOG.print(1, "[Error] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
 
     }
+
+    public void testShields()  {
+        Character c1 = Character.loadFromJSON("zubi_starfleet");
+        Character c2 = Character.loadFromJSON("test_dummy");
+
+        int[] results = new int[1000];
+
+        for (int i=0; i<1000; i++) {
+            c1.setHealth(c1.getMaxHealth());
+            c1.getEffects().clear();
+            results[i] = c1.getHealth();
+
+            c1.getAbilities().get(1).apply(c1); //shield
+            c2.getAbilities().get(0).apply(c1); //attack
+            results[i] -= c1.getHealth();
+
+
+        }
+
+        int total = 0;
+        for (int i=0; i<1000; i++) {
+            total += results[i];
+
+        }
+
+        if (total/1000f >= 5 && total/1000f <= 6)
+        LOG.print(1, "[OK] Shields - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+        LOG.print(1, "[Error] Shields - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+    }
+
+
+    public void testAttributeModifier()  {
+        Character c1 = Character.loadFromJSON("zubi_filmmaker");
+        Character c2 = Character.loadFromJSON("test_dummy");
+
+        c1.setDefence(0);
+
+        int[] results = new int[1000];
+
+        c1.getAbilities().get(1).apply(c2); //apply attribute reduction
+
+        if (c2.getMovement() == 1)
+            LOG.print(2, "[OK] Attribute Mod (Movement) - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[OK] Attribute Mod (Movement)  - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+        for (int i=0; i<1000; i++) {
+            c1.setHealth(c1.getMaxHealth());
+            results[i] = c1.getHealth();
+            c2.getAbilities().get(1).apply(c1); //attack
+            results[i] -= c1.getHealth();
+        }
+
+        int total = 0;
+        for (int i=0; i<1000; i++) {
+            total += results[i];
+        }
+
+        //Without the modifier, should be 50% chance of 10
+        if (total/1000f >= 2.5 && total/1000f <= 3.5)
+        LOG.print(2, "[OK] Attribute Mod (Attack) - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+        LOG.print(2, "[OK] Attribute Mod (Attack) - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+    }
+
+
+    public void testRemover()  {
+        Character c1 = Character.loadFromJSON("zubi_starfleet");
+        Character c2 = Character.loadFromJSON("cultist");
+        Character c3 = Character.loadFromJSON("doomsayer");
+        c1.setLevel(10);
+
+
+        c1.getEffects().clear();
+        c1.getAbilities().get(1).apply(c1); //buff
+        c2.getAbilities().get(1).apply(c1); //debuff
+        c3.getAbilities().get(1).apply(c1); //debuff
+        c1.getAbilities().get(2).apply(c1); //remover
+
+
+        if (c1.getEffects().size() == 1)
+            LOG.print(2, "[OK] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[OK] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+    }
+
+
 }
+

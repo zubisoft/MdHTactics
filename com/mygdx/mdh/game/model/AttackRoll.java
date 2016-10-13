@@ -9,9 +9,29 @@ public class AttackRoll   {
     Roll damageRoll;
 
     boolean hit=false;
+
+    public boolean isIgnoreCrits() {
+        return ignoreCrits;
+    }
+
+    public void setIgnoreCrits(boolean ignoreCrits) {
+
+        this.ignoreCrits = ignoreCrits;
+    }
+
+    boolean ignoreCrits = false;
     float hitChanceModifier=0;
     float hitChance=0.5f;
     double hitRoll;
+
+    public float getCriticalChance() {
+        return criticalChance;
+    }
+
+    public void setCriticalChance(float criticalChance) {
+        this.criticalChance = criticalChance;
+    }
+
     float criticalChance = 0.95f;
 
     public boolean isCritical() {
@@ -30,7 +50,7 @@ public class AttackRoll   {
         damageRoll = new Roll(type,diceNumber,diceSides,modifier);
         hitChance = chance;
 
-        roll();
+        //roll();
     }
 
     public Roll roll() {
@@ -43,7 +63,8 @@ public class AttackRoll   {
 
         //Critic
         isCritical = false;
-        if (hitRoll >= criticalChance) {
+
+        if (hitRoll >= criticalChance && ignoreCrits == false) {
             damageRoll.addPercentModifier(1);
             isCritical = true;
         }

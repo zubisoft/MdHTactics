@@ -80,8 +80,11 @@ public class RemoverEffect extends Effect {
     public void execute () {
         super.execute();
 
+
         for (Effect e: target.getEffects()) {
+
             if (targetType.contains(e.getEffectType()) || targetSubType.contains(e.getEffectSubType())) {
+
                 e.setDuration(-1);
             }
         }

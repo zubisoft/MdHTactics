@@ -118,7 +118,7 @@ public class AttributeModifierEffect extends Effect {
     }
 
     public void copy(AttributeModifierEffect e) {
-        System.out.println("Copied 2");
+
         super.copy(e);
         this.attributeType = e.attributeType;
         this.negative = e.negative;
@@ -126,7 +126,7 @@ public class AttributeModifierEffect extends Effect {
     }
 
     public AttributeModifierEffect copy() {
-        System.out.println("Copied 1");
+
         AttributeModifierEffect e = new AttributeModifierEffect();
         e.copy(this);
         e.negative = negative;

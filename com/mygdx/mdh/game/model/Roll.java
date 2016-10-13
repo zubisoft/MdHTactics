@@ -55,15 +55,15 @@ public class Roll {
     }
 
     public int roll () {
-        baseRoll = Dice.roll(Math.abs(diceNumber), diceSides) + modifier;
+        baseRoll = Dice.roll(Math.abs(diceNumber), diceSides);
         if (diceNumber<0) baseRoll = -baseRoll;
         rolled = true;
-        return Math.round((1+percentModifier)*(baseRoll));
+        return Math.round((1+percentModifier)*(baseRoll + modifier));
     }
 
     public int getRoll () {
         if (!rolled) roll();
-        return Math.round((1+percentModifier)*(baseRoll));
+        return Math.round((1+percentModifier)*(baseRoll + modifier));
     }
 
     public int getBaseRoll() {

@@ -22,6 +22,16 @@ public class DamageEffect extends Effect {
      */
     boolean directDamage = false;
 
+    public boolean isNoCritics() {
+        return noCritics;
+    }
+
+    public void setNoCritics(boolean noCritics) {
+        this.noCritics = noCritics;
+    }
+
+    boolean noCritics = false;
+
 
     EnumSet<Character.CHARACTER_TAGS> conditionalType;
 
@@ -59,7 +69,7 @@ public class DamageEffect extends Effect {
         e.copy(this);
         e.directDamage = directDamage;
         e.conditionalType = conditionalType;
-
+        e.noCritics = noCritics;
 
         return e;
     }
@@ -96,6 +106,7 @@ public class DamageEffect extends Effect {
             AttackRoll r = new AttackRoll(Roll.RollType.DAMAGE,diceNumber,diceSides,modifier,chance);
             r.setHitChanceModifier(chanceModifier);
             r.setDirectDamage(directDamage);
+            r.setIgnoreCrits(noCritics);
             r.roll();
             damageRolls.add(r);
         }
