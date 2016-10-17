@@ -22,6 +22,7 @@ import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.effects.DamageEffect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
+import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.*;
 
@@ -129,14 +130,13 @@ public class MDHTacticsMain extends ScreenManager {
         testStunEffects();
         testAttributeModifier();
         testRemover();
-
-
-
-
+        testHeal();
 
     }
 
     public void testDamageEffects () {
+
+        /* Testing Zubi Shuriken */
         Character c1 = Character.loadFromJSON("zubi_filmmaker");
         Character c2 = Character.loadFromJSON("cultist");
 
@@ -164,6 +164,116 @@ public class MDHTacticsMain extends ScreenManager {
             LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
             LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+        /* Testing Zubi Proton Torpedoes */
+        c1 = Character.loadFromJSON("zubi_starfleet");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setLevel(10);
+
+        c2.setMaxHealth(100);
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(100);
+            c2.setDefence(Dice.roll(1,6));
+
+            c1.getAbilities().get(3).apply(c2);
+
+            damages[i] = 100-c2.getHealth();
+        }
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+        if (test/1000.0f > 5.5 && test/1000.0f < 8)
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+        /* Testing Zubi Phaser */
+        c1 = Character.loadFromJSON("zubi_starfleet");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(0);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(100);
+
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = 100-c2.getHealth();
+        }
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+        if (test/1000.0f > 3 && test/1000.0f < 4)
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+        /* Testing Hagen Bacteria */
+        c1 = Character.loadFromJSON("hagen_doctor");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(0);
+        c1.setLevel(10);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(100);
+
+            c1.getAbilities().get(2).apply(c2);
+            c2.startTurn();
+            c2.startTurn();
+            c2.startTurn();
+
+            damages[i] = 100-c2.getHealth();
+        }
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+        if (test/1000.0f > 5 && test/1000.0f < 9)
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+
+
+        /* Testing Hagen Nitrogen */
+        c1 = Character.loadFromJSON("hagen_doctor");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(0);
+        c1.setLevel(10);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(100);
+
+            c1.getAbilities().get(3).apply(c2);
+
+            damages[i] = 100-c2.getHealth();
+        }
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+        if (test/1000.0f > 9.5 && test/1000.0f < 11.5)
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
 
     }
 
@@ -196,12 +306,46 @@ public class MDHTacticsMain extends ScreenManager {
             test+=stuns[i];
         }
 
-
         if (test/1000.0f > 0.23 && test/1000.0f < 0.27)
             LOG.print(1, "[OK] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
             LOG.print(1, "[Error] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
+
+        c1 = Character.loadFromJSON("hagen_doctor");
+        c2 = Character.loadFromJSON("test_dummy");
+
+
+        c2.setMaxHealth(100);
+        c1.setAttack(20);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+            c2.setAvailableActions(2);
+            c2.getEffects().clear();
+
+            stuns[i] = 0;
+            c1.getAbilities().get(0).apply(c2);
+
+            c2.startTurn();
+            stuns[i]  += 2-c2.getAvailableActions();
+            c2.startTurn();
+            stuns[i]  += 2-c2.getAvailableActions();
+            c2.startTurn();
+            stuns[i]  += 2-c2.getAvailableActions();
+        }
+
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=stuns[i];
+        }
+
+        if (test/1000.0f > 0.8 && test/1000.0f < 1.2)
+            LOG.print(1, "[OK] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
     }
 
@@ -233,6 +377,37 @@ public class MDHTacticsMain extends ScreenManager {
         LOG.print(1, "[OK] Shields - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
         LOG.print(1, "[Error] Shields - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+        c1 = Character.loadFromJSON("zubi_filmmaker");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setLevel(10);
+        c1.setDefence(0);
+        c1.setMaxHealth(100);
+
+        for (int i=0; i<1000; i++) {
+            c1.setHealth(c1.getMaxHealth());
+            c1.getEffects().clear();
+            results[i] = c1.getHealth();
+
+            c1.getAbilities().get(2).apply(c1); //shield
+            c2.getAbilities().get(0).apply(c1); //attack
+            c2.getAbilities().get(0).apply(c1); //attack
+            c2.getAbilities().get(0).apply(c1); //attack
+            results[i] -= c1.getHealth();
+
+        }
+
+        total = 0;
+        for (int i=0; i<1000; i++) {
+            total += results[i];
+
+        }
+
+        if (total/1000f >= 10 && total/1000f <= 10)
+            LOG.print(1, "[OK] Shields - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Shields - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
     }
 
 
@@ -268,6 +443,32 @@ public class MDHTacticsMain extends ScreenManager {
         LOG.print(2, "[OK] Attribute Mod (Attack) - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
         else
         LOG.print(2, "[OK] Attribute Mod (Attack) - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+
+
+        /* Testing Zubi Tungsten */
+        c1 = Character.loadFromJSON("zubi_filmmaker");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setLevel(10);
+
+        c1.getAbilities().get(3).apply(c2); //apply attribute modifier
+
+        if (c2.getAvailableActions() == 4)
+            LOG.print(2, "[OK] Attribute Mod (Actions) - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[OK] Attribute Mod (Actions)  - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+
+        /* Testing Hagen Nitrogen */
+        c1 = Character.loadFromJSON("hagen_doctor");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setLevel(10);
+
+        c1.getAbilities().get(3).apply(c2); //apply attribute modifier
+
+        if (c2.getAttack() == -4)
+            LOG.print(2, "[OK] Attribute Mod (Attack) - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[OK] Attribute Mod (Attack)  - "+c1.getAbilities().get(3).getName()+"@"+c1.getName(), LOG.ANSI_RED);
     }
 
 
@@ -291,6 +492,77 @@ public class MDHTacticsMain extends ScreenManager {
             LOG.print(2, "[OK] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
     }
 
+/*
+    public void testStun()  {
 
-}
+        Character c1 = Character.loadFromJSON("zubi_filmmaker");
+        Character c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(20);
+
+
+        int[] results = new int[1000];
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(c1.getMaxHealth());
+            c2.getEffects().clear();
+
+            c1.getAbilities().get(0).apply(c2); //attack
+            c2.startTurn();
+            c2.startTurn();
+            c2.startTurn();
+
+
+            results[i] = 2-c1.getAvailableActions();
+        }
+
+        int total = 0;
+        for (int i=0; i<1000; i++) {
+            total += results[i];
+        }
+
+        //Without the modifier, should be 50% chance of 10
+        if (total/1000f >= 0.4 && total/1000f <= 0.6)
+            LOG.print(2, "[OK] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[OK] Stun - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
+    }
+*/
+
+
+    public void testHeal () {
+
+        /* Testing Hagen Transfusion */
+        Character c1 = Character.loadFromJSON("hagen_doctor");
+
+
+        int[] results = new int[1000];
+
+        c1.setMaxHealth(100);
+        for (int i = 0; i < 1000; i++) {
+            c1.setHealth(80);
+
+            c1.getAbilities().get(1).apply(c1);
+            c1.startTurn();
+            c1.startTurn();
+
+            results[i] = c1.getHealth() - 80;
+        }
+
+
+        //On average we should see 6.75
+        int total = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            total += results[i];
+        }
+
+        if (total / 1000.0f > 8.5 && total / 1000.0f < 9.5)
+            LOG.print(1, "[OK] Heal - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Heal - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+    }
+
+
+
+    }
 

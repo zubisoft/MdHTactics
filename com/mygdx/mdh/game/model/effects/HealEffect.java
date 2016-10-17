@@ -42,7 +42,7 @@ public class HealEffect  extends Effect{
 
             if (duration>=0) {
                 if (roll != null && target != null) {
-                    LOG.print(2,"[HealEffect] Healed: "+roll.getRoll(), LOG.ANSI_GREEN);
+                    LOG.print(3,"[HealEffect] Healed: "+roll.getRoll(), LOG.ANSI_GREEN);
                     target.hit(-roll.getRoll());
                 }
             }

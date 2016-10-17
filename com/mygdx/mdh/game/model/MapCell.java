@@ -91,7 +91,7 @@ public class MapCell {
             map.blockMapCell(this);
         }
 
-        System.out.println("[MapCell]"+this+" "+this.isOccupied());
+
         this.character=c;
 
     }

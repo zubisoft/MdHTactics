@@ -68,7 +68,8 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
         super.process(d);
 
 
-        if ( roll.getRoll() <= 0 ) return;
+        if ( roll.getRoll() <= 0 && hits<=0) return;
+
 
 
 

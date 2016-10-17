@@ -100,7 +100,6 @@ public class ScrollableBox extends Group {
 
                 );
 
-System.out.println("asdf "+textArea.getText().split("\n").length);
         textArea.setPrefRows(textArea.getText().split("\n").length);
         textArea.invalidate();
         c.invalidate();

@@ -205,8 +205,6 @@ public class CombatController extends Stage {
         EffectManager.instance.setCombatController(this);
 
 
-        System.out.println("map "+map.getCell(1,1).getCell().getMap().hashCode());
-
 
     }
 

@@ -101,8 +101,10 @@ public class StoryMessageBar extends Actor {
 
 
     public void addMessages(java.util.List<StoryText> storyText) {
-        for(StoryText t: storyText)
+        for(StoryText t: storyText) {
             story.addLast(t);
+            System.out.println(t.getText());
+        }
 
         Position p = Position.LEFT;
         for (StoryText s: storyText) {
@@ -155,6 +157,8 @@ public class StoryMessageBar extends Actor {
 
 
             la.setText(story.removeFirst().text);
+            System.out.println("Label "+la.getText());
+            la.setPrefRows(5);
 
             layout.addAction(Actions.sequence(
                     Actions.alpha(0),

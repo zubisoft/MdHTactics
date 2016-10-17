@@ -53,6 +53,14 @@ public class CombatInputListener extends InputAdapter {
         //gameScreen.getTiledMap().getLayers().get(0).setVisible(!gameScreen.getTiledMap().getLayers().get(0).isVisible());
         if(keycode == Input.Keys.NUM_2);
         //gameScreen.getTiledMap().getLayers().get(1).setVisible(!gameScreen.getTiledMap().getLayers().get(1).isVisible());
+
+        if(keycode==Input.Keys.F9) {
+            for (Character c : CombatController.combat.getCharacters()) {
+                if (!c.isFriendly()) c.setHealth(0);
+            }
+        }
+
+
         if(keycode==Input.Keys.F10) {
             for (Character c : CombatController.combat.getCharacters()) {
                 c.setAvailableActions(0);
