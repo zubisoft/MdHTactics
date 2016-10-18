@@ -99,6 +99,9 @@ public class StoryMessageBar extends Actor {
         return story.size>=1;
     }
 
+    public void clear() {story.clear();}
+
+
 
     public void addMessages(java.util.List<StoryText> storyText) {
         for(StoryText t: storyText) {

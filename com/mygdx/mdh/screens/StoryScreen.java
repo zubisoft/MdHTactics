@@ -33,11 +33,7 @@ public class StoryScreen extends AbstractGameScreen {
 
 
             if(messageBar.hasMoreMessages()==false)
-                switch(storyType) {
-                    case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
-                    case OUTRO: gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition); break;
-
-                }
+                loadNextScreen();
             else {
                 messageBar.hide();
                 messageBar.show();
@@ -66,6 +62,13 @@ public class StoryScreen extends AbstractGameScreen {
     SpriteBatch batch = new SpriteBatch();
 
     private boolean paused;
+
+    public void loadNextScreen() {
+        switch(storyType) {
+            case INTRO: gameScreen.setScreen(new CombatScreen(gameScreen), transition); break;
+            case OUTRO: gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition); break;
+        }
+    }
 
     public StoryScreen(ScreenManager game, STORY_TYPE storyType) {
         super(game);
@@ -107,7 +110,7 @@ public class StoryScreen extends AbstractGameScreen {
             @Override
             public void clicked(InputEvent evt, float x, float y) {
                 super.clicked(evt,x,y);
-                gameScreen.setScreen(new CombatScreen(gameScreen), transition);
+                loadNextScreen();
             }
         }
         );
