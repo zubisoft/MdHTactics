@@ -3,7 +3,6 @@ package com.mygdx.mdh.game.model.effects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.EnumSet;
 
@@ -86,15 +85,7 @@ public class AttributeModifierEffect extends Effect {
         }
     }
 
-    /**
-     * This effect simply affects other damage effects, does nothing else
-     *
-     * @param d
-     * @return
-     */
-    public void process(Effect d) {
-        super.process(d);
-    }
+
 
 
     public String toString() {

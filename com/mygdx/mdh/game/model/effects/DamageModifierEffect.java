@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.model.Roll;
 import com.mygdx.mdh.game.util.LOG;
 
-import java.util.EnumSet;
-
 /**
  * Created by zubisoft on 29/03/2016.
  */
@@ -69,22 +67,25 @@ public class DamageModifierEffect extends Effect {
      * @param d
      * @return
      */
-    public void process(Effect d) {
-        super.process(d);
+    public boolean process(Effect d) {
+        if(!super.process(d)) return false;
 
-        if ( roll.getRoll() == 0 && this.getChanceModifier() == 0 ) return;
 
-        if (outbound && d.source == this.target) return;
+        if ( roll.getRoll() == 0 && this.getChanceModifier() == 0 ) return false;
 
-        if (!outbound && d.source == this.target) return; //This would exclude damage going to oneself
+        if (outbound && d.source == this.target) return false;
+
+        if (!outbound && d.source == this.target) return false; //This would exclude damage going to oneself
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
 
             DamageEffect de = (DamageEffect)d;
 
             for (int i=0; i<de.getHits();i++) {
-                if (de.getDamageRolls().get(i).getRolledDamage() != null)
+                if (de.getDamageRolls().get(i).getRolledDamage() != null) {
+                    LOG.print(3,"[DamageMod] Modifier: "+roll, LOG.ANSI_RED);
                     de.getDamageRolls().get(i).getRolledDamage().addModifier(roll.getRoll());
+                }
             }
 
             d.addChanceModifier(this.getChanceModifier());
@@ -92,6 +93,8 @@ public class DamageModifierEffect extends Effect {
 
             effectTriggered ();
         }
+
+        return true;
     }
 
 

@@ -3,33 +3,15 @@ package com.mygdx.mdh;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.mygdx.mdh.game.Test.EffectTest;
-import com.mygdx.mdh.game.Test.Orto;
-import com.mygdx.mdh.game.Test.User;
-import com.mygdx.mdh.game.model.*;
 import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.effects.DamageEffect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
-import com.mygdx.mdh.screens.*;
-
+import com.mygdx.mdh.screens.MainMenuScreen;
+import com.mygdx.mdh.screens.ScreenManager;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
-
-import java.io.IOException;
 
 
 public class MDHTacticsMain extends ScreenManager {
@@ -73,57 +55,8 @@ public class MDHTacticsMain extends ScreenManager {
 
     public void loadTest () {
 
-
-        /*
-        User u = new User();
-        User u2 = u.loadFromJSON("test");
-
-        System.out.println(u2.getOrto().getName());
-        */
-/*
-        FileHandle file = Gdx.files.internal("core/assets/data/missions/test.txt");
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Map.class, new MapDeserializer());
-        objectMapper.registerModule(module);
-
-        JsonNode x=null;
-        try { x*/
-
-
-//Map m = new Map("map_C01M01");
-
-        //Map.loadFromJSON("map_C01M01");
-        //Mission m = Mission.loadFromJSON("test");
-        /*
-        Mission m = Mission.loadFromJSON("mission_C01M01");
-        System.out.println(m.getMissionMap().getCell(1,1).getCellType());
-        System.out.println(m.getBaddies().get(0).getName());
-        */
-        //Mission teschar= new Mission();
-       // teschar.setMissionId("mission_C01M01");
-
-        //System.out.println(Game.loadFromJSON("DefaultGame").getGameCampaign().get(0).getCampaignMissions().get(1).getName());
-
-        /*
-        Character c1 = Character.loadFromJSON("zubi_filmmaker");
-        Character c2 = Character.loadFromJSON("cultist");
-
-        LOG.print(3, "Ability:" +c1.getAbilities().get(0), LOG.ANSI_GREEN);
-        LOG.print(3, "Before:"+ c2.toString(), LOG.ANSI_GREEN);
-        c1.getAbilities().get(0).apply(c2);
-        LOG.print(3, "After:" +c2.toString(), LOG.ANSI_BLUE);
-
-
-        LOG.print(3, "Ability:" +c1.getAbilities().get(0), LOG.ANSI_GREEN);
-        LOG.print(3, "Before:"+ c2.toString(), LOG.ANSI_GREEN);
-        c2.startTurn();
-        LOG.print(3, "After:" +c2.toString(), LOG.ANSI_BLUE);
-
-
-
-*/
         LOG.setLevel(2);
+
 
         testShields();
         testDamageEffects();
@@ -131,6 +64,7 @@ public class MDHTacticsMain extends ScreenManager {
         testAttributeModifier();
         testRemover();
         testHeal();
+        testDamageModifier();
 
     }
 
@@ -562,6 +496,65 @@ public class MDHTacticsMain extends ScreenManager {
             LOG.print(1, "[Error] Heal - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_RED);
     }
 
+
+    public void testDamageModifier () {
+
+        /* Testing Hagen Transfusion */
+        Character c1 = Character.loadFromJSON("migo_harvester");
+        Character c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(0);
+
+
+        int[] results = new int[1000];
+        int[] results2 = new int[1000];
+
+        for (int i = 0; i < 1000; i++) {
+            c2.setMaxHealth(100);
+            c2.getEffects().clear();
+
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(0).apply(c2);
+
+            c2.setHealth(100);
+            c1.setHealth(10);
+
+            c1.getAbilities().get(2).apply(c2);
+
+            results[i] = 100 - c2.getHealth();
+
+            results2[i] = c1.getHealth()-10;
+        }
+
+
+        int total = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            total += results[i];
+        }
+
+
+        if (total / 1000.0f > 15 && total / 1000.0f < 19)
+            LOG.print(1, "[OK] Conditional Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Conditional Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+
+
+        total = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            total += results[i];
+        }
+
+
+        if (total / 1000.0f > 15 && total / 1000.0f < 19)
+            LOG.print(1, "[OK] Drain Health - " + c1.getAbilities().get(2).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Drain Health  - " + c1.getAbilities().get(2).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+    }
 
 
     }

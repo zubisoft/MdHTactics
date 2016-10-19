@@ -65,11 +65,11 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
      * @param d
      * @return
      */
-    public void process(Effect d) {
+    public boolean process(Effect d) {
         super.process(d);
 
-        if ( Math.random() > chance) return;
-        if ( d.getSource() == this.getTarget()) return; //Only inbound damage!
+
+        if ( d.getSource() == this.getTarget()) return false; //Only inbound damage!
 
 
 
@@ -97,6 +97,8 @@ public class ProtectionEffect extends Effect implements CharacterChangeListener 
             notification = "Protected "+(originalDamage-newDamage)+"/"+originalDamage;
             effectTriggered ();
         }
+
+        return true;
     }
 
 

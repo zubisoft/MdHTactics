@@ -2,11 +2,8 @@ package com.mygdx.mdh.game.model.effects;
 
 
 import com.badlogic.gdx.graphics.Color;
-import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.EnumSet;
-import java.util.Iterator;
 
 /**
  * Created by zubisoft on 29/03/2016.
@@ -68,11 +65,12 @@ public class RemoverEffect extends Effect {
         return e;
     }
 
-    public void process(Effect e) {
-
+    public boolean process(Effect e) {
+        if (!super.process(e)) return false;
         if (targetType.contains(e.getEffectType()) || targetSubType.contains(e.getEffectSubType())) {
             e.setDuration(-1);
         }
+        return true;
 
     }
 

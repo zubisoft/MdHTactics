@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Roll;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.*;
 
@@ -117,7 +116,7 @@ public class Effect  /*implements Cloneable*/  {
         this.stacking = stacking;
     }
 
-    int stacking = 0;
+    int stacking = 1;
 
 
     //Number and type of dice to roll, plus roll modifier (e.g. 2d6+3)
@@ -157,6 +156,18 @@ public class Effect  /*implements Cloneable*/  {
         this.failed = failed;
     }
 
+
+    /**
+     * Defines in which effect processing step the conditional Effects will apply.
+     * By default, it applies to all the steps.
+     * (e.g. if APPLY is in the set, the effect wont trigger unless one conditional Effect is present)
+     * */
+
+    public enum ConditionalStep {
+        APPLY, EXECUTE, PROCESS
+    }
+
+    EnumSet<ConditionalStep> conditionalStep;
 
     /**
      *  Defines the list of effect names that will enable this effect to trigger.
@@ -212,6 +223,7 @@ public class Effect  /*implements Cloneable*/  {
         hits = 1;
         effectListeners = new ArrayList<>();
         effectSubType = EnumSet.noneOf(EffectSubType.class);
+        conditionalStep = EnumSet.allOf(ConditionalStep.class);
         icon="effect-icon-generic";
         color=Color.WHITE;
 
@@ -255,6 +267,7 @@ public class Effect  /*implements Cloneable*/  {
         cancelled=e.cancelled;
         effectTargetType = e.effectTargetType;
         conditionalEffects = e.conditionalEffects;
+        conditionalStep=e.conditionalStep;
 
     }
 
@@ -286,15 +299,28 @@ public class Effect  /*implements Cloneable*/  {
      *
      * Default implementation does nothing.
      */
-    public void process(Effect d) {
+    public boolean process(Effect d) {
+
+        if (cancelled) return false;
+
+        //if ( !isValidTarget() ) return ;
+        if (conditionalStep.contains(ConditionalStep.PROCESS) && conditionalEffects.size()>0 && !conditionalEffects.contains(d.getName())) {
+            //System.out.println("Processing condition fail"+conditionalStep+conditionalEffects);
+            return false;
+        }
+        if ( duration < 0 ) {
+            //System.out.println("Processing duration fail");
+            return false;
+        }
+        if (chanceRoll>chance) {
+            //System.out.println("Processing chance fail");
+            return false;
+        }
+
+        return true;
 
 
 
-        if ( !isValidTarget() ) return ;
-        if ( duration < 0 ) return ;
-        if (cancelled) return;
-
-        if(chanceRoll>chance) return;
     }
 
 
@@ -304,7 +330,8 @@ public class Effect  /*implements Cloneable*/  {
      * Default implementation does nothing.
      */
     public void execute () {
-        if ( !isValidTarget() ) return ;
+
+        if (conditionalStep.contains(ConditionalStep.EXECUTE) && !isValidTarget()) return;
         if ( duration < 0 ) return ;
         if ( cancelled ) return;
 
@@ -316,10 +343,11 @@ public class Effect  /*implements Cloneable*/  {
      * Applies the effect to the target, according to the current status of the roll.
      * Default implementation simply attaches the effect to the target if the stacking is not maxed.
      */
-    public void apply() {
-        if ( !isValidTarget() ) return ;
-        if ( duration < 0 ) return ;
-        if (cancelled) return;
+    public boolean apply() {
+        if (conditionalStep.contains(ConditionalStep.APPLY) && !isValidTarget()) return false;
+        if ( duration < 0 ) return false;
+        if (cancelled) return false;
+        if (target.getEffectsByNameAndClass(this.name, this.effectClass).size()+1 > stacking) return false;
 
        // if(chanceRoll>chance) return;
 
@@ -329,8 +357,10 @@ public class Effect  /*implements Cloneable*/  {
             System.out.println( "* "+e.getName()+"\n");
         }*/
 
-        if (target.getEffectsByNameAndClass(this.name, this.effectClass).size() <= stacking)
-            target.addEffect(this);
+
+        target.addEffect(this);
+
+        return true;
     }
 
 

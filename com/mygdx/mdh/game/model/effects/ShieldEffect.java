@@ -64,14 +64,10 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
      * @param d
      * @return
      */
-    public void process(Effect d) {
-        super.process(d);
+    public boolean process(Effect d) {
+        if (!super.process(d)) return false;
 
-
-        if ( roll.getRoll() <= 0 && hits<=0) return;
-
-
-
+        if ( roll.getRoll() <= 0 && hits<=0) return false;
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
 
@@ -100,6 +96,7 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
             }
 
         }
+        return true;
     }
 
 

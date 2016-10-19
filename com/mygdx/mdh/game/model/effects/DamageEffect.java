@@ -33,6 +33,19 @@ public class DamageEffect extends Effect {
     boolean noCritics = false;
 
 
+    public boolean isHealthDrain() {
+        return healthDrain;
+    }
+
+    public void setHealthDrain(boolean healthDrain) {
+        this.healthDrain = healthDrain;
+    }
+
+    boolean healthDrain = false;
+
+
+
+
     EnumSet<Character.CHARACTER_TAGS> conditionalType;
 
 
@@ -70,6 +83,7 @@ public class DamageEffect extends Effect {
         e.directDamage = directDamage;
         e.conditionalType = conditionalType;
         e.noCritics = noCritics;
+        e.healthDrain = healthDrain;
 
         return e;
     }
@@ -145,8 +159,10 @@ public class DamageEffect extends Effect {
                     rolledResult = Math.max(damageRolls.get(i).getRolledDamage().getRoll(), 0);
 
                     if (rolledResult>0) {
+                        LOG.print(3,"[DamageEffect] Damage: "+damageRolls.get(i).getRolledDamage(), LOG.ANSI_RED);
                         notification=(damageRolls.get(i).isCritical()?"Critic!":"")+" -"+rolledResult+" HP";
                         target.hit(rolledResult);
+                        if(healthDrain) source.hit(-rolledResult);
                     } else {
                         notification="No Damage!";
                     }
