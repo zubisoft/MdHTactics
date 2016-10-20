@@ -1,29 +1,26 @@
 package com.mygdx.mdh.game.model;
 
-import java.io.IOException;
-import java.util.*;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.mygdx.mdh.game.EffectManager;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.model.effects.AttributeModifierEffect;
 import com.mygdx.mdh.game.model.effects.Effect;
+import com.mygdx.mdh.game.util.Dice;
 import com.mygdx.mdh.game.util.LOG;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by zubisoft on 27/01/2016.
  */
 
-public class Character  {
+public class Character {
 
 
     //Core attributes
@@ -42,33 +39,43 @@ public class Character  {
     int level;
 
 
+    public enum CharacterClass {
+        Strong, Fast, Tough, Smart, Dedicated, Charismatic
+    }
+
+
+
+    CharacterClass characterClass;
+
+
     String persona;
 
     public void copy(Character b) {
-        this.characterId=b.characterId;
-        this.name=b.name;
-        this.attack=b.attack;
-        this.defence=b.defence;
-        this.health=b.health;
-        this.maxHealth=b.maxHealth;
-        this.movement=b.movement;
-        this.maxActions=b.maxActions;
-        this.availableActions=b.availableActions; //Default?
-        this.friendly=b.friendly;
-        this.dead=b.dead;
-        this.xp=b.xp;
-        this.level=b.level;
-        this.persona=b.persona;
-        this.tags=b.tags;
+        this.characterId = b.characterId;
+        this.name = b.name;
+        this.attack = b.attack;
+        this.defence = b.defence;
+        this.health = b.health;
+        this.maxHealth = b.maxHealth;
+        this.movement = b.movement;
+        this.maxActions = b.maxActions;
+        this.availableActions = b.availableActions; //Default?
+        this.friendly = b.friendly;
+        this.dead = b.dead;
+        this.xp = b.xp;
+        this.level = b.level;
+        this.persona = b.persona;
+        this.tags = b.tags;
         //this.cell=b.cell; //Dangerous
-        this.column=b.column;
-        this.row=b.row;
-        this.effects=b.effects; //Not necessarily
+        this.column = b.column;
+        this.row = b.row;
+        this.effects = b.effects; //Not necessarily
         //this.listeners=b.listeners;//Dangerous
-        this.pic=b.pic;
+        this.pic = b.pic;
+        this.characterClass=b.characterClass;
 
         this.abilities.clear();
-        for (Ability a: b.abilities) {
+        for (Ability a : b.abilities) {
             Ability aux = new Ability();
             aux.copy(a);
             aux.setSource(this);
@@ -85,41 +92,44 @@ public class Character  {
     EnumSet<CHARACTER_TAGS> tags;
 
     //Position
-    @JsonIgnore MapCell cell;
-    @JsonIgnore int column;
-    @JsonIgnore int row;
+    @JsonIgnore
+    MapCell cell;
+    @JsonIgnore
+    int column;
+    @JsonIgnore
+    int row;
 
     //Abilities of the character
     List<Ability> abilities;
 
     //Effects currently applied on this character
-    @JsonIgnore private List<Effect> effects;
+    @JsonIgnore
+    private List<Effect> effects;
 
     //event handling
-    @JsonIgnore private List<CharacterChangeListener> listeners;
-
-
+    @JsonIgnore
+    private List<CharacterChangeListener> listeners;
 
 
     //Graphic info
     String pic;
 
 
-
-
     public Character() {
 
         abilities = new ArrayList<Ability>();
 
-        effects = new ArrayList<Effect> ();
+        effects = new ArrayList<Effect>();
 
-        listeners = new ArrayList<> ();
+        listeners = new ArrayList<>();
 
         maxActions = 2;
-        availableActions=2;
-        xp =0;
-        level=1;
+        availableActions = 2;
+        xp = 0;
+        level = 1;
         tags = EnumSet.noneOf(CHARACTER_TAGS.class);
+
+        characterClass = CharacterClass.Strong; //Default
     }
 
     public void reset() {
@@ -129,6 +139,13 @@ public class Character  {
         setDead(false);
     }
 
+    public CharacterClass getCharacterClass() {
+        return characterClass;
+    }
+
+    public void setCharacterClass(CharacterClass characterClass) {
+        this.characterClass = characterClass;
+    }
 
     public EnumSet<CHARACTER_TAGS> getTags() {
         return tags;
@@ -171,8 +188,8 @@ public class Character  {
             setAvailableActions(maxActions);
             //this.setActive(true);
 
-            for (Ability a: getAbilities()) {
-                if (a.getCurrentCooldown()>0) a.setCurrentCooldown(a.getCurrentCooldown()-1);
+            for (Ability a : getAbilities()) {
+                if (a.getCurrentCooldown() > 0) a.setCurrentCooldown(a.getCurrentCooldown() - 1);
             }
 
             if (effects.size() > 0) {
@@ -181,7 +198,7 @@ public class Character  {
                 for (Effect tmp : effects) {
                     //tmp.setTarget(this);
                     //Resolve immediate effects
-                    LOG.print(4, "[Character] Starting turn effects: "+tmp.getEffectClass());
+                    LOG.print(4, "[Character] Starting turn effects: " + tmp.getEffectClass());
                     //if(tmp.getGameSegment()== Effect.GameSegmentType.TURN_START)
                     EffectManager.instance.execute(tmp);
                     tmp.startTurn();
@@ -198,28 +215,30 @@ public class Character  {
     public void hit(int damage) {
 
         //Do not allow to surpass max hitpoints when healed
-        if (damage<0 && (getHealth()-damage)>maxHealth)
-            health=maxHealth;
+        if (damage < 0 && (getHealth() - damage) > maxHealth)
+            health = maxHealth;
 
-        if (getHealth()-damage > maxHealth) setHealth(maxHealth);
-        else setHealth(getHealth()-damage);
+        if (getHealth() - damage > maxHealth) setHealth(maxHealth);
+        else setHealth(getHealth() - damage);
 
-        for(CharacterChangeListener cl: listeners) {
+        for (CharacterChangeListener cl : listeners) {
             cl.onCharacterHit(damage);
         }
 
     }
 
-    public int getHealth() { return health; }
-    public void setHealth(int h) {
-        health=h;
-        if (health<=0) {
-            dead=true;
-            availableActions=-1;
-            if(cell!= null) cell.setOccupied(null);
-        }
+    public int getHealth() {
+        return health;
     }
 
+    public void setHealth(int h) {
+        health = h;
+        if (health <= 0) {
+            dead = true;
+            availableActions = -1;
+            if (cell != null) cell.setOccupied(null);
+        }
+    }
 
 
     public int getAvailableActions() {
@@ -238,20 +257,20 @@ public class Character  {
         if (modifier>0) cleanEffects();
         */
 
-        return availableActions /*+modifier*/ ;
+        return availableActions /*+modifier*/;
     }
 
 
     public void setAvailableActions(int a) {
-        if (this.availableActions<=0 && a>0) {
-            for(CharacterChangeListener cl: listeners) {
+        if (this.availableActions <= 0 && a > 0) {
+            for (CharacterChangeListener cl : listeners) {
                 cl.onCharacterActive(this);
             }
         }
 
-        this.availableActions=a;
+        this.availableActions = a;
 
-        if(availableActions<=0) {
+        if (availableActions <= 0) {
             for (CharacterChangeListener cl : listeners) {
                 cl.onCharacterInactive(this);
             }
@@ -261,41 +280,46 @@ public class Character  {
 
 
     public int getAttack() {
-        int modifier=0;
+        int modifier = 0;
 
         //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
-        for (Effect e:getEffects()) {
-            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
-                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.ATTACK))
-                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+        for (Effect e : getEffects()) {
+            if (e.getEffectClass() == Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect) e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.ATTACK))
+                    modifier += ((AttributeModifierEffect) e).getAttributeModifier();
             }
 
         }
-        return attack+modifier;
+        return attack + modifier;
     }
+
     public int getDefence() {
-        int modifier=0;
+        int modifier = 0;
 
         //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
-        for (Effect e:getEffects()) {
-            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
-                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.DEFENCE))
-                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+        for (Effect e : getEffects()) {
+            if (e.getEffectClass() == Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect) e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.DEFENCE))
+                    modifier += ((AttributeModifierEffect) e).getAttributeModifier();
             }
 
         }
-        return defence+modifier;
+        return defence + modifier;
     }
 
 
+    public boolean isFriendly() {
+        return friendly;
+    }
 
+    public String getPic() {
+        return pic;
+    }
 
-    public boolean isFriendly() { return friendly; }
-    public String getPic() { return pic; }
     public List<Ability> getAbilities() {
         List<Ability> aux = new ArrayList<>();
 
-        for (Ability a: abilities) {
+        for (Ability a : abilities) {
 
             if (a.getRequiredLevel() <= this.getLevel()) {
                 aux.add(a);
@@ -305,13 +329,10 @@ public class Character  {
     }
 
 
-
-
     public void setMaxHealth(int maxHealth) {
-        health=maxHealth;
+        health = maxHealth;
         this.maxHealth = maxHealth;
     }
-
 
 
     public int getMaxActions() {
@@ -319,7 +340,7 @@ public class Character  {
     }
 
     public void setMaxActions(int maxActions) {
-        availableActions=maxActions;
+        availableActions = maxActions;
         this.maxActions = maxActions;
     }
 
@@ -330,16 +351,16 @@ public class Character  {
 
     public void setAbilities(List<Ability> abilities) {
         this.abilities = abilities;
-        for (Ability a: abilities) {
+        for (Ability a : abilities) {
             a.setSource(this);
-            for(Effect e: a.getEffects()) {
+            for (Effect e : a.getEffects()) {
                 e.setSource(this);
             }
         }
     }
 
     public void setPic(String pic) {
-         this.pic = pic;
+        this.pic = pic;
     }
 
     public List<Ability> addAbility(Ability ab) {
@@ -348,10 +369,9 @@ public class Character  {
     }
 
 
+    public static Character loadFromJSON(String name) {
 
-    public static Character loadFromJSON (String name) {
-
-        FileHandle file = Gdx.files.internal("core/assets/data/characters/" + name+ ".txt");
+        FileHandle file = Gdx.files.internal("core/assets/data/characters/" + name + ".txt");
         String jsonData = file.readString();
 
 
@@ -375,22 +395,21 @@ public class Character  {
 
     }
 
-    public static Character loadByName (String name) {
+    public static Character loadByName(String name) {
         return Character.loadFromJSON(name);
     }
 
 
-
     public String toString() {
-        return "[Character: "+name+"] HP:"+health+ " AP:"+availableActions+" @ "+cell ;
+        return "[Character: " + name + "] HP:" + health + " AP:" + availableActions + " @ " + cell;
     }
 
 
     public List<Effect> getEffectsByNameAndClass(String name, Effect.EffectClass type) {
         List<Effect> list = new ArrayList<>();
 
-        for (Effect e: effects) {
-            if ((e.getName()+e.getEffectClass()).equals(name+type))
+        for (Effect e : effects) {
+            if ((e.getName() + e.getEffectClass()).equals(name + type))
                 list.add(e);
         }
 
@@ -398,7 +417,9 @@ public class Character  {
     }
 
 
-    /******************** Generic getters and setters ********************/
+    /********************
+     * Generic getters and setters
+     ********************/
     public boolean isDead() {
         return dead;
     }
@@ -412,10 +433,10 @@ public class Character  {
     }
 
     /**
-     Simply adds an effect to the effect list, as is.
-     This method is called once all the relevant modifiers are applied to the effect.
+     * Simply adds an effect to the effect list, as is.
+     * This method is called once all the relevant modifiers are applied to the effect.
      **/
-    public void addEffect (Effect e) {
+    public void addEffect(Effect e) {
         effects.add(e);
     }
 
@@ -423,26 +444,26 @@ public class Character  {
      * This method adds a list of effects to a character after processing all the relevant modifiers.
      * The target is set to this character, and then sent to the effect manager for processing, where
      * source and target modifiers are applied before ultimately adding the effect.
-     *
+     * <p>
      * Immediate effects will be triggered.
      *
      * @param e
      */
-    public void addEffect (List<Effect> e) {
+    public void addEffect(List<Effect> e) {
 
-       // if (e != null) effects.addAll(e);
-        if (e==null ) return;
+        // if (e != null) effects.addAll(e);
+        if (e == null) return;
 
-        int i=0;
+        int i = 0;
 
 
-        for (Effect tmp: e) {
+        for (Effect tmp : e) {
             tmp.setTarget(this);
             //Resolve immediate effects
 
 
             //TODO If first attack fails, further effects are not applied - MUY CHAPUCERO
-            if (!EffectManager.instance.apply(tmp) && i==0) {
+            if (!EffectManager.instance.apply(tmp) && i == 0) {
                 //System.out.println("breaking");
                 break;
             }
@@ -454,18 +475,18 @@ public class Character  {
 
     }
 
-    public int getNextLevelXP () {
-        return 500*(level+1)*(level+1)-500*(level+1);
+    public int getNextLevelXP() {
+        return 500 * (level + 1) * (level + 1) - 500 * (level + 1);
     }
 
-    public void cleanEffects () {
-        if(effects.size()==0) return;
+    public void cleanEffects() {
+        if (effects.size() == 0) return;
 
         Iterator<Effect> iterator = effects.iterator();
 
         while (iterator.hasNext()) {
             Effect tmp = iterator.next();
-            if (tmp.getDuration()<=0) {
+            if (tmp.getDuration() <= 0) {
                 LOG.print(4, "[Character] Remove Effect " + tmp.getEffectClass() + " from " + getName());
                 iterator.remove();
             }
@@ -474,8 +495,9 @@ public class Character  {
     }
 
 
-    public boolean isActive() { return getAvailableActions()>0; }
-
+    public boolean isActive() {
+        return getAvailableActions() > 0;
+    }
 
 
     public String getName() {
@@ -499,18 +521,18 @@ public class Character  {
     }
 
     public int getMovement() {
-        int modifier=0;
+        int modifier = 0;
 
         //TODO Super inefficient, maybe better when adding/removing effects and keeping an aux variable
-        for (Effect e:getEffects()) {
-            if (e.getEffectClass()== Effect.EffectClass.ATTRIBUTE_MODIFIER) {
-                if (((AttributeModifierEffect)e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.MOVEMENT))
-                    modifier += ((AttributeModifierEffect)e).getAttributeModifier();
+        for (Effect e : getEffects()) {
+            if (e.getEffectClass() == Effect.EffectClass.ATTRIBUTE_MODIFIER) {
+                if (((AttributeModifierEffect) e).getAttributeType().contains(AttributeModifierEffect.EffectTargetType.MOVEMENT))
+                    modifier += ((AttributeModifierEffect) e).getAttributeModifier();
             }
 
         }
 
-        return movement+modifier;
+        return movement + modifier;
     }
 
     public void setMovement(int movement) {
@@ -523,11 +545,11 @@ public class Character  {
     }
 
     public void setCell(MapCell cell) {
-        if(this.cell !=null && this.cell != cell)  this.cell.setOccupied(null);
+        if (this.cell != null && this.cell != cell) this.cell.setOccupied(null);
         this.cell = cell;
         this.cell.setOccupied(this);
-        this.column = (int)cell.getMapCoordinates().x;
-        this.row = (int)cell.getMapCoordinates().y;
+        this.column = (int) cell.getMapCoordinates().x;
+        this.row = (int) cell.getMapCoordinates().y;
     }
 
     public int getRow() {
@@ -547,19 +569,18 @@ public class Character  {
     }
 
     public boolean hasEffect(Effect effect) {
-        for (Effect e:getEffects()) {
+        for (Effect e : getEffects()) {
             if (e.getName().equals(effect.getName())) return true;
-         }
+        }
         return false;
     }
-
 
 
     public int getXp() {
         return xp;
     }
 
-    public void addXp (int x) {
+    public void addXp(int x) {
         setXp(getXp() + x);
     }
 
@@ -568,9 +589,64 @@ public class Character  {
         this.xp = xp;
 
         while (xp >= getNextLevelXP() && level <= 20) {
-            setLevel(getLevel()+1);
+            levelUp();
         }
     }
+
+    public void levelUp() {
+        this.level = this.level + 1;
+
+        switch (characterClass) {
+            case Strong:
+                setAttack(getAttack()+1);
+                setDefence(getDefence()+(Math.floorMod(level, 2)==0?1:0));
+                setMaxHealth(getMaxHealth()+ Dice.roll(10));
+                break;
+            case Fast:
+                setAttack(getAttack()+(Math.floorMod(level, 2)==0?1:0));
+                setDefence(getDefence()+(Math.floorMod(level, 3)==0?1:0));
+                setMovement(getMovement()+(Math.floorMod(level, 5)==0?1:0));
+                setMaxHealth(getMaxHealth()+ Dice.roll(6));
+                break;
+            case Tough:
+                setAttack(getAttack()+(Math.floorMod(level, 2)==0?1:0));
+                setDefence(getDefence()+1);
+                setMaxHealth(getMaxHealth()+ Dice.roll(12));
+                break;
+            case Smart:
+                setAttack(getAttack()+(Math.floorMod(level, 2)==0?1:0));
+                setDefence(getDefence()+(Math.floorMod(level, 3)==0?1:0));
+                setMaxActions(getMaxActions()+(Math.floorMod(level, 5)==0?1:0));
+                setMaxHealth(getMaxHealth()+ Dice.roll(6));
+                break;
+            case Dedicated:
+                setAttack(getAttack()+(Math.floorMod(level, 3)==0?1:0));
+                setDefence(getDefence()+(Math.floorMod(level, 2)==0?1:0));
+                setMaxActions(getMaxActions()+(Math.floorMod(level, 5)==0?1:0));
+                setMaxHealth(getMaxHealth()+ Dice.roll(8));
+                break;
+            case Charismatic:
+                setAttack(getAttack()+(Math.floorMod(level, 2)==0?1:0));
+                setDefence(getDefence()+(Math.floorMod(level, 2)==0?1:0));
+                setMovement(getMovement()+(Math.floorMod(level, 10)==0?1:0));
+                setMaxHealth(getMaxHealth()+ Dice.roll(8));
+                break;
+
+        }
+
+
+        System.out.println("Level UP"+(Math.floorMod(level, 5)==0?1:0));
+
+        for (Ability a : abilities) {
+            if (a.getRequiredLevel() == level) {
+                for (CharacterChangeListener l : listeners) {
+                    l.onAbilityUnlock(this, a);
+                }
+            }
+        }
+
+    }
+
 
     public int getLevel() {
         return level;
@@ -579,17 +655,13 @@ public class Character  {
     public void setLevel(int level) {
         if (this.level == level) return;
 
-        this.level = level;
+        while (this.level < level) {
+            levelUp();
 
-        for (Ability a: abilities) {
-            if (a.getRequiredLevel() == level) {
-                for (CharacterChangeListener l: listeners) {
-                    l.onAbilityUnlock(this,a);
-                }
-            }
         }
-    }
 
+
+    }
 
 
     public String getPersona() {

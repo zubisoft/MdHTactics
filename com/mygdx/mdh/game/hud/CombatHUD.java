@@ -1,27 +1,26 @@
 package com.mygdx.mdh.game.hud;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
+import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.controller.AbilityButtonClickListener;
-import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
 import com.mygdx.mdh.game.controller.EffectButtonClickListener;
 import com.mygdx.mdh.game.model.Ability;
 import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
-import com.mygdx.mdh.game.util.LOG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +44,8 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
 
     Stack abilitiesBar;
 
-    TextureRegion sprite = Assets.instance.guiElements.get("menus/generic-box");
-
+    //TextureRegion sprite = Assets.instance.guiElements.get("menus/generic-box");
+    ScrollableBox messageBox = new ScrollableBox();
 
 
     TextureRegion abilityBarSprite = Assets.instance.guiElements.get("combatui/HUD-bar");
@@ -122,6 +121,10 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         characterInfoNameBox.setPosition(50,12);
         characterInfoNameBox.setWidth(150);
         characterInfoNameBox.add(characterInfoName) ;
+
+        /*messageBox.setText( "hola que tal");
+        messageBox.setBounds(100,100,300,300);
+        this.addActor(messageBox);*/
 
 
     }
@@ -254,8 +257,11 @@ public class CombatHUD extends Stage implements CharacterChangeListener {
         this.act();
 
 
+
+
         batch.setColor(1f, 1f, 1f,  0.5f);
-        batch.draw(sprite,900,0,350,200);
+        //batch.draw(sprite,900,0,350,200);
+        //messageBox.draw(batch,1.0f);
         batch.setColor(1f, 1f, 1f,1f);
 
 

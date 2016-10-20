@@ -3,6 +3,7 @@ package com.mygdx.mdh.screens;
 /**
  * Created by zubisoft on 20/03/2016.
  */
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -18,11 +19,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
 import com.mygdx.mdh.game.hud.ScrollableBox;
-import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
-import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
@@ -147,7 +146,14 @@ public class MainMenuScreen extends AbstractGameScreen {
         stack.add(background);
         stack.add(buttonList);
 
-
+        ScrollableBox box = new ScrollableBox();
+        box.setText("mecawen to");
+        for (int i = 0; i<=200; i++) {
+            box.addText("kk "+i);
+        }
+        box.setSize(300,300);
+        box.setPosition(100,100);
+        stage.addActor(box);
 
 
         /*

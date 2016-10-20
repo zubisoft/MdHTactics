@@ -70,8 +70,8 @@ public class CombatInputListener extends InputAdapter {
         if(keycode==Input.Keys.F11) {
             for (Character c : CombatController.combat.getCharacters()) {
                 if (c.isFriendly()) {
-                    c.setAvailableActions(5);
-                    c.setMovement(10);
+                    //c.setAvailableActions(5);
+                    //c.setMovement(10);
                     c.setLevel(5);
                 }
             }
