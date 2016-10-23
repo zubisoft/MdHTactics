@@ -139,12 +139,12 @@ public class DamageEffect extends Effect {
     }
 
 
-    public void execute () {
-        super.execute();
+    public boolean execute () {
+        if(!super.execute()) return false;
 
         setFailed(true);
 
-        if (!conditionalType.isEmpty() && Collections.disjoint(conditionalType,target.getTags()) ) return;
+        if (!conditionalType.isEmpty() && Collections.disjoint(conditionalType,target.getTags()) ) return false;
 
             for (int i=0; i<hits;i++) {
                 //double attackRoll = Math.random();
@@ -177,7 +177,7 @@ public class DamageEffect extends Effect {
 
                 effectTriggered();
             }
-
+            return true;
 
 
     }

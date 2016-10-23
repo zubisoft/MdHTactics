@@ -75,20 +75,22 @@ public class RemoverEffect extends Effect {
     }
 
 
-    public void execute () {
-        super.execute();
+    public boolean execute () {
+        if(!super.execute()) return false;
+
 
 
         for (Effect e: target.getEffects()) {
 
             if (targetType.contains(e.getEffectType()) || targetSubType.contains(e.getEffectSubType())) {
-
+                System.out.println("Removing "+e);
                 e.setDuration(-1);
             }
         }
         target.cleanEffects();
 
         effectTriggered();
+        return true;
 
     }
 

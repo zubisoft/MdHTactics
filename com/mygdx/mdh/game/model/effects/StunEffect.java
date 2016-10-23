@@ -3,8 +3,6 @@ package com.mygdx.mdh.game.model.effects;
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.mdh.game.util.LOG;
 
-import java.util.ArrayList;
-
 /**
  * Created by zubisoft on 09/04/2016.
  */
@@ -39,8 +37,8 @@ public class StunEffect  extends Effect  {
         }
 
 
-        public void execute () {
-            super.execute();
+        public boolean execute () {
+            if(!super.execute()) return false;
 
 
             //For those effects that have a chance to happen
@@ -53,6 +51,7 @@ public class StunEffect  extends Effect  {
                 target.setAvailableActions(target.getAvailableActions() - 1);
             }
             effectTriggered ();
+            return true;
         }
 
         public String notification() {

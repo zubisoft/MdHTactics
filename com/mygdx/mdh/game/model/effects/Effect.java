@@ -72,7 +72,7 @@ public class Effect  /*implements Cloneable*/  {
      * Used to classify and handle effects in a more refined way.
      */
     public enum EffectSubType {
-        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING,ELECTRIC, UNARMED
+        FIRE, ICE, MELEE, RANGED, MAGIC, TECH, DIVINE, FANTASY, SCIFI, BIO, POISON, ENERGY, MENTAL, EVIL, GOOD,PIERCING, SLASHING,ELECTRIC, UNARMED, PHYSICAL
     }
 
     EnumSet<EffectSubType> effectSubType;
@@ -194,14 +194,14 @@ public class Effect  /*implements Cloneable*/  {
 
 
 
-
         //Check if the target is applicable
         switch (effectTargetType) {
             case ALL: return true;
-            case SELF: if (source == target) return true;
-            case ALLIES: if (target.isFriendly()) return true;
-            case BADDIES: if (!target.isFriendly()) return true;
+            case SELF: if (source == target) return true; break;
+            case ALLIES: if (target.isFriendly()) return true; break;
+            case BADDIES: if (!target.isFriendly()) return true; break;
         }
+
         return false;
     }
 
@@ -329,14 +329,14 @@ public class Effect  /*implements Cloneable*/  {
      *
      * Default implementation does nothing.
      */
-    public void execute () {
+    public boolean execute () {
 
-        if (conditionalStep.contains(ConditionalStep.EXECUTE) && !isValidTarget()) return;
-        if ( duration < 0 ) return ;
-        if ( cancelled ) return;
+        if (conditionalStep.contains(ConditionalStep.EXECUTE) && !isValidTarget())  return false;
+        if ( duration < 0 ) return false;
+        if (cancelled) return false;
 
-        if(chanceRoll>chance) return;
-
+        if(chanceRoll>chance) return false;
+        return true;
     }
 
     /**

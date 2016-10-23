@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
-import com.mygdx.mdh.game.hud.ScrollableBox;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
@@ -146,6 +145,7 @@ public class MainMenuScreen extends AbstractGameScreen {
         stack.add(background);
         stack.add(buttonList);
 
+        /*
         ScrollableBox box = new ScrollableBox();
         box.setText("mecawen to");
         for (int i = 0; i<=200; i++) {
@@ -154,6 +154,7 @@ public class MainMenuScreen extends AbstractGameScreen {
         box.setSize(300,300);
         box.setPosition(100,100);
         stage.addActor(box);
+        */
 
 
         /*

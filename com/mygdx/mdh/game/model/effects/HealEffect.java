@@ -35,10 +35,9 @@ public class HealEffect  extends Effect{
         }
 
 
-        public void execute () {
+        public boolean execute () {
+            if(!super.execute()) return false;
 
-            //For those effects that have a chance to happen
-            if ( Math.random() > chance) return;
 
             if (duration>=0) {
                 if (roll != null && target != null) {
@@ -48,6 +47,7 @@ public class HealEffect  extends Effect{
             }
 
             effectTriggered ();
+            return true;
         }
 
         public String notification() {

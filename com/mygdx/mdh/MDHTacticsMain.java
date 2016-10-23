@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.Dice;
@@ -57,14 +58,41 @@ public class MDHTacticsMain extends ScreenManager {
 
         LOG.setLevel(2);
 
-
+        testMinoanPriestess();
+        /*
         testShields();
         testDamageEffects();
         testStunEffects();
         testAttributeModifier();
         testRemover();
         testHeal();
-        testDamageModifier();
+        testDamageModifier();*/
+
+    }
+
+    public void testMinoanPriestess() {
+        Character c1 = Character.loadFromJSON("minoan_priestess");
+        Character c2 = Character.loadFromJSON("test_dummy");
+        Character c3 = Character.loadFromJSON("test_dummy");
+        c2.setFriendly(true);
+        c3.setFriendly(false);
+
+
+        c2.getAbilities().get(2).apply(c3); //debuff
+        c2.getAbilities().get(3).apply(c2); //buff
+        c3.getAbilities().get(2).apply(c2); //debuff
+        c3.getAbilities().get(3).apply(c3); //buff
+
+        c1.getAbilities().get(2).apply(c2); //remover
+        c1.getAbilities().get(2).apply(c3); //remover
+
+        System.out.println(c3.getEffects().get(0).getEffectType() +" "+c2.getEffects().get(0).getEffectType());
+        if (c2.getEffects().size() == 1 && c3.getEffects().size() == 1
+                && c3.getEffects().get(0).getEffectType()== Effect.EffectType.BUFF
+                && c2.getEffects().get(0).getEffectType()== Effect.EffectType.DEBUFF)
+            LOG.print(2, "[OK] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(2, "[Error] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
     }
 
