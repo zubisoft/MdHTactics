@@ -3,16 +3,19 @@ package com.mygdx.mdh.screens;
 /**
  * Created by zubisoft on 20/03/2016.
  */
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
@@ -87,29 +90,57 @@ public class LoadGameScreen extends AbstractGameScreen {
 
         buttonList = new Table();
         buttonList.pad(10);
-        buttonList.setPosition(600,500);
+        buttonList.setSize(300,300);
+        //buttonList.setPosition(600,500);
 
 
         FileHandle fh = Gdx.files.internal("core/assets/data/games");
 
         for (FileHandle f: fh.list() ) {
             if (!f.isDirectory()) {
-                Label la = (new Label(f.name(), uiSkin, "default-font", Color.ORANGE));
+
+                Label la = (new Label(f.name(),  Assets.uiSkin, "handwritten_black", Color.BLACK));
                 listener = new MenuClickListener(f.name());
                 la.addListener(listener);
                 buttonList.add(la);
                 buttonList.row();
             }
 
-
         }
+
+
+
+        ScrollPane box = new ScrollPane(buttonList);
+
+
+        NinePatchDrawable tableBackground = new NinePatchDrawable(new NinePatch(Assets.instance.guiElements.get("menus/generic-box"),8,8,8,8));
+        box.getStyle().background = tableBackground;
+
+
+        SpriteDrawable txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/knob")));
+        box.getStyle().vScrollKnob = txr;
+
+        txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/scrollbar")));
+        box.getStyle().vScroll = txr;
+        box.getStyle().vScroll.setMinWidth(20);
+        box.setFillParent(true);
+
+        box.setSize(300,300);
+
+        Table c = new Table();
+        //c.setFillParent(true);
+        c.add(box).size(300,300);
+
+        Table x = new Table();
+        x.add(c).size(300,300);
+
 
 
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
-        stack.add(buttonList);
+        stack.add(x);
 
 
         /*

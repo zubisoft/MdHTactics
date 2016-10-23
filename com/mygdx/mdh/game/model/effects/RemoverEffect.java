@@ -83,7 +83,6 @@ public class RemoverEffect extends Effect {
         for (Effect e: target.getEffects()) {
 
             if (targetType.contains(e.getEffectType()) || targetSubType.contains(e.getEffectSubType())) {
-                System.out.println("Removing "+e);
                 e.setDuration(-1);
             }
         }

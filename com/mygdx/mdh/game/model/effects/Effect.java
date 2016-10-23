@@ -313,7 +313,7 @@ public class Effect  /*implements Cloneable*/  {
             return false;
         }
         if (chanceRoll>chance) {
-            //System.out.println("Processing chance fail");
+            //System.out.println("Processing chance fail"+chance+chanceRoll);
             return false;
         }
 
@@ -335,7 +335,8 @@ public class Effect  /*implements Cloneable*/  {
         if ( duration < 0 ) return false;
         if (cancelled) return false;
 
-        if(chanceRoll>chance) return false;
+        //System.out.println("Effect executed" + this);
+        //if(chanceRoll>chance) return false;
         return true;
     }
 
@@ -344,9 +345,13 @@ public class Effect  /*implements Cloneable*/  {
      * Default implementation simply attaches the effect to the target if the stacking is not maxed.
      */
     public boolean apply() {
+
         if (conditionalStep.contains(ConditionalStep.APPLY) && !isValidTarget()) return false;
+
         if ( duration < 0 ) return false;
+
         if (cancelled) return false;
+
         if (target.getEffectsByNameAndClass(this.name, this.effectClass).size()+1 > stacking) return false;
 
        // if(chanceRoll>chance) return;
@@ -357,7 +362,7 @@ public class Effect  /*implements Cloneable*/  {
             System.out.println( "* "+e.getName()+"\n");
         }*/
 
-
+        //System.out.println("Effect applied" + this);
         target.addEffect(this);
 
         return true;

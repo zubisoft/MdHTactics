@@ -71,6 +71,8 @@ public class ShieldEffect extends Effect implements CharacterChangeListener {
 
         if (d.getEffectClass()== EffectClass.DAMAGE) {
 
+
+
             DamageEffect de = (DamageEffect)d;
 
             int blocked=0;

@@ -130,6 +130,7 @@ public class Character {
         tags = EnumSet.noneOf(CHARACTER_TAGS.class);
 
         characterClass = CharacterClass.Strong; //Default
+        friendly = false;
     }
 
     public void reset() {
@@ -193,7 +194,7 @@ public class Character {
             }
 
             if (effects.size() > 0) {
-                cleanEffects();
+
 
                 for (Effect tmp : effects) {
                     //tmp.setTarget(this);
@@ -203,6 +204,8 @@ public class Character {
                     EffectManager.instance.execute(tmp);
                     tmp.startTurn();
                 }
+
+                cleanEffects();
 
             }
         }
@@ -634,8 +637,6 @@ public class Character {
 
         }
 
-
-        System.out.println("Level UP"+(Math.floorMod(level, 5)==0?1:0));
 
         for (Ability a : abilities) {
             if (a.getRequiredLevel() == level) {
