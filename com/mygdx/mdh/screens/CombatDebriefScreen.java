@@ -3,13 +3,12 @@ package com.mygdx.mdh.screens;
 /**
  * Created by zubisoft on 20/03/2016.
  */
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.controller.CharacterChangeListener;
@@ -32,12 +30,14 @@ import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
+import com.mygdx.mdh.screens.widgets.UnlocksWindow;
 
 
 public class CombatDebriefScreen extends AbstractGameScreen implements CharacterChangeListener, GameEventListener {
 
 
     Table unlocksTable = new Table();
+    UnlocksWindow unlocksWindow;
 
     /**
      * Animation to resize the progress bar
@@ -208,6 +208,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
                 ScreenTransition transition = ScreenTransitionFade.init(0.75f);
                 StoryScreen screen = new StoryScreen(gameScreen, StoryScreen.STORY_TYPE.OUTRO);
                 screen.setMessages(gameScreen.getGame().getCurrentMission().getOutroText());
+                gameScreen.game.saveGame();
                 gameScreen.setScreen(screen, transition);
             }
 
@@ -312,7 +313,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
 
         gameScreen.game.addListener(this);
         gameScreen.game.completeMission(gameScreen.game.getCurrentMission());
-        gameScreen.game.saveGame();
+
 
 
         /*
@@ -320,6 +321,19 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         btnLoad.setPosition(400,300);
         btnQuit.setPosition(400,100);
         */
+
+
+        unlocksWindow = new UnlocksWindow(unlocksTable);
+        stage.addActor(unlocksWindow);
+
+        unlocksWindow.setPosition(
+                500
+                , 500
+                );
+
+        unlocksWindow.show();
+
+
     }
 
 
@@ -398,6 +412,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
 
         unlocksTable.add(s).size(100,100);
 
+
     }
 
     public  void onMissionUnlocked (Mission m) {
@@ -406,7 +421,7 @@ public class CombatDebriefScreen extends AbstractGameScreen implements Character
         t.row();
         t.add(new Label("Unlocked mission\n"+m.getName(),Assets.uiSkin,"handwritten_black" )).align(Align.center);
 
-        unlocksTable.add(t).size(100,100);
+        unlocksTable.add(t).size(500,200);
 
         //unlocksTable.row();
     }
