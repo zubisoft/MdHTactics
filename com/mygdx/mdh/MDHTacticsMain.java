@@ -3,7 +3,6 @@ package com.mygdx.mdh;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.mygdx.mdh.game.model.test.EffectTester;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
@@ -36,7 +35,7 @@ public class MDHTacticsMain extends ScreenManager {
         Gdx.graphics.setWindowedMode(Constants.VIEWPORT_GUI_WIDTH,Constants.VIEWPORT_GUI_HEIGHT);
 
 
-        EffectTester.runTests();
+        //EffectTester.runTests();
 
         //AudioManager.instance.play(Assets.instance.music.song01);
         // Start gameScreen at menu screen

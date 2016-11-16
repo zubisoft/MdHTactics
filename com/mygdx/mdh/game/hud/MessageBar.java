@@ -9,10 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
-import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
-import com.mygdx.mdh.game.util.LOG;
 
 /**
  * Created by zubisoft on 25/03/2016.
@@ -66,8 +64,8 @@ public class MessageBar extends Actor {
 
 
         /*
-        la.setY(Constants.VIEWPORT_GUI_HEIGHT/2);
-        la.setX(Constants.VIEWPORT_GUI_WIDTH/2-la.getWidth()/2);
+        dialogueText.setY(Constants.VIEWPORT_GUI_HEIGHT/2);
+        dialogueText.setX(Constants.VIEWPORT_GUI_WIDTH/2-dialogueText.getWidth()/2);
         */
 
     }

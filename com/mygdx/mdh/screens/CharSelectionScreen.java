@@ -12,9 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.CombatController;
 import com.mygdx.mdh.game.CombatRenderer;
+import com.mygdx.mdh.game.model.Character;
 import com.mygdx.mdh.game.model.Game;
 import com.mygdx.mdh.game.model.util.PersonaList;
 import com.mygdx.mdh.game.util.Assets;
@@ -23,9 +23,6 @@ import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 import com.mygdx.mdh.screens.widgets.Portrait;
 import com.mygdx.mdh.screens.widgets.WidgetCharterSheet;
-
-import java.util.ArrayList;
-import java.util.Set;
 
 
 public class CharSelectionScreen extends AbstractGameScreen {
@@ -59,22 +56,26 @@ public class CharSelectionScreen extends AbstractGameScreen {
                         }
                     } else {
                         gameScreen.game.removeCurrentParty(portrait.getCharacter());
-                        portrait.setSelected(false);
+                        portrait.setHighlight(false);
                     }
                     break;
 
                 case NEXT:
                     gameScreen.game.removeCurrentParty(portrait.getCharacter());
+
                     portrait.next();
                     selectCharacter(portrait);
-                    gameScreen.game.addCurrentParty(portrait.getCharacter());
+                    portrait.setHighlight(false);
+                    //gameScreen.game.addCurrentParty(portrait.getCharacter());
                     break;
 
                 case PREV:
                     gameScreen.game.removeCurrentParty(portrait.getCharacter());
+
                     portrait.prev();
                     selectCharacter(portrait);
-                    gameScreen.game.addCurrentParty(portrait.getCharacter());
+                    portrait.setHighlight(false);
+                    //gameScreen.game.addCurrentParty(portrait.getCharacter());
                     break;
             }
 
@@ -206,19 +207,28 @@ public class CharSelectionScreen extends AbstractGameScreen {
 
 
 
+
         for (int i=0; i<12; i++) {
 
             if (availableCharacters.getPersonas().size()>i) {
 
+                int index = 0;
+                int selectedCharIndex = 0;
+                for (Character c: availableCharacters.get(personaIds.get(i))) {
 
+                    if (gameScreen.game.isInParty( c.characterId )) {
+                        selectedCharIndex = index;
+                    }
+                    index++;
+                }
 
-                portraits[i] = new Portrait(availableCharacters.get(personaIds.get(i),0));
+                portraits[i] = new Portrait(availableCharacters.get(personaIds.get(i),selectedCharIndex));
                 portraits[i].setAlternateCharacters(availableCharacters.get(personaIds.get(i)));
                 listener = new PortraitClickListener(portraits[i]);
                 portraits[i].addListener(listener);
 
                 if (gameScreen.game.isInParty( portraits[i].getCharacter().characterId)) {
-                    portraits[i].setSelected(true);
+                    portraits[i].setHighlight(true);
                 }
 
 
@@ -279,7 +289,7 @@ public class CharSelectionScreen extends AbstractGameScreen {
         } else
             leftArrow.setVisible(false);
 
-        portrait.setSelected(true);
+        portrait.setHighlight(true);
 
     }
 

@@ -3,13 +3,10 @@ package com.mygdx.mdh.game.hud;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Queue;
@@ -17,7 +14,7 @@ import com.mygdx.mdh.game.model.StoryText;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * Created by zubisoft on 25/03/2016.
@@ -28,7 +25,8 @@ public class StoryMessageBar extends Actor {
 
     Table layout;
 
-    TextArea la;
+    Label characterName;
+    TextArea dialogueText;
     Image portraitImage;
 
 
@@ -59,16 +57,28 @@ public class StoryMessageBar extends Actor {
         background.setPosition(0,0);
 
 
-        la =(new TextArea("", Assets.uiSkin, "default"));
-        la.getStyle().font = Assets.uiSkin.getFont("handwritten_black");
-        la.getStyle().font.setColor(Color.BLACK);
-        la.setSize(Constants.VIEWPORT_GUI_WIDTH,180);
-        la.setAlignment(Align.center);
+
 
         Table c = new Table();
         c.setSize(Constants.VIEWPORT_GUI_WIDTH,200);
-        c.add(la).width(Constants.VIEWPORT_GUI_WIDTH-100).pad(25);
-        //c.pad(25);
+
+        characterName =(new Label("", Assets.uiSkin, "handwritten_white_big"));
+        //characterName.getStyle().font = Assets.uiSkin.getFont("handwritten_black_big");
+        //characterName.getStyle().font.setColor(Color.WHITE);
+        characterName.getStyle().font = Assets.uiSkin.getFont("handwritten_white");
+        characterName.setSize(Constants.VIEWPORT_GUI_WIDTH,180);
+        characterName.setAlignment(Align.left);
+
+        c.add(characterName).width(Constants.VIEWPORT_GUI_WIDTH-100).pad(25);
+        c.row();
+
+        dialogueText =(new TextArea("", Assets.uiSkin, "handwritten_black_big"));
+        //dialogueText.getStyle().font = Assets.uiSkin.getFont("handwritten_black_big");
+        //dialogueText.getStyle().font.setColor(Color.BLACK);
+        dialogueText.setSize(Constants.VIEWPORT_GUI_WIDTH,180);
+        dialogueText.setAlignment(Align.center);
+
+        c.add(dialogueText).width(Constants.VIEWPORT_GUI_WIDTH-100).pad(25);
 
 
         textbox.setSize(Constants.VIEWPORT_GUI_WIDTH,200);
@@ -158,14 +168,14 @@ public class StoryMessageBar extends Actor {
             }
 
 
+            characterName.setText(story.first().character.getName());
 
-            la.setText(story.removeFirst().text);
-            System.out.println("Label "+la.getText());
-            la.setPrefRows(5);
+            dialogueText.setText(story.removeFirst().text);
+            dialogueText.setPrefRows(5);
 
             layout.addAction(Actions.sequence(
                     Actions.alpha(0),
-                    Actions.alpha(0.8f,1.0f, Interpolation.fade)
+                    Actions.alpha(0.8f,0.5f, Interpolation.fade)
 
 
             ));

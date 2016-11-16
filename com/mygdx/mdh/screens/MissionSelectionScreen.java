@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.model.Campaign;
-import com.mygdx.mdh.game.model.Mission;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.game.util.LOG;
@@ -106,7 +105,7 @@ public class MissionSelectionScreen extends AbstractGameScreen {
     MissionPortrait currentSelectedMission;
     PortraitClickListener listener;
 
-    TextArea title;
+    Label title;
     TextArea description;
     Image portrait;
 
@@ -179,10 +178,10 @@ public class MissionSelectionScreen extends AbstractGameScreen {
     public void createMissionInfoLayout () {
 
         //Mission Information Area
-        title = new TextArea("Mission Title",Assets.uiSkin,"mdh_menu_infobox_title" );
+        title = new Label("Mission Title",Assets.uiSkin,"handwritten_black" );
         title.setAlignment(Align.center);
 
-        description = new TextArea("First of all, there are no ads poping on this one, which was annoying as hell.",Assets.uiSkin,"mdh_menu_infobox_title" );
+        description = new TextArea("First of all, there are no ads poping on this one, which was annoying as hell.",Assets.uiSkin,"handwritten_black" );
         description.setAlignment(Align.center);
 
         portrait = new Image(Assets.instance.characters.get("zubi").portrait);
@@ -194,9 +193,9 @@ public class MissionSelectionScreen extends AbstractGameScreen {
         Table c = new Table();
         c.top();
         c.setSize(450,200);
-        c.add(title).center().height(50).pad(30);
+        c.add(title).center().height(50).padTop(10);
         c.row();
-        c.add(description).size(400,150).center().padLeft(40);
+        c.add(description).size(400,100).center().pad(30);
 
         missionInfoBox.add(new Image(Assets.instance.guiElements.get("menus/charselection_infobox")));
         missionInfoBox.add(c);

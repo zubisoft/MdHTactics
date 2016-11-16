@@ -5,27 +5,29 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.*;
-
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.mdh.game.IA.StrategyManager;
+import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.characters.actions.GameWaitAction;
 import com.mygdx.mdh.game.controller.CharacterClickListener;
 import com.mygdx.mdh.game.controller.CombatInputListener;
-import com.mygdx.mdh.game.model.Ability;
-import com.mygdx.mdh.game.model.Character;
-import com.mygdx.mdh.game.model.Combat;
-import com.mygdx.mdh.game.characters.CharacterActor;
 import com.mygdx.mdh.game.hud.CombatHUD;
 import com.mygdx.mdh.game.map.IsoMapActor;
 import com.mygdx.mdh.game.map.IsoMapCellActor;
+import com.mygdx.mdh.game.model.Ability;
+import com.mygdx.mdh.game.model.Character;
+import com.mygdx.mdh.game.model.Combat;
 import com.mygdx.mdh.game.model.MapCell;
 import com.mygdx.mdh.game.model.effects.Effect;
 import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.util.LOG;
 import com.mygdx.mdh.screens.ScreenManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -170,8 +172,8 @@ public class CombatController extends Stage {
         this.addActor(map);
 
 
-        background = new Sprite(Assets.instance.maps.get("map01"));
-        background.setPosition(0,-275);
+        background = new Sprite(Assets.instance.maps.get(combat.getMap().getMapId()));
+        background.setPosition(-500,-75);
 
         createActorsForLayer( combat );
 
@@ -183,7 +185,7 @@ public class CombatController extends Stage {
         //Initialize elements for graphic control
         stateTime = 0;
         cameraManager = new CameraManager();
-        cameraManager.setPosition(new Vector2(map.getCellWidth()*64,map.getCellHeigth()*32));
+        cameraManager.setPosition(new Vector2(map.getCellWidth()*64,map.getCellHeigth()*32+100));
 
         //Add event handling
         multiplexer = new InputMultiplexer();

@@ -73,7 +73,7 @@ public class DamageModifierEffect extends Effect {
 
         if ( roll.getRoll() == 0 && this.getChanceModifier() == 0 ) return false;
 
-        if (outbound && d.source == this.target) return false;
+        if (outbound && d.target == this.target) return false;
 
         if (!outbound && d.source == this.target) return false; //This would exclude damage going to oneself
 

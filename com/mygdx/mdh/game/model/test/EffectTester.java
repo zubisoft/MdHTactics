@@ -15,16 +15,159 @@ public class EffectTester {
 
         LOG.setLevel(2);
 
+        testMinoanGuard ();
+        testMinotaur();
+        testDamageModifier();
+
         testMinoanPriestess();
         testShields();
-
         testDamageEffects();
         testStunEffects();
         testAttributeModifier();
         testRemover();
         testHeal();
-        testDamageModifier();
 
+
+
+    }
+
+
+    public static void testMinoanGuard () {
+
+        /* Testing Axe */
+        Character c1 = Character.loadFromJSON("minoan_guard");
+        Character c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(20);
+
+
+        int[] damages = new int[1000];
+        int test = 0;
+
+        for (int i = 0; i < 1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = c2.getMaxHealth() - c2.getHealth();
+        }
+
+
+        //On average we should see 6.75
+
+        for (int i = 0; i < 1000; i++) {
+
+            test += damages[i];
+        }
+
+
+        if (test / 1000.0f > 6 && test / 1000.0f < 8)
+            LOG.print(1, "[OK] Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+
+
+        /* Testing Bullrush */
+
+        c1 = Character.loadFromJSON("minoan_guard");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setAttack(20);
+
+
+
+
+
+        for (int i = 0; i < 1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+
+            c1.getEffects().clear();
+            c1.getAbilities().get(1).apply(c1);
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = c2.getMaxHealth() - c2.getHealth();
+        }
+
+
+        //On average we should see 6.75
+        test = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            test += damages[i];
+        }
+
+
+        if (test / 1000.0f > 9 && test / 1000.0f < 12)
+            LOG.print(1, "[OK] Buff - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Buff - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+
+
+
+
+    }
+
+
+    public static void testMinotaur () {
+
+        /* Testing Axe */
+        Character c1 = Character.loadFromJSON("minotaur");
+        Character c2 = Character.loadFromJSON("test_dummy");
+
+
+        int[] damages = new int[1000];
+
+
+        for (int i = 0; i < 1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = c2.getMaxHealth() - c2.getHealth();
+        }
+
+
+        //On average we should see 6.75
+        int test = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            test += damages[i];
+        }
+
+
+        if (test / 1000.0f > 32 && test / 1000.0f < 38)
+            LOG.print(1, "[OK] Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - " + c1.getAbilities().get(0).getName() + "@" + c1.getName(), LOG.ANSI_RED);
+
+        /* Testing Bullrush */
+
+        c1 = Character.loadFromJSON("minotaur");
+        c2 = Character.loadFromJSON("test_dummy");
+
+
+
+        for (int i = 0; i < 1000; i++) {
+            c2.setHealth(c2.getMaxHealth());
+
+            c1.getEffects().clear();
+            c1.getAbilities().get(1).apply(c1);
+            c1.getAbilities().get(0).apply(c2);
+
+            damages[i] = c2.getMaxHealth() - c2.getHealth();
+        }
+
+
+        //On average we should see 6.75
+        test = 0;
+        for (int i = 0; i < 1000; i++) {
+
+            test += damages[i];
+        }
+
+
+        if (c1.getMovement() == 4 && test / 1000.0f > 39 && test / 1000.0f < 44)
+            LOG.print(1, "[OK] Buff - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Buff - " + c1.getAbilities().get(1).getName() + "@" + c1.getName(), LOG.ANSI_RED);
 
     }
 
@@ -53,8 +196,7 @@ public class EffectTester {
         else
             LOG.print(2, "[Error] Remover - "+c1.getAbilities().get(2).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
-
-          /* Testing Zubi Proton Torpedoes */
+        /* Embrace of the Snake */
         c1 = Character.loadFromJSON("minoan_priestess");
         c2 = Character.loadFromJSON("test_dummy");
         c1.setLevel(10);
@@ -84,6 +226,35 @@ public class EffectTester {
         else
             LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(0).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
+
+        /* Embrace of the Snake */
+        c1 = Character.loadFromJSON("minoan_priestess");
+        c2 = Character.loadFromJSON("test_dummy");
+        c1.setLevel(10);
+        c1.setAttack(20);
+        c2.setMaxHealth(200);
+
+        for (int i=0; i<1000; i++) {
+            c2.setHealth(200);
+            c2.getEffects().clear();
+
+            c1.getAbilities().get(0).apply(c2);
+            c1.getAbilities().get(1).apply(c2);
+
+            damages[i] = 200-c2.getHealth();
+        }
+
+        test = 0;
+        for (int i=0; i<1000; i++) {
+
+            test+=damages[i];
+        }
+
+
+        if (test/1000.0f > 102 && test/1000.0f < 105)
+            LOG.print(1, "[OK] Damage - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_GREEN);
+        else
+            LOG.print(1, "[Error] Damage - "+c1.getAbilities().get(1).getName()+"@"+c1.getName(), LOG.ANSI_RED);
 
     }
 

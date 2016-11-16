@@ -31,7 +31,7 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public static Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
 
-    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/skin/Alyssa_Kayla.ttf"));
+    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/skin/CantedComic.ttf"));
     public BitmapFont font15 ;
 
     public AssetFonts fonts;
@@ -64,7 +64,7 @@ public class Assets implements Disposable, AssetErrorListener {
             defaultBig.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-            parameter.size = 25;
+            parameter.size = 14;
             parameter.borderColor= Color.BLACK;
             parameter.borderWidth=0.2f;
             parameter.color = Color.WHITE;
@@ -75,12 +75,37 @@ public class Assets implements Disposable, AssetErrorListener {
             uiSkin.add("font15",font15);
 
             parameter.color = Color.BLACK;
-            parameter.size = 25;
+            parameter.size = 14;
             font15  = generator.generateFont(parameter);
             uiSkin.add("handwritten_black",font15);
 
-
+            uiSkin.get("default", Label.LabelStyle.class).font = font15;
+            uiSkin.get("handwritten_black", Label.LabelStyle.class).font = font15;
             uiSkin.get("handwritten_black", TextArea.TextFieldStyle.class).font = font15;
+
+            parameter.color = Color.BLACK;
+            parameter.size = 25;
+            font15  = generator.generateFont(parameter);
+            uiSkin.add("handwritten_black_big",font15);
+
+            TextField.TextFieldStyle aux = new TextField.TextFieldStyle(uiSkin.get("handwritten_black", TextArea.TextFieldStyle.class));
+
+            parameter.color = Color.BLACK;
+            parameter.size = 20;
+            font15  = generator.generateFont(parameter);
+            aux.font = font15;
+
+            uiSkin.add("handwritten_black_big", aux, TextArea.TextFieldStyle.class);
+
+            Label.LabelStyle aux2 = new Label.LabelStyle(uiSkin.get("handwritten_black", Label.LabelStyle.class));
+
+            parameter.borderWidth=1;
+            parameter.borderColor= Color.WHITE;
+            parameter.color = Color.WHITE;
+            font15  = generator.generateFont(parameter);
+            aux2.font = font15;
+
+            uiSkin.add("handwritten_white_big", aux2, Label.LabelStyle.class);
 
             parameter.color = Color.WHITE;
             parameter.size = 25;

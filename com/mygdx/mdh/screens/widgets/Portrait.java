@@ -3,11 +3,9 @@ package com.mygdx.mdh.screens.widgets;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
-import com.mygdx.mdh.game.util.Assets;
 import com.mygdx.mdh.game.model.Character;
-import javafx.scene.paint.Color;
+import com.mygdx.mdh.game.util.Assets;
 
 import java.util.List;
 
@@ -21,6 +19,15 @@ public class Portrait extends Stack {
 
     public void setAlternateCharacters(List<Character> alternateCharacters) {
         this.alternateCharacters = alternateCharacters;
+        if (character != null) {
+            int i = 0;
+            for (Character c: alternateCharacters) {
+                if (character.characterId.equals(c.characterId)) {
+                    altNum = i;
+                }
+                i++;
+            }
+        }
     }
 
     List<Character> alternateCharacters;
@@ -78,7 +85,7 @@ public class Portrait extends Stack {
         return false;
     }
 
-    public void setSelected(boolean selected) {
+    public void setHighlight(boolean selected) {
         if (selected) portraitFrame.setColor(new com.badlogic.gdx.graphics.Color(1.0f, 0.84313726f, 0.0f, 1));
         else  portraitFrame.setColor(new com.badlogic.gdx.graphics.Color(1f, 1f, 1f, 1));
 

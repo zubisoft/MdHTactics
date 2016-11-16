@@ -72,6 +72,7 @@ public class ScrollableBox extends Group {
 
         box.getStyle().vScrollKnob = txr;
 
+
         txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/scrollbar")));
         box.getStyle().vScroll = txr;
         box.getStyle().vScroll.setMinWidth(20);

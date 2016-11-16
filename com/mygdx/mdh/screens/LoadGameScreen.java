@@ -25,27 +25,44 @@ import com.mygdx.mdh.game.util.Constants;
 import com.mygdx.mdh.screens.Transitions.ScreenTransition;
 import com.mygdx.mdh.screens.Transitions.ScreenTransitionFade;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class LoadGameScreen extends AbstractGameScreen {
 
+    public enum ButtonType {
+        LOAD,SAVE
+    }
 
     private class MenuClickListener extends ClickListener {
 
         String filename;
+        ButtonType type;
 
-        public MenuClickListener (String filename) {
+        public MenuClickListener (ButtonType type, String filename) {
             super();
             this.filename = filename;
-
+            this.type=type;
         }
 
         @Override
         public void clicked(InputEvent evt, float x, float y) {
 
             ScreenTransition transition = ScreenTransitionFade.init(0.75f);
-            if(filename != null) {
-                gameScreen.setGame(Game.loadGame(filename));
-                gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+
+            if (type == ButtonType.LOAD) {
+                if (filename != null) {
+                    gameScreen.setGame(Game.loadGame(filename));
+                    gameScreen.setScreen(new CharSelectionScreen(gameScreen), transition);
+                }
+            }
+
+            if (type == ButtonType.SAVE) {
+                if (filename != null) {
+                    System.out.println(inputText.getText());
+                }
             }
 
             //new StoryScreen(gameScreen)
@@ -73,11 +90,23 @@ public class LoadGameScreen extends AbstractGameScreen {
 
     private boolean paused;
 
+    public boolean isShowSaveButton() {
+        return showSaveButton;
+    }
+
+    public void setShowSaveButton(boolean showSaveButton) {
+        this.showSaveButton = showSaveButton;
+    }
+
+    boolean showSaveButton = false;
+
     public LoadGameScreen(ScreenManager game) {
         super(game);
 
 
     }
+
+    TextField inputText;
 
     final Skin uiSkin = new Skin(Gdx.files.internal("core/assets/skin/uiskin.json"));
 
@@ -90,8 +119,13 @@ public class LoadGameScreen extends AbstractGameScreen {
 
         buttonList = new Table();
         buttonList.pad(10);
-        buttonList.setSize(300,300);
+        buttonList.setSize(600,300);
         //buttonList.setPosition(600,500);
+
+
+
+
+
 
 
         FileHandle fh = Gdx.files.internal("core/assets/data/games");
@@ -100,9 +134,9 @@ public class LoadGameScreen extends AbstractGameScreen {
             if (!f.isDirectory()) {
 
                 Label la = (new Label(f.name(),  Assets.uiSkin, "handwritten_black", Color.BLACK));
-                listener = new MenuClickListener(f.name());
+                listener = new MenuClickListener(ButtonType.LOAD,f.name());
                 la.addListener(listener);
-                buttonList.add(la);
+                buttonList.add(la).left();
                 buttonList.row();
             }
 
@@ -119,25 +153,59 @@ public class LoadGameScreen extends AbstractGameScreen {
 
         SpriteDrawable txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/knob")));
         box.getStyle().vScrollKnob = txr;
+        box.setVariableSizeKnobs(false);
+        box.setFadeScrollBars(false);
 
         txr = new SpriteDrawable(new Sprite(Assets.instance.guiElements.get("menus/scrollbar")));
         box.getStyle().vScroll = txr;
         box.getStyle().vScroll.setMinWidth(20);
         box.setFillParent(true);
 
-        box.setSize(300,300);
+        box.setSize(600,300);
 
         Table c = new Table();
+
         //c.setFillParent(true);
-        c.add(box).size(300,300);
+        c.add(box).size(600,300);
 
         Table x = new Table();
-        x.add(c).size(300,300);
+
+        if (showSaveButton) {
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+
+            String prefix = "Savegame";
+            if (gameScreen.game != null && gameScreen.game.getCurrentMission() != null) prefix = gameScreen.game.getCurrentMission().getName();
+
+            inputText = new TextField(prefix+" "+dateFormat.format(date), Assets.uiSkin);
+            inputText.getStyle().background = tableBackground;
+            inputText.setSize(600,50);
+            inputText.setCursorPosition(0);
+            //stage.addActor(inputText);
+
+            TextField b = new TextField("Save", Assets.uiSkin);
+            b.setSize(100,50);
+
+            MenuClickListener mc = new MenuClickListener(ButtonType.SAVE,"");
+            b.addListener(mc);
+
+            x.add(inputText).size(500, 50);
+            x.add(b).size(100,50).pad(0);
+
+            x.row();
+        }
+
+
+
+
+        x.add(c).size(600,300).colspan(2);
 
 
 
         Stack stack = new Stack();
         stage.addActor(stack);
+
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(background);
         stack.add(x);

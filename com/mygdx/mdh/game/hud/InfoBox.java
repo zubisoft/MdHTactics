@@ -1,20 +1,15 @@
 package com.mygdx.mdh.game.hud;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.mygdx.mdh.game.util.Assets;
 
 /**
@@ -24,8 +19,6 @@ public class InfoBox extends Actor {
     private Table t,t1;
     TextArea textArea = new TextArea("",Assets.uiSkin, "default");
 
-    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/skin/Alyssa_Kayla.ttf"));
-    BitmapFont font15;
 
     public InfoBox () {
 
@@ -48,10 +41,9 @@ public class InfoBox extends Actor {
         parameter.color = Color.BLACK;
         parameter.magFilter = Texture.TextureFilter.Linear;
         parameter.minFilter = Texture.TextureFilter.Linear;
-         font15 = generator.generateFont(parameter);
 
 
-        textArea.getStyle().font = font15;
+        textArea.getStyle().font = Assets.uiSkin.getFont("handwritten_black");
 
     }
 

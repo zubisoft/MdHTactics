@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mygdx.mdh.game.controller.GameEventListener;
 import com.mygdx.mdh.game.model.util.PersonaList;
@@ -15,7 +17,6 @@ import com.mygdx.mdh.game.util.MissionDeserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -142,6 +143,12 @@ public class Game {
     }
 
     public void saveGame() {
+        saveGame("autosave");
+    }
+
+
+
+    public void saveGame(String filename) {
         ObjectMapper mapper  = new ObjectMapper();
 
         SimpleModule module = new SimpleModule();
@@ -162,11 +169,12 @@ public class Game {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));*/
 
         try {
-            mapper.writeValue(Gdx.files.internal("core/assets/data/games/autosave.txt").file(), this);
+            mapper.writeValue(Gdx.files.internal("core/assets/data/games/"+filename+".txt").file(), this);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public static Game loadGame(String gameId) {
         FileHandle file = Gdx.files.internal("core/assets/data/games/"+gameId);
@@ -360,12 +368,14 @@ public class Game {
         return gameCampaign;
     }
 
+    @JsonIgnore
     public Campaign getNextCampaign() {
         int i = this.gameCampaign.indexOf(currentCampaign);
         if (i<0 || i+1>=gameCampaign.size() || !gameCampaign.get(i+1).isUnlocked()) return null;
         return gameCampaign.get(i+1);
     }
 
+    @JsonIgnore
     public Campaign getPrevCampaign() {
         int i = this.gameCampaign.indexOf(currentCampaign);
         if (i==-1 || i-1<0 || !gameCampaign.get(i-1).isUnlocked()) return null;
@@ -390,7 +400,7 @@ public class Game {
     }
 
     public boolean addCurrentParty(Character character) {
-        if (currentParty.size()<MAX_PARTY) {
+        if (currentParty.size()<MAX_PARTY && !isInParty(character.characterId)) {
             character.setFriendly(true);
             this.currentParty.add(character);
             return true;

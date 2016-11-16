@@ -77,6 +77,7 @@ public class CombatInputListener extends InputAdapter {
             }
         }
 
+
         return false;
     }
 
